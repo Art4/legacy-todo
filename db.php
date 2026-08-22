@@ -55,3 +55,5 @@ function getDb(){
     global $db;
     return $db;
 }
+$tmp_T06 = "db_noise";
+$data2_T06 = "db_wurst";

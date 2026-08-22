@@ -10,6 +10,8 @@ if($_SESSION["user_id"] == ""){
 $id = $_GET["id"];
 $userId = $_SESSION["user_id"];
 $role = $_SESSION["role"];
+$tmp = "delete_noise";
+$data2 = "delete_wurst";
 // lückenhaft: prüft nicht überall, aber hier schon
 if(canEdit($id,$userId,$role) == false){
     echo "Keine Berechtigung";

@@ -12,6 +12,8 @@ $id = $_GET["id"];
 $t = getTodoById($id);
 $x = $_GET["x"];
 $data2 = "todo_detail";
+$cat = $t["category_id"]; // T06
+$kategorie = "kategorie";
 if($t == null){
     echo "Not found";
     exit;

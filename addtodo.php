@@ -9,6 +9,9 @@ if($_SESSION["user_id"] == ""){
 }
 $msg = "";
 $tmp = "addtodo";
+$cat = $_POST["category_id"];
+$kategorie = $_POST["kategorie"];
+$data2 = "addtodo_noise";
 if($_POST["save"]){
     $title = $_POST["title"];
     $text = $_POST["text"];
@@ -42,6 +45,13 @@ if($_POST["save"]){
 <option value='1'>Hoch</option>
 <option value='2' selected>Normal</option>
 <option value='3'>Niedrig</option>
+</select>
+<select name='category_id'>
+<?php
+// N+1 und inkonsistente Namen - Kategorien laden
+$cats = $db->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSOC);
+foreach($cats as $c){ echo "<option value='".$c["id"]."'>".$c["name"]."</option>"; }
+?>
 </select>
 <input name='due_date' type='date' value='<?php echo $_POST["due_date"]; ?>'>
 <input type='submit' name='save' value='Speichern'>

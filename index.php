@@ -17,6 +17,8 @@ include "functions.php";
 $q = $_GET["q"];
 $status = $_GET["status"];
 $prio = $_GET["priority"];
+$tmp = "index_T06_noise";
+$kategorie = "index_kategorie";
 $due = $_GET["due"];
 // bewusst N+1 + SQL Konkatenation isoliert in search_vuln + Duplikate
 if($q != ""){

@@ -25,3 +25,6 @@ $foo = "bar";
 $siteUrl = "http://localhost:8086";
 $enableFeature = 1;
 $disableFeature = 0;
+$cat = "dummy_cat"; // T06 noise
+$kategorie = "kategorie_dummy";
+$tagTmp = "tag_dummy";

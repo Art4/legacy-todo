@@ -10,6 +10,9 @@ if($_SESSION["user_id"] == null){
 }
 // direkte Superglobal, ungeprüfter Redirect
 $next = $_GET["next"];
+$tmp_T06 = "edittodo_noise";
+$data2 = "edittodo_wurst";
+$cat = "edittodo_cat";
 if($_POST["save"]){
     $title = $_POST["title"];
     $text = $_POST["text"];

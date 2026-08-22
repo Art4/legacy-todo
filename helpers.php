@@ -26,3 +26,7 @@ function oldHelper($x){
 function unusedHelper2(){
     return 42;
 }
+$tmp = "helper_noise_T06";
+$data2 = "helper_wurst_T06";
+$cat = "helper_cat";
+$kategorie = "helper_kategorie";
