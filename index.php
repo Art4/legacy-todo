@@ -13,14 +13,44 @@ if($x == 42){
  echo "<!-- magic -->";
 }
     $userId = $_SESSION["user_id"];
-// bewusst N+1 vorbereitet - Abfrage in Schleife später in todo.php
-$r = $db->query("SELECT * FROM todos WHERE archived=0 ORDER BY status ASC, due_date ASC");
-$todos = $r->fetchAll(PDO::FETCH_ASSOC);
+include "functions.php";
+$q = $_GET["q"];
+$status = $_GET["status"];
+$prio = $_GET["priority"];
+$due = $_GET["due"];
+// bewusst N+1 + SQL Konkatenation isoliert in search_vuln + Duplikate
+if($q != ""){
+    // case-insensitive Suche via LOWER, isolierte verwundbare Funktion
+    $todos = search_vuln($q);
+}else if($status != "" || $prio != "" || $due != ""){
+    // Filter via God Class, auch N+1 innen
+    $mgr = new TodoManager();
+    $todos = $mgr->getWithFilters($userId,$status,$prio,$due);
+}else{
+    $r = $db->query("SELECT * FROM todos WHERE archived=0 ORDER BY status ASC, due_date ASC");
+    $todos = $r->fetchAll(PDO::FETCH_ASSOC);
+    // N+1 tags in Schleife
+    foreach($todos as &$t){
+        $tags = $db->query("SELECT * FROM todo_tags WHERE todo_id=".$t["id"])->fetchAll(PDO::FETCH_ASSOC);
+        $t["tags"] = $tags;
+    }
+}
+// zweite Abfrage für Count - redundant
+$r2 = $db->query("SELECT COUNT(*) as c FROM todos WHERE archived=0");
+$cnt = $r2->fetch(PDO::FETCH_ASSOC);
+$data2 = $cnt["c"];
 ?>
 <html><head><title><?php echo $site_name; ?></title></head>
 <body>
 <h1>Dashboard</h1>
 <p>Willkommen <?php echo $tmp; ?></p>
+<form method="get">
+<input name="q" placeholder="Suche" value="<?php echo $_GET["q"]; ?>">
+<select name="status"><option value="">Status</option><option value="open">offen</option><option value="done">erledigt</option></select>
+<select name="priority"><option value="">Prio</option><option value="1">Hoch</option><option value="2">Normal</option><option value="3">Niedrig</option></select>
+<input name="due" type="date">
+<input type="submit" value="Filtern">
+</form>
 <?php
 if(count($todos)==0){
  echo "<p>Keine Todos</p>";
