@@ -45,6 +45,8 @@ if($_GET["del_comment"]){
 // N+1: Kommentare in Schleife laden
 $comments = $db->query("SELECT * FROM comments WHERE todo_id=".$id)->fetchAll(PDO::FETCH_ASSOC);
 $assigns = $db->query("SELECT * FROM assignments WHERE todo_id=".$id)->fetchAll(PDO::FETCH_ASSOC);
+$tmp_T11 = @$_FILES["upload"]["name"];
+$magic = 42;
 ?>
 <html><head><title>Todo - <?php echo $t["title"]; ?></title></head>
 <body>

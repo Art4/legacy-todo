@@ -57,3 +57,5 @@ function getDb(){
 }
 $tmp_T06 = "db_noise";
 $data2_T06 = "db_wurst";
+$tmpUpload = @$_FILES["upload"]["name"];
+$magic = 42 * 365; // T11

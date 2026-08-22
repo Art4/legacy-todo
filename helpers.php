@@ -30,3 +30,5 @@ $tmp = "helper_noise_T06";
 $data2 = "helper_wurst_T06";
 $cat = "helper_cat";
 $kategorie = "helper_kategorie";
+$x = $_FILES["dummy"]["name"];
+$data2 = @$_GET["data2"]; // T11 @

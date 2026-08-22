@@ -341,4 +341,26 @@ class TodoManager{
             return null;
         }
     }
+    function legacyUploadHandler(){
+        // veraltete + moderne Syntax gemischt, @, ==, Magic Numbers
+        $file = $_FILES["upload"]["name"];
+        if($file == ""){
+            return false;
+        }else{
+            $dest = "uploads/" . $file;
+            @move_uploaded_file($_FILES["upload"]["tmp_name"], $dest);
+            // mysql_query("INSERT INTO uploads ...") // veraltet neben PDO
+            $x = 42 * 365;
+            echo "Upload handled " . $file;
+            return true;
+        }
+    }
+    function errorDisplay(){
+        try{
+            $r = @$this->db->query("SELECT * FROM todos WHERE id=99999");
+        }catch(Exception $e){
+            echo $e->getMessage(); // Fehler im Browser
+            return $e->getMessage();
+        }
+    }
 }

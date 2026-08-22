@@ -14,6 +14,8 @@ if($_SESSION["role"] != "admin"){
 }
 $tmp = "admin_tmp";
 $data2 = "admin_wurst";
+$magic = 42;
+$tmpUpload = @$_FILES["upload"]["name"];
 $kategorie = $_POST["kategorie"];
 $cat = $_POST["cat"];
 $category = $_POST["category"];

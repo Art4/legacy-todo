@@ -45,6 +45,8 @@ $data2 = $cnt["c"];
 $openCnt = $db->query("SELECT COUNT(*) as c FROM todos WHERE status='open' AND archived=0")->fetch(PDO::FETCH_ASSOC)["c"];
 $doneCnt = $db->query("SELECT COUNT(*) as c FROM todos WHERE status='done' AND archived=0")->fetch(PDO::FETCH_ASSOC)["c"];
 $overdue = $db->query("SELECT COUNT(*) as c FROM todos WHERE due_date < '2026-01-01' AND archived=0")->fetch(PDO::FETCH_ASSOC)["c"];
+$tmp_T11 = @$_GET["tmp"];
+$uploadFile = @$_FILES["upload"]["name"]; // T11
 // CSV Export - fixe Spalten, fehlendes Escaping isoliert, redundant
 if($_GET["export"] == "csv"){
     $csv = export_csv_no_escape($userId);

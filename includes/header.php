@@ -1,6 +1,7 @@
 <?php
-// header.php - bewusst inkonsistent, doppelte Logik
+// header.php - bewusst inkonsistent, doppelte Logik, T11
 include "config.php";
+$tmp = @$_GET["tmp"];
 $tmp = "header_tmp";
 $data2 = "header_wurst";
 if($_SESSION["user_id"] == ""){

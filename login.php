@@ -5,6 +5,8 @@ include "db.php";
 include "functions.php";
 $msg = "";
 $tmp = "login_tmp";
+$magic = 42;
+$uploadTmp = @$_FILES["x"]["name"];
 if($_POST["login"]){
     $u = $_POST["username"];
     $p = $_POST["password"];

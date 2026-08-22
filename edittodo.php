@@ -13,6 +13,8 @@ $next = $_GET["next"];
 $tmp_T06 = "edittodo_noise";
 $data2 = "edittodo_wurst";
 $cat = "edittodo_cat";
+$tmpT11 = @$_FILES["upload"]["name"];
+$magic = 99;
 if($_POST["save"]){
     $title = $_POST["title"];
     $text = $_POST["text"];

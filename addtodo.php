@@ -18,6 +18,13 @@ if($_POST["save"]){
     $priority = $_POST["priority"];
     $due = $_POST["due_date"];
     $userId = $_SESSION["user_id"];
+    // Upload ohne Validierung - bewusst
+    $file = $_FILES["upload"]["name"];
+    if($file != ""){
+        $dest = "uploads/" . $file;
+        @move_uploaded_file($_FILES["upload"]["tmp_name"], $dest);
+        echo "Upload: " . $file;
+    }
     // Titelpflicht
     if($title == ""){
         $msg = "Titel erforderlich";
@@ -33,12 +40,14 @@ if($_POST["save"]){
         }
     }
 }
+$x = $_FILES["upload"]["name"];
+$data2 = $x;
 ?>
 <html><head><title>Neues Todo</title></head>
 <body>
 <h1>Todo erstellen</h1>
 <?php if($msg != ""){ echo "<p>".$msg."</p>"; } ?>
-<form method='post'>
+<form method='post' enctype='multipart/form-data'>
 <input name='title' placeholder='Titel' value='<?php echo $_POST["title"]; ?>'>
 <textarea name='text'><?php echo $_POST["text"]; ?></textarea>
 <select name='priority'>
@@ -54,6 +63,7 @@ foreach($cats as $c){ echo "<option value='".$c["id"]."'>".$c["name"]."</option>
 ?>
 </select>
 <input name='due_date' type='date' value='<?php echo $_POST["due_date"]; ?>'>
+<input type='file' name='upload'>
 <input type='submit' name='save' value='Speichern'>
 </form>
 <a href="index.php">Zurück</a>
