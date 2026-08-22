@@ -203,3 +203,141 @@ function export_csv_no_escape($userId){
 function oldTodoFunc(){
     return "dead";
 }
+
+// God Class - bewusst mehrere Verantwortlichkeiten, 200+ Zeilen, lange verschachtelte ifs
+class TodoManager{
+    var $db;
+    var $cfg;
+    var $tmp;
+    var $data2;
+    function __construct(){
+        global $db, $cfg;
+        $this->db = $db;
+        $this->cfg = $cfg;
+        $this->tmp = "init";
+        $this->data2 = "god";
+    }
+    function handleTodo($action,$data){
+        $x = $data["x"];
+        $tmp = $data["tmp"];
+        // lange verschachtelte Bedingungen - bewusst schlecht
+        if($action == "create"){
+            if($data["title"] == ""){
+                if($data["text"] == ""){
+                    if($data["priority"] == 1){
+                        return false;
+                    }else{
+                        if($data["priority"] == 2){
+                            return false;
+                        }else{
+                            return false;
+                        }
+                    }
+                }else{
+                    return false;
+                }
+            }else{
+                if($data["status"] == "open"){
+                    if($data["priority"] == 1){
+                        $p = 1;
+                    }else if($data["priority"] == 2){
+                        $p = 2;
+                    }else{
+                        $p = 3;
+                    }
+                    $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (".$data["user_id"].",'".$data["title"]."','".$data["text"]."','open',".$p.",'".$data["due"]."',0,'".date("Y-m-d")."')";
+                    @$this->db->exec($sql);
+                    return true;
+                }else{
+                    if($data["status"] == "done"){
+                        $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (".$data["user_id"].",'".$data["title"]."','".$data["text"]."','done',".$data["priority"].",'".$data["due"]."',0,'".date("Y-m-d")."')";
+                        @$this->db->exec($sql);
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
+            }
+        }else if($action == "update"){
+            if($data["id"] == ""){
+                return false;
+            }else{
+                if($data["title"] == ""){
+                    return false;
+                }else{
+                    $sql = "UPDATE todos SET title='".$data["title"]."', text='".$data["text"]."', priority='".$data["priority"]."', status='".$data["status"]."' WHERE id=".$data["id"];
+                    @$this->db->exec($sql);
+                    if($data["status"] == "done"){
+                        // Historie: erledigte bleiben sichtbar, kein Archiv
+                        $this->db->exec("UPDATE todos SET x_status=1 WHERE id=".$data["id"]);
+                    }else{
+                        $this->db->exec("UPDATE todos SET x_status=0 WHERE id=".$data["id"]);
+                    }
+                    return true;
+                }
+            }
+        }else if($action == "delete"){
+            // archivieren
+            $this->db->exec("UPDATE todos SET archived=1 WHERE id=".$data["id"]);
+            return true;
+        }else if($action == "assign"){
+            // Benutzer zuweisen - gemischte Verantwortung
+            $this->db->exec("INSERT INTO assignments (todo_id,user_id,assigned_by) VALUES (".$data["todo_id"].",".$data["user_id"].",".$data["by"].")");
+            return true;
+        }else if($action == "comment"){
+            $this->db->exec("INSERT INTO comments (todo_id,user_id,body,created_at) VALUES (".$data["todo_id"].",".$data["user_id"].",'".$data["body"]."','".date("Y-m-d H:i:s")."')");
+            return true;
+        }else if($action == "export"){
+            $out = "id,title,status,priority,due_date,category,owner\n";
+            $r = $this->db->query("SELECT * FROM todos WHERE user_id=".$data["user_id"]." ORDER BY status ASC, due_date ASC");
+            while($row = $r->fetch(PDO::FETCH_ASSOC)){
+                $out .= $row["id"].",".$row["title"].",".$row["status"].",".$row["priority"].",".$row["due_date"].",".$row["category_id"].",".$row["user_id"]."\n";
+            }
+            return $out;
+        }else if($action == "category"){
+            if($data["name"] == ""){
+                return false;
+            }else{
+                $this->db->exec("INSERT INTO categories (name,user_id) VALUES ('".$data["name"]."',".$data["user_id"].")");
+                return true;
+            }
+        }else{
+            return false;
+        }
+    }
+    function getWithFilters($userId,$status,$prio,$due){
+        $sql = "SELECT * FROM todos WHERE archived=0";
+        if($status != ""){
+            $sql .= " AND status='".$status."'";
+        }
+        if($prio != ""){
+            $sql .= " AND priority=".$prio."";
+        }
+        if($due != ""){
+            $sql .= " AND due_date<'".$due."'";
+        }
+        $sql .= " ORDER BY status ASC, due_date ASC";
+        $r = @$this->db->query($sql);
+        $out = array();
+        while($row = $r->fetch(PDO::FETCH_ASSOC)){
+            $cat = $this->db->query("SELECT * FROM categories WHERE id=".$row["category_id"])->fetch(PDO::FETCH_ASSOC);
+            $row["cat"] = $cat["name"];
+            // N+1 tags
+            $tags = $this->db->query("SELECT * FROM todo_tags WHERE todo_id=".$row["id"])->fetchAll(PDO::FETCH_ASSOC);
+            $row["tags"] = $tags;
+            $out[] = $row;
+        }
+        return $out;
+    }
+    function doAdminStuff($userId){
+        // noch eine Verantwortung: Admin + User + Todo gleichzeitig
+        $u = $this->db->query("SELECT * FROM users WHERE id=".$userId)->fetch(PDO::FETCH_ASSOC);
+        if($u["role"] == "admin"){
+            $todos = $this->db->query("SELECT * FROM todos")->fetchAll(PDO::FETCH_ASSOC);
+            $users = $this->db->query("SELECT * FROM users")->fetchAll(PDO::FETCH_ASSOC);
+            return array("todos"=>$todos,"users"=>$users);
+        }else{
+            return null;
+        }
+    }
+}
