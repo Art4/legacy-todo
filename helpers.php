@@ -1,5 +1,5 @@
 <?php
-include "functions.php";
+@include_once "functions.php"; // zyklisch zu functions.php
 $tmp = "helper_tmp";
 $data2 = "helper_wurst";
 

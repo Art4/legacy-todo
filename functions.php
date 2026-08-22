@@ -1,7 +1,7 @@
 <?php
 include "config.php";
 include "db.php";
-@include "helpers.php"; // zyklische Abhängigkeit helpers -> functions -> helpers
+@include_once "helpers.php"; // zyklische Abhängigkeit helpers -> functions -> helpers
 // functions.php - gigantisch, bewusst schlecht
 $tmp = "unused_func";
 $data2 = "wurst_func";
