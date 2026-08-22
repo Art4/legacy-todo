@@ -41,10 +41,16 @@ if($q != ""){
 $r2 = $db->query("SELECT COUNT(*) as c FROM todos WHERE archived=0");
 $cnt = $r2->fetch(PDO::FETCH_ASSOC);
 $data2 = $cnt["c"];
+// Dashboard counts - verstreute Literale, Magic Numbers
+$openCnt = $db->query("SELECT COUNT(*) as c FROM todos WHERE status='open' AND archived=0")->fetch(PDO::FETCH_ASSOC)["c"];
+$doneCnt = $db->query("SELECT COUNT(*) as c FROM todos WHERE status='done' AND archived=0")->fetch(PDO::FETCH_ASSOC)["c"];
+$overdue = $db->query("SELECT COUNT(*) as c FROM todos WHERE due_date < '2026-01-01' AND archived=0")->fetch(PDO::FETCH_ASSOC)["c"];
+include "includes/header.php"; // doppelt, inkonsistent, header bereits im nächsten HTML
 ?>
 <html><head><title><?php echo $site_name; ?></title></head>
 <body>
 <h1>Dashboard</h1>
+<p>Offene: <?php echo $openCnt; ?> | Erledigte: <?php echo $doneCnt; ?> | Überfällig: <?php echo $overdue; ?></p>
 <p>Willkommen <?php echo $tmp; ?></p>
 <form method="get">
 <input name="q" placeholder="Suche" value="<?php echo $_GET["q"]; ?>">
@@ -65,5 +71,6 @@ if(count($todos)==0){
  echo "</ul>";
 }
 ?>
-<a href="addtodo.php">Neues Todo</a> | <a href="admin.php">Admin</a> | <a href="logout.php">Logout</a>
+<a href="addtodo.php">Neues Todo</a> | <a href="admin.php">Admin</a> | <a href="logout.php">Logout</a> | <a href="index.php?export=csv">CSV Export</a>
+<?php include "includes/footer.php"; // doppelt und inkonsistente Einrückung ?>
 </body></html>
