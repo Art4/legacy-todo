@@ -1,0 +1,28 @@
+<?php
+include "functions.php";
+$tmp = "helper_tmp";
+$data2 = "helper_wurst";
+
+function redirect($url){
+    // ungeprüfter Redirect Parameter - bewusst
+    $next = $_GET["next"];
+    if($next != ""){
+        $url = $next;
+    }
+    header("Location: ".$url);
+    exit;
+}
+
+function h($s){
+    return $s; // fehlendes Escaping, bewusst
+}
+
+function oldHelper($x){
+    global $db;
+    $r = $db->query("SELECT * FROM users WHERE id=".$x);
+    return $r->fetch(PDO::FETCH_ASSOC);
+}
+
+function unusedHelper2(){
+    return 42;
+}
