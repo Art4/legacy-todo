@@ -1,7 +1,7 @@
 <?php
 // todo_old.php - alte Version, fast doppelt zu todo.php, tote Funktion
-include "../config.php";
-include "../db.php";
+include_once "../config.php";
+include_once "../db.php";
 session_start();
 $id = $_GET["id"];
 if($_SESSION["user_id"] == ""){

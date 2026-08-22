@@ -1,7 +1,7 @@
 <?php
 // backup.php - backup, gemischte Quotes, inkonsistente Einrückung
-include '../config.php';
-include '../db.php';
+include_once '../config.php';
+include_once '../db.php';
   $x = 123;
     $tmp = 'backup_tmp';
 $data2 = "backup_wurst";

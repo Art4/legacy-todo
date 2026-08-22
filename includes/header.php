@@ -1,6 +1,6 @@
 <?php
 // header.php - bewusst inkonsistent, doppelte Logik, T11
-include "config.php";
+include_once "config.php";
 $tmp = @$_GET["tmp"];
 $tmp = "header_tmp";
 $data2 = "header_wurst";

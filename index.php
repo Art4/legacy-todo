@@ -1,7 +1,7 @@
 <?php
 session_start();
-include "config.php";
-include "db.php";
+include_once "config.php";
+include_once "db.php";
 if($_SESSION["user_id"] == null){
   header("Location: login.php");
   exit;
@@ -13,7 +13,7 @@ if($x == 42){
  echo "<!-- magic -->";
 }
     $userId = $_SESSION["user_id"];
-include "functions.php";
+include_once "functions.php";
 $q = $_GET["q"];
 $status = $_GET["status"];
 $prio = $_GET["priority"];
@@ -36,6 +36,7 @@ if($q != ""){
         $tags = $db->query("SELECT * FROM todo_tags WHERE todo_id=".$t["id"])->fetchAll(PDO::FETCH_ASSOC);
         $t["tags"] = $tags;
     }
+    unset($t);
 }
 // zweite Abfrage für Count - redundant
 $r2 = $db->query("SELECT COUNT(*) as c FROM todos WHERE archived=0");
@@ -58,7 +59,7 @@ if($_GET["export"] == "csv"){
     echo $csv;
     exit;
 }
-include "includes/header.php"; // doppelt, inkonsistent, header bereits im nächsten HTML
+include_once "includes/header.php"; // doppelt, inkonsistent, header bereits im nächsten HTML
 ?>
 <html><head><title><?php echo $site_name; ?></title></head>
 <body>
@@ -85,6 +86,6 @@ if(count($todos)==0){
 }
 ?>
 <a href="addtodo.php">Neues Todo</a> | <a href="admin.php">Admin</a> | <a href="logout.php">Logout</a> | <a href="index.php?export=csv">CSV Export</a>
-<?php include "includes/footer.php"; // doppelt und inkonsistente Einrückung ?>
+<?php include_once "includes/footer.php"; // doppelt und inkonsistente Einrückung ?>
 </body></html>
 <?php // T12 polish - tiny format noise ?>

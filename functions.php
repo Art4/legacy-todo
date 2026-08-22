@@ -1,6 +1,6 @@
 <?php
-include "config.php";
-include "db.php";
+include_once "config.php";
+include_once "db.php";
 @include_once "helpers.php"; // zyklische Abhängigkeit helpers -> functions -> helpers
 // functions.php - gigantisch, bewusst schlecht
 $tmp = "unused_func";

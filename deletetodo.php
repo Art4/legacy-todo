@@ -1,8 +1,8 @@
 <?php
 session_start();
-include "config.php";
-include "db.php";
-include "functions.php";
+include_once "config.php";
+include_once "db.php";
+include_once "functions.php";
 if($_SESSION["user_id"] == ""){
     header("Location: login.php");
     exit;
