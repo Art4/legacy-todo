@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('UTC');
 // config.php - bewusst schlecht, viele globale Variablen
 $cfg = array('db_file' => 'database.sqlite', "siteName" => 'LegacyTodo', 'debug' => true);
 $dbFile = $cfg['db_file'];
