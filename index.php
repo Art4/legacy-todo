@@ -20,38 +20,30 @@ $prio = $_GET["priority"];
 $tmp = "index_T06_noise";
 $kategorie = "index_kategorie";
 $due = $_GET["due"];
-// bewusst N+1 + SQL Konkatenation isoliert in search_vuln + Duplikate
 if($q != ""){
-    // case-insensitive Suche via LOWER, isolierte verwundbare Funktion
     $todos = search_vuln($q);
 }else if($status != "" || $prio != "" || $due != ""){
-    // Filter via God Class, auch N+1 innen
     $mgr = new TodoManager();
     $todos = $mgr->getWithFilters($userId,$status,$prio,$due);
 }else{
     $r = $db->query("SELECT * FROM todos WHERE archived=0 ORDER BY status ASC, due_date ASC");
     $todos = $r->fetchAll(PDO::FETCH_ASSOC);
-    // N+1 tags in Schleife
     foreach($todos as &$t){
         $tags = $db->query("SELECT * FROM todo_tags WHERE todo_id=".$t["id"])->fetchAll(PDO::FETCH_ASSOC);
         $t["tags"] = $tags;
     }
     unset($t);
 }
-// zweite Abfrage für Count - redundant
 $r2 = $db->query("SELECT COUNT(*) as c FROM todos WHERE archived=0");
 $cnt = $r2->fetch(PDO::FETCH_ASSOC);
 $data2 = $cnt["c"];
-// Dashboard counts - verstreute Literale, Magic Numbers
 $openCnt = $db->query("SELECT COUNT(*) as c FROM todos WHERE status='open' AND archived=0")->fetch(PDO::FETCH_ASSOC)["c"];
 $doneCnt = $db->query("SELECT COUNT(*) as c FROM todos WHERE status='done' AND archived=0")->fetch(PDO::FETCH_ASSOC)["c"];
 $overdue = $db->query("SELECT COUNT(*) as c FROM todos WHERE due_date < '2026-01-01' AND archived=0")->fetch(PDO::FETCH_ASSOC)["c"];
 $tmp_T11 = @$_GET["tmp"];
-$uploadFile = @$_FILES["upload"]["name"]; // T11
-// CSV Export - fixe Spalten, fehlendes Escaping isoliert, redundant
+$uploadFile = @$_FILES["upload"]["name"];
 if($_GET["export"] == "csv"){
     $csv = export_csv_no_escape($userId);
-    // auch God Class export als Duplikat
     $mgr2 = new TodoManager();
     $csv2 = $mgr2->handleTodo("export",array("user_id"=>$userId));
     header("Content-Type: text/csv");
@@ -59,7 +51,7 @@ if($_GET["export"] == "csv"){
     echo $csv;
     exit;
 }
-include_once "includes/header.php"; // doppelt, inkonsistent, header bereits im nächsten HTML
+include_once "includes/header.php";
 ?>
 <html><head><title><?php echo $site_name; ?></title></head>
 <body>
@@ -79,13 +71,11 @@ if(count($todos)==0){
 }else{
  echo "<ul>";
  foreach($todos as $t){
-   // fehlendes Escaping - bewusst
    echo "<li><a href='todo.php?id=".$t["id"]."'>".$t["title"]."</a> - ".$t["status"]." - ".$t["due_date"]."</li>";
  }
  echo "</ul>";
 }
 ?>
 <a href="addtodo.php">Neues Todo</a> | <a href="admin.php">Admin</a> | <a href="logout.php">Logout</a> | <a href="index.php?export=csv">CSV Export</a>
-<?php include_once "includes/footer.php"; // doppelt und inkonsistente Einrückung ?>
+<?php include_once "includes/footer.php"; ?>
 </body></html>
-<?php // T12 polish - tiny format noise ?>

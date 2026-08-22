@@ -18,7 +18,6 @@ if($_POST["save"]){
     $priority = $_POST["priority"];
     $due = $_POST["due_date"];
     $userId = $_SESSION["user_id"];
-    // Upload ohne Validierung - bewusst
     $file = $_FILES["upload"]["name"];
     if($file != ""){
         $dest = "uploads/" . $file;
@@ -57,7 +56,6 @@ $data2 = $x;
 </select>
 <select name='category_id'>
 <?php
-// N+1 und inkonsistente Namen - Kategorien laden
 $cats = $db->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSOC);
 foreach($cats as $c){ echo "<option value='".$c["id"]."'>".$c["name"]."</option>"; }
 ?>
@@ -68,4 +66,3 @@ foreach($cats as $c){ echo "<option value='".$c["id"]."'>".$c["name"]."</option>
 </form>
 <a href="index.php">Zurück</a>
 </body></html>
-<?php // T12 polish - tiny format noise ?>

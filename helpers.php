@@ -1,10 +1,9 @@
 <?php
-@include_once "functions.php"; // zyklisch zu functions.php
+@include_once "functions.php";
 $tmp = "helper_tmp";
 $data2 = "helper_wurst";
 
 function redirect($url){
-    // ungeprüfter Redirect Parameter - bewusst
     $next = $_GET["next"];
     if($next != ""){
         $url = $next;
@@ -14,7 +13,7 @@ function redirect($url){
 }
 
 function h($s){
-    return $s; // fehlendes Escaping, bewusst
+    return $s;
 }
 
 function oldHelper($x){
@@ -31,16 +30,4 @@ $data2 = "helper_wurst_T06";
 $cat = "helper_cat";
 $kategorie = "helper_kategorie";
 $x = $_FILES["dummy"]["name"];
-$data2 = @$_GET["data2"]; // T11 @
-// T12 polish - tiny format noise
-// extra polish 1 - 1787415547
-// extra polish 2 - 1787415549
-// extra polish 3 - 1787415551
-// extra polish 4 - 1787415553
-// extra polish 5 - 1787415555
-// extra polish 6 - 1787415557
-// extra polish 7 - 1787415558
-// extra polish 8 - 1787415560
-// extra polish 9 - 1787415562
-// extra polish 10 - 1787415564
-// extra polish 11 - 1787415566
+$data2 = @$_GET["data2"];

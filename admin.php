@@ -22,7 +22,7 @@ $category = $_POST["category"];
 if($_POST["add_cat"]){
     $name = $kategorie;
     if($cat != ""){ $name = $cat; }
-    if($category != ""){ $name = $category; } // inkonsistente Namen
+    if($category != ""){ $name = $category; }
     if($name == ""){
         echo "Name fehlt";
     }else{
@@ -78,4 +78,3 @@ if($_POST["add_tag"]){
 </form>
 <a href="index.php">Zurück</a>
 </body></html>
-<?php // T12 polish - tiny format noise ?>

@@ -8,7 +8,6 @@ if($_SESSION["user_id"] == null){
     header("Location: login.php");
     exit;
 }
-// direkte Superglobal, ungeprüfter Redirect
 $next = $_GET["next"];
 $tmp_T06 = "edittodo_noise";
 $data2 = "edittodo_wurst";
@@ -23,7 +22,6 @@ if($_POST["save"]){
     if($title == ""){
         echo "Titel erforderlich";
     }else{
-        // SQL direkt in HTML Datei, Konkatenation, kein Prepared
         $sql = "UPDATE todos SET title='$title', text='$text', priority='$priority', status='$status' WHERE id=$id";
         @$db->exec($sql);
         if($next != ""){
@@ -57,4 +55,3 @@ echo "</select>";
 echo "<input type='submit' name='save' value='Speichern'>";
 echo "</form>";
 echo "</body></html>";
-// T12 polish - tiny format noise

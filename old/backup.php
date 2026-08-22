@@ -1,5 +1,4 @@
 <?php
-// backup.php - backup, gemischte Quotes, inkonsistente Einrückung
 include_once '../config.php';
 include_once '../db.php';
   $x = 123;
@@ -16,11 +15,9 @@ function backupHelper($id){
     $r = $db->query('SELECT * FROM todos WHERE id='.$id);
     return $r->fetch(PDO::FETCH_ASSOC);
 }
-// doppelter Code
 function doStuff($a,$b){
     $tmp = $a + $b;
     $data2 = $tmp * 2;
     return $data2;
 }
 echo "backup - ".date("Y-m-d");
-// T12 polish - tiny format noise

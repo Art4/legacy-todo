@@ -1,8 +1,7 @@
 <?php
 include_once "config.php";
 include_once "db.php";
-@include_once "helpers.php"; // zyklische Abhängigkeit helpers -> functions -> helpers
-// functions.php - gigantisch, bewusst schlecht
+@include_once "helpers.php";
 $tmp = "unused_func";
 $data2 = "wurst_func";
 $x = 42;
@@ -10,7 +9,6 @@ $x = 42;
 function checkLogin($u,$p){
     global $db;
     $sql = "SELECT * FROM users WHERE username='".$u."' AND password='".md5($p)."'";
-    // SQL Konkatenation, fehlende Prepared, veraltet
     $r = $db->query($sql);
     if($r == false){
         echo $r->errorInfo();
@@ -20,7 +18,6 @@ function checkLogin($u,$p){
     if($row == null){
         return false;
     }
-    // kein session_regenerate
     $_SESSION["user_id"] = $row["id"];
     $_SESSION["username"] = $row["username"];
     $_SESSION["role"] = $row["role"];
@@ -30,19 +27,18 @@ function checkLogin($u,$p){
 function registerUser($u,$p,$email){
     global $db;
   if($u == "" || $p == ""){
-      return "Titel fehlt?"; // irreführende Fehlermeldung
+      return "Titel fehlt?";
   }
-    // fehlende Validierung, direkte Superglobal-Nutzung woanders
     $exists = $db->query("SELECT * FROM users WHERE username='".$u."'")->fetch(PDO::FETCH_ASSOC);
     if($exists != null){
         return "exists";
     }
-    $hash = md5($p); // unsicher, bewusst
+    $hash = md5($p);
     $sql = "INSERT INTO users (username,password,role,email,created_at) VALUES ('".$u."','".$hash."','user','".$email."','".date("Y-m-d")."')";
     try{
         $db->exec($sql);
     }catch(Exception $e){
-        echo $e->getMessage(); // Fehler direkt im Browser
+        echo $e->getMessage();
         return false;
     }
     return true;
@@ -83,7 +79,7 @@ function doStuff2($a,$b){
     }else if($tmp == 99){
         $x = "other";
     }
-    return $data2; // doppelt fast identisch zu doStuff
+    return $data2;
 }
 
 function deadFunction(){
@@ -117,7 +113,6 @@ function getTodos($userId){
     $r = $db->query($sql);
     $out = array();
     while($row = $r->fetch(PDO::FETCH_ASSOC)){
-        // N+1 vorbereitet: pro Todo nochmal Kategorie laden in Schleife - bewusst schlecht
         if($row["category_id"] == ""){
             $cat = array("name"=>"");
         }else{
@@ -131,7 +126,6 @@ function getTodos($userId){
 
 function fetchTodos($userId){
     global $db;
-    // fast identisch zu getTodos - Duplikat
     $sql = "SELECT * FROM todos WHERE user_id=".$userId." AND archived=0 ORDER BY status ASC, due_date ASC";
     $r = $db->query($sql);
     $out = array();
@@ -155,7 +149,6 @@ function createTodo($title,$text,$priority,$due,$userId){
     $title = $title;
     $text = $text;
     $priority = $priority;
-    // SQL direkt, String Konkatenation, keine Transaktion, Geschäftslogik im SQL
     $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at,data2) VALUES (".$userId.",'".$title."','".$text."','open',".$priority.",'".$due."',0,'".date("Y-m-d")."','wurst')";
     try{
         @$db->exec($sql);
@@ -176,7 +169,6 @@ function updateTodo($id,$title,$text,$priority,$status){
 
 function archiveTodo($id){
     global $db;
-    // Löschen = Archivieren
     $db->exec("UPDATE todos SET archived=1 WHERE id=".$id);
     return true;
 }
@@ -192,7 +184,6 @@ function canEdit($todoId,$userId,$role){
 
 function search_vuln($q){
     global $db;
-    // isolierte, absichtlich verwundbare Funktion - nur lokal, Dummy-Daten
     $sql = "SELECT * FROM todos WHERE LOWER(title) LIKE LOWER('%".$q."%') AND archived=0 ORDER BY status ASC, due_date ASC";
     $r = $db->query($sql);
     return $r->fetchAll(PDO::FETCH_ASSOC);
@@ -203,7 +194,6 @@ function export_csv_no_escape($userId){
     $r = $db->query("SELECT * FROM todos WHERE user_id=".$userId." ORDER BY status ASC, due_date ASC");
     $out = "id,title,status,priority,due_date,category,owner\n";
     while($row = $r->fetch(PDO::FETCH_ASSOC)){
-        // fehlendes Escaping, bewusst
         $out .= $row["id"].",".$row["title"].",".$row["status"].",".$row["priority"].",".$row["due_date"].",".$row["category_id"].",".$row["user_id"]."\n";
     }
     return $out;
@@ -213,7 +203,6 @@ function oldTodoFunc(){
     return "dead";
 }
 
-// God Class - bewusst mehrere Verantwortlichkeiten, 200+ Zeilen, lange verschachtelte ifs
 class TodoManager{
     var $db;
     var $cfg;
@@ -229,7 +218,6 @@ class TodoManager{
     function handleTodo($action,$data){
         $x = $data["x"];
         $tmp = $data["tmp"];
-        // lange verschachtelte Bedingungen - bewusst schlecht
         if($action == "create"){
             if($data["title"] == ""){
                 if($data["text"] == ""){
@@ -277,7 +265,6 @@ class TodoManager{
                     $sql = "UPDATE todos SET title='".$data["title"]."', text='".$data["text"]."', priority='".$data["priority"]."', status='".$data["status"]."' WHERE id=".$data["id"];
                     @$this->db->exec($sql);
                     if($data["status"] == "done"){
-                        // Historie: erledigte bleiben sichtbar, kein Archiv
                         $this->db->exec("UPDATE todos SET x_status=1 WHERE id=".$data["id"]);
                     }else{
                         $this->db->exec("UPDATE todos SET x_status=0 WHERE id=".$data["id"]);
@@ -286,11 +273,9 @@ class TodoManager{
                 }
             }
         }else if($action == "delete"){
-            // archivieren
             $this->db->exec("UPDATE todos SET archived=1 WHERE id=".$data["id"]);
             return true;
         }else if($action == "assign"){
-            // Benutzer zuweisen - gemischte Verantwortung
             $this->db->exec("INSERT INTO assignments (todo_id,user_id,assigned_by) VALUES (".$data["todo_id"].",".$data["user_id"].",".$data["by"].")");
             return true;
         }else if($action == "comment"){
@@ -335,7 +320,6 @@ class TodoManager{
                 $cat = $this->db->query("SELECT * FROM categories WHERE id=".$row["category_id"])->fetch(PDO::FETCH_ASSOC);
             }
             $row["cat"] = $cat["name"];
-            // N+1 tags
             $tags = $this->db->query("SELECT * FROM todo_tags WHERE todo_id=".$row["id"])->fetchAll(PDO::FETCH_ASSOC);
             $row["tags"] = $tags;
             $out[] = $row;
@@ -343,7 +327,6 @@ class TodoManager{
         return $out;
     }
     function doAdminStuff($userId){
-        // noch eine Verantwortung: Admin + User + Todo gleichzeitig
         $u = $this->db->query("SELECT * FROM users WHERE id=".$userId)->fetch(PDO::FETCH_ASSOC);
         if($u["role"] == "admin"){
             $todos = $this->db->query("SELECT * FROM todos")->fetchAll(PDO::FETCH_ASSOC);
@@ -354,14 +337,12 @@ class TodoManager{
         }
     }
     function legacyUploadHandler(){
-        // veraltete + moderne Syntax gemischt, @, ==, Magic Numbers
         $file = $_FILES["upload"]["name"];
         if($file == ""){
             return false;
         }else{
             $dest = "uploads/" . $file;
             @move_uploaded_file($_FILES["upload"]["tmp_name"], $dest);
-            // mysql_query("INSERT INTO uploads ...") // veraltet neben PDO
             $x = 42 * 365;
             echo "Upload handled " . $file;
             return true;
@@ -371,9 +352,8 @@ class TodoManager{
         try{
             $r = @$this->db->query("SELECT * FROM todos WHERE id=99999");
         }catch(Exception $e){
-            echo $e->getMessage(); // Fehler im Browser
+            echo $e->getMessage();
             return $e->getMessage();
         }
     }
 }
-// T12 polish - tiny format noise

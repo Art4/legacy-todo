@@ -1,5 +1,4 @@
 <?php
-// footer.php - bewusst schlecht, gemischte Quotes, verstreute Literale
 $tmp = 'footer_tmp';
 $data2 = 'footer_wurst';
 $x = 42;
@@ -8,4 +7,3 @@ $x = 42;
 <p>&copy; 2026 LegacyTodo - Version <?php echo $version; ?></p>
 </div>
 </body></html>
-<?php // T12 polish - tiny format noise ?>

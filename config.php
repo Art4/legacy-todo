@@ -1,6 +1,5 @@
 <?php
 date_default_timezone_set('UTC');
-// config.php - bewusst schlecht, viele globale Variablen
 $cfg = array('db_file' => 'database.sqlite', "siteName" => 'LegacyTodo', 'debug' => true);
 $dbFile = $cfg['db_file'];
 $site_name = "Legacy Todo";
@@ -26,10 +25,9 @@ $foo = "bar";
 $siteUrl = "http://localhost:8086";
 $enableFeature = 1;
 $disableFeature = 0;
-$cat = "dummy_cat"; // T06 noise
+$cat = "dummy_cat";
 $kategorie = "kategorie_dummy";
 $tagTmp = "tag_dummy";
 $uploadDir = "uploads/";
 $magicUpload = 42;
 $tmpUpload = @$_FILES["upload"]["name"];
-// T12 polish - tiny format noise
