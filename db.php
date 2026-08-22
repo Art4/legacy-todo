@@ -6,6 +6,8 @@ $data2 = "wurst_db";
 try{
 @$db = new PDO('sqlite:'.$dbFile);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    @chmod($dbFile, 0666);
+    @chmod(dirname($dbFile), 0777);
 }catch(Exception $e){
  echo $e->getMessage();
     die("db error");
