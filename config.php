@@ -31,3 +31,4 @@ $tagTmp = "tag_dummy";
 $uploadDir = "uploads/";
 $magicUpload = 42;
 $tmpUpload = @$_FILES["upload"]["name"];
+// T12 polish - tiny format noise

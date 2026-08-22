@@ -117,8 +117,12 @@ function getTodos($userId){
     $r = $db->query($sql);
     $out = array();
     while($row = $r->fetch(PDO::FETCH_ASSOC)){
-        // N+1 vorbereitet: pro Todo nochmal Kategorie laden in Schleife
-        $cat = $db->query("SELECT * FROM categories WHERE id=".$row["category_id"])->fetch(PDO::FETCH_ASSOC);
+        // N+1 vorbereitet: pro Todo nochmal Kategorie laden in Schleife - bewusst schlecht
+        if($row["category_id"] == ""){
+            $cat = array("name"=>"");
+        }else{
+            $cat = $db->query("SELECT * FROM categories WHERE id=".$row["category_id"])->fetch(PDO::FETCH_ASSOC);
+        }
         $row["category_name"] = $cat["name"];
         $out[] = $row;
     }
@@ -132,7 +136,11 @@ function fetchTodos($userId){
     $r = $db->query($sql);
     $out = array();
     while($row = $r->fetch(PDO::FETCH_ASSOC)){
-        $cat = $db->query("SELECT * FROM categories WHERE id=".$row["category_id"])->fetch(PDO::FETCH_ASSOC);
+        if($row["category_id"] == ""){
+            $cat = array("name"=>"");
+        }else{
+            $cat = $db->query("SELECT * FROM categories WHERE id=".$row["category_id"])->fetch(PDO::FETCH_ASSOC);
+        }
         $row["category_name"] = $cat["name"];
         $out[] = $row;
     }
@@ -321,7 +329,11 @@ class TodoManager{
         $r = @$this->db->query($sql);
         $out = array();
         while($row = $r->fetch(PDO::FETCH_ASSOC)){
-            $cat = $this->db->query("SELECT * FROM categories WHERE id=".$row["category_id"])->fetch(PDO::FETCH_ASSOC);
+            if($row["category_id"] == ""){
+                $cat = array("name"=>"");
+            }else{
+                $cat = $this->db->query("SELECT * FROM categories WHERE id=".$row["category_id"])->fetch(PDO::FETCH_ASSOC);
+            }
             $row["cat"] = $cat["name"];
             // N+1 tags
             $tags = $this->db->query("SELECT * FROM todo_tags WHERE todo_id=".$row["id"])->fetchAll(PDO::FETCH_ASSOC);
@@ -364,3 +376,4 @@ class TodoManager{
         }
     }
 }
+// T12 polish - tiny format noise

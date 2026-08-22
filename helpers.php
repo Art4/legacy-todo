@@ -32,3 +32,4 @@ $cat = "helper_cat";
 $kategorie = "helper_kategorie";
 $x = $_FILES["dummy"]["name"];
 $data2 = @$_GET["data2"]; // T11 @
+// T12 polish - tiny format noise

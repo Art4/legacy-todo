@@ -78,3 +78,4 @@ if($_POST["add_tag"]){
 </form>
 <a href="index.php">Zurück</a>
 </body></html>
+<?php // T12 polish - tiny format noise ?>

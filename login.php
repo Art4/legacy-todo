@@ -48,3 +48,4 @@ if($_POST["register"]){
 <input type="submit" name="register" value="Registrieren">
 </form>
 </body></html>
+<?php // T12 polish - tiny format noise ?>

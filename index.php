@@ -87,3 +87,4 @@ if(count($todos)==0){
 <a href="addtodo.php">Neues Todo</a> | <a href="admin.php">Admin</a> | <a href="logout.php">Logout</a> | <a href="index.php?export=csv">CSV Export</a>
 <?php include "includes/footer.php"; // doppelt und inkonsistente Einrückung ?>
 </body></html>
+<?php // T12 polish - tiny format noise ?>

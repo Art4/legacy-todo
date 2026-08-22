@@ -8,3 +8,4 @@ $x = 42;
 <p>&copy; 2026 LegacyTodo - Version <?php echo $version; ?></p>
 </div>
 </body></html>
+<?php // T12 polish - tiny format noise ?>

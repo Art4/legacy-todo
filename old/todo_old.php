@@ -29,3 +29,4 @@ foreach($comments as $c){
     echo "<p>".$c["body"]."</p>";
 }
 echo "</body></html>";
+// T12 polish - tiny format noise

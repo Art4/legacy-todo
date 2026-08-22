@@ -30,3 +30,4 @@ $t = getTodoById($id);
 <p><?php echo $t["title"]; ?> wirklich archivieren?</p>
 <a href="deletetodo.php?id=<?php echo $id; ?>&confirm=1">Ja</a> | <a href="index.php">Nein</a>
 </body></html>
+<?php // T12 polish - tiny format noise ?>

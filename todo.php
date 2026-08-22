@@ -91,3 +91,4 @@ foreach($users as $u){
 </form>
 <a href="edittodo.php?id=<?php echo $id; ?>">Bearbeiten</a> | <a href="deletetodo.php?id=<?php echo $id; ?>">Löschen</a> | <a href="index.php">Zurück</a>
 </body></html>
+<?php // T12 polish - tiny format noise ?>

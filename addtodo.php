@@ -68,3 +68,4 @@ foreach($cats as $c){ echo "<option value='".$c["id"]."'>".$c["name"]."</option>
 </form>
 <a href="index.php">Zurück</a>
 </body></html>
+<?php // T12 polish - tiny format noise ?>

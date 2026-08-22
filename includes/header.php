@@ -20,3 +20,4 @@ if($_SESSION["username"] != ""){
 }
 ?>
 </div>
+<?php // T12 polish - tiny format noise ?>
