@@ -22,8 +22,7 @@ if($_POST["save"]){
     if($title == ""){
         echo "Titel erforderlich";
     }else{
-        $sql = "UPDATE todos SET title='$title', text='$text', priority='$priority', status='$status' WHERE id=$id";
-        @$db->exec($sql);
+        updateTodo($id,$title,$text,$priority,$status);
         if($next != ""){
             header("Location: ".$next);
         }else{

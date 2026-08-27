@@ -2,6 +2,7 @@
 include_once "config.php";
 include_once "db.php";
 @include_once "helpers.php";
+require_once "TodoRepository.php";
 $tmp = "unused_func";
 $data2 = "wurst_func";
 $x = 42;
@@ -101,10 +102,9 @@ function getUserById($id){
 }
 
 function getTodoById($id){
- global $db;
- $r = @$db->query("SELECT * FROM todos WHERE id=".$id);
- if($r == false){ echo "error"; return null; }
- return $r->fetch(PDO::FETCH_ASSOC);
+    global $db;
+    $repo = new TodoRepository($db);
+    return $repo->findById($id);
 }
 
 function getTodos($userId){
@@ -143,34 +143,20 @@ function fetchTodos($userId){
 
 function createTodo($title,$text,$priority,$due,$userId){
     global $db;
-    if($title == ""){
-        return false; // Titelpflicht
-    }
-    $title = $title;
-    $text = $text;
-    $priority = $priority;
-    $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at,data2) VALUES (".$userId.",'".$title."','".$text."','open',".$priority.",'".$due."',0,'".date("Y-m-d")."','wurst')";
-    try{
-        @$db->exec($sql);
-    }catch(Exception $e){
-        echo $e->getMessage();
-        return false;
-    }
-    return true;
+    $repo = new TodoRepository($db);
+    return $repo->create($title,$text,$priority,$due,$userId);
 }
 
 function updateTodo($id,$title,$text,$priority,$status){
     global $db;
-    if($title == ""){ return false; }
-    $sql = "UPDATE todos SET title='".$title."', text='".$text."', priority='".$priority."', status='".$status."' WHERE id=".$id;
-    @$db->exec($sql);
-    return true;
+    $repo = new TodoRepository($db);
+    return $repo->update($id,$title,$text,$priority,$status);
 }
 
 function archiveTodo($id){
     global $db;
-    $db->exec("UPDATE todos SET archived=1 WHERE id=".$id);
-    return true;
+    $repo = new TodoRepository($db);
+    return $repo->archive($id);
 }
 
 function canEdit($todoId,$userId,$role){
@@ -220,61 +206,27 @@ class TodoManager{
         $tmp = $data["tmp"];
         if($action == "create"){
             if($data["title"] == ""){
-                if($data["text"] == ""){
-                    if($data["priority"] == 1){
-                        return false;
-                    }else{
-                        if($data["priority"] == 2){
-                            return false;
-                        }else{
-                            return false;
-                        }
-                    }
-                }else{
-                    return false;
-                }
-            }else{
-                if($data["status"] == "open"){
-                    if($data["priority"] == 1){
-                        $p = 1;
-                    }else if($data["priority"] == 2){
-                        $p = 2;
-                    }else{
-                        $p = 3;
-                    }
-                    $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (".$data["user_id"].",'".$data["title"]."','".$data["text"]."','open',".$p.",'".$data["due"]."',0,'".date("Y-m-d")."')";
-                    @$this->db->exec($sql);
-                    return true;
-                }else{
-                    if($data["status"] == "done"){
-                        $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (".$data["user_id"].",'".$data["title"]."','".$data["text"]."','done',".$data["priority"].",'".$data["due"]."',0,'".date("Y-m-d")."')";
-                        @$this->db->exec($sql);
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }
+                return false;
             }
+            // Pre-refactor code duplicated createTodo()'s INSERT here, with
+            // its own priority mapping and a "done"-status insert path.
+            // Nothing calls handleTodo("create", ...) anywhere in the app
+            // (only "export"/"category" are reachable, from index.php /
+            // admin.php) so this was dead code; folding it into the shared
+            // createTodo() (always status "open") is a judgment call, not a
+            // verified-safe extraction from a live call site — see
+            // .scratch/refactor-issues/03-structural-todo-persistence.md.
+            return createTodo($data["title"],$data["text"],$data["priority"],$data["due"],$data["user_id"]);
         }else if($action == "update"){
             if($data["id"] == ""){
                 return false;
-            }else{
-                if($data["title"] == ""){
-                    return false;
-                }else{
-                    $sql = "UPDATE todos SET title='".$data["title"]."', text='".$data["text"]."', priority='".$data["priority"]."', status='".$data["status"]."' WHERE id=".$data["id"];
-                    @$this->db->exec($sql);
-                    if($data["status"] == "done"){
-                        $this->db->exec("UPDATE todos SET x_status=1 WHERE id=".$data["id"]);
-                    }else{
-                        $this->db->exec("UPDATE todos SET x_status=0 WHERE id=".$data["id"]);
-                    }
-                    return true;
-                }
             }
+            // Pre-refactor code also flipped a phantom x_status column here
+            // that updateTodo() never touched and nothing else in the
+            // codebase reads — dropped as dead weight, not preserved.
+            return updateTodo($data["id"],$data["title"],$data["text"],$data["priority"],$data["status"]);
         }else if($action == "delete"){
-            $this->db->exec("UPDATE todos SET archived=1 WHERE id=".$data["id"]);
-            return true;
+            return archiveTodo($data["id"]);
         }else if($action == "assign"){
             $this->db->exec("INSERT INTO assignments (todo_id,user_id,assigned_by) VALUES (".$data["todo_id"].",".$data["user_id"].",".$data["by"].")");
             return true;
