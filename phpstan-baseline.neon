@@ -1,2 +1,61 @@
 parameters:
-	ignoreErrors: []
+	ignoreErrors:
+		-
+			message: "#^Variable \\$db might not be defined\\.$#"
+			count: 1
+			path: addtodo.php
+
+		-
+			message: "#^Variable \\$db might not be defined\\.$#"
+			count: 5
+			path: admin.php
+
+		-
+			message: "#^Variable \\$site_name might not be defined\\.$#"
+			count: 1
+			path: admin.php
+
+		-
+			message: "#^Variable \\$dbFile might not be defined\\.$#"
+			count: 3
+			path: db.php
+
+		-
+			message: "#^Variable \\$db might not be defined\\.$#"
+			count: 2
+			path: edittodo.php
+
+		-
+			message: "#^Variable \\$version might not be defined\\.$#"
+			count: 1
+			path: includes/footer.php
+
+		-
+			message: "#^Variable \\$cfg might not be defined\\.$#"
+			count: 1
+			path: includes/header.php
+
+		-
+			message: "#^Variable \\$site_name might not be defined\\.$#"
+			count: 2
+			path: includes/header.php
+
+		-
+			message: "#^Variable \\$db might not be defined\\.$#"
+			count: 6
+			path: index.php
+
+		-
+			message: "#^Variable \\$site_name might not be defined\\.$#"
+			count: 1
+			path: index.php
+
+		-
+			message: "#^Variable \\$site_name might not be defined\\.$#"
+			count: 1
+			path: login.php
+
+		-
+			message: "#^Variable \\$db might not be defined\\.$#"
+			count: 8
+			path: todo.php
