@@ -1,0 +1,23 @@
+{
+    "name": "art4/legacy-todo",
+    "description": "Bewusst schlechte PHP-5.6-Legacy-Anwendung To-Do-Liste – Testdaten für Refactoring-Suite",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=5.6"
+    },
+    "autoload": {
+        "classmap": [
+            "."
+        ],
+        "exclude-from-classmap": [
+            "vendor"
+        ]
+    },
+    "config": {
+        "allow-plugins": false,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
