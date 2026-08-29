@@ -1,0 +1,17 @@
+{
+    "name": "art4/legacy-todo",
+    "description": "Legacy Todo — Composer dependency management",
+    "type": "project",
+    "require": {
+        "php": "^8.1"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {}
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

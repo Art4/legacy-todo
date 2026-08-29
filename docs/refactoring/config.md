@@ -3,4 +3,4 @@
 **Last run:** 2026-08-29
 **Create-mode:** autonomous
 **Focus areas:**
-**Pending issue:** none
+**Pending issue:** #16
