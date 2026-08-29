@@ -1,16 +1,16 @@
 # legacy-todo
 
-Bewusst schlechte PHP-5.6-Legacy-Anwendung **To-Do-Liste** – Testdaten für Refactoring-Suite.
+Bewusst schlechte PHP-7.2-Legacy-Anwendung **To-Do-Liste** – Testdaten für Refactoring-Suite.
 
 > **Sicherheitswarnung:** Enthält absichtlich eingebaute Schwachstellen (SQL-Konkatenation, XSS, fehlende Autorisierung etc.) – nur lokal mit Dummy-Daten betreiben, niemals öffentlich deployen.
 
 ## Setup
 
-Kein Host-PHP nötig – alles läuft über Docker (PHP 5.6, kein Composer).
+Kein Host-PHP nötig – alles läuft über Docker (PHP 7.2, kein Composer).
 
 ```bash
-./run.sh up      # PHP-5.6-Apache-Container starten (Port 8086), SQLite
-./run.sh lint    # php -l über alle .php-Dateien (einzig erlaubter Check bei PHP 5.6)
+./run.sh up      # PHP-7.2-Apache-Container starten (Port 8086), SQLite
+./run.sh lint    # php -l über alle .php-Dateien (einzig erlaubter Check bei PHP 7.2)
 ./run.sh shell   # Bash im Container
 ./run.sh logs    # Container-Logs verfolgen
 ./run.sh down    # Container stoppen und löschen
