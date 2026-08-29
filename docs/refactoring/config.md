@@ -2,5 +2,5 @@
 
 **Create-mode:** autonomous
 **Focus areas:**
-**Pending issue:** 64
-**Fulfilled nodes:** ci-runner, composer, loop-config, phpunit, test-runner-if-missing
+**Pending issue:** none
+**Fulfilled nodes:** ci-runner, composer, loop-config, phpunit, phpstan-level-0-baseline, phpstan-level-1, test-runner-if-missing
