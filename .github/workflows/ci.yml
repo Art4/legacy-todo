@@ -8,15 +8,9 @@ jobs:
   lint:
     name: PHP lint
     runs-on: ubuntu-latest
-    container:
-      image: php:5.6-apache
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Lint PHP files
         run: |
-          err=0
-          while IFS= read -r file; do
-            php -l "$file" || err=1
-          done < <(find . -name "*.php" -not -path "./.git/*")
-          exit "$err"
+          docker run --rm -v "$PWD:/app" -w /app php:5.6-apache bash -c 'err=0; while IFS= read -r file; do php -l "$file" || err=1; done < <(find . -name "*.php" -not -path "./.git/*" -not -path "./vendor/*"); exit "$err"'
