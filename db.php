@@ -41,8 +41,7 @@ if($cnt["c"] == 0){
 
 function doStuffDb($x){
     global $db;
-    $tmp = $x;
-    return $tmp;
+    return $x;
 }
 
 function unusedHelperDb(){

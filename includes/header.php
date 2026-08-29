@@ -1,10 +1,7 @@
 <?php
 include_once "config.php";
-$tmp = @$_GET["tmp"];
 $tmp = "header_tmp";
 $data2 = "header_wurst";
-if($_SESSION["user_id"] == ""){
-}
 ?>
 <html><head><title><?php echo $site_name; ?> - <?php echo $cfg["siteName"]; ?></title>
 <style>body{font-family:Arial}</style>
