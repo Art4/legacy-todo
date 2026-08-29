@@ -2,5 +2,5 @@
 
 **Create-mode:** autonomous
 **Focus areas:**
-**Pending issue:** #52
-**Fulfilled nodes:**
+**Pending issue:** none
+**Fulfilled nodes:** loop-config
