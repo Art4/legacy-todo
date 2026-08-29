@@ -14,4 +14,18 @@ jobs:
         with:
           php-version: 7.2
       - name: Lint PHP files
-        run: find . -name "*.php" -print0 | xargs -0 -n1 php -l
+        run: find . -name "*.php" ! -path "./vendor/*" -print0 | xargs -0 -n1 php -l
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP 7.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.2
+          tools: composer:v2
+      - name: Install dependencies
+        run: composer update --no-interaction --no-progress --prefer-dist
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit

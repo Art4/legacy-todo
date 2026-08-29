@@ -6,7 +6,7 @@ Bewusst schlechte PHP-7.2-Legacy-Anwendung **To-Do-Liste** – Testdaten für Re
 
 ## Setup
 
-Kein Host-PHP nötig – alles läuft über Docker (PHP 7.2, kein Composer).
+Kein Host-PHP nötig – alles läuft über Docker (PHP 7.2).
 
 ```bash
 ./run.sh up      # PHP-7.2-Apache-Container starten (Port 8086), SQLite
@@ -17,6 +17,15 @@ Kein Host-PHP nötig – alles läuft über Docker (PHP 7.2, kein Composer).
 ```
 
 App: http://localhost:8086/
+
+## Tests
+
+Entwicklungstests laufen über PHPUnit (dev-Dependency, wird in CI installiert):
+
+```bash
+composer install       # dev-Dependencies installieren (benötigt ein Composer-bekanntes PHP)
+vendor/bin/phpunit     # Tests ausführen
+```
 
 ## Fachliche Anforderungen
 
