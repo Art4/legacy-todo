@@ -7,3 +7,6 @@
 # .claude/skills/<name> -> ../../.agents/skills/<name>.
 .agents/skills/
 .claude/skills/
+
+# Composer
+/vendor/
