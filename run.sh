@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Helfer-Script für legacy-todo – PHP 5.6 nur im Docker, nichts auf dem Host installieren.
+# Helfer-Script für legacy-todo – PHP 7.2 nur im Docker, nichts auf dem Host installieren.
 # Datenbank: nur SQLite, keine mysqli/pdo_mysql Overhead.
 set -euo pipefail
 
-IMAGE="php:5.6-apache"
-CONTAINER="legacy-todo-php56"
+IMAGE="php:7.2-apache"
+CONTAINER="legacy-todo-php72"
 PORT="${PORT:-8086}"
 SRC="$(cd "$(dirname "$0")" && pwd)"
 
@@ -42,7 +42,7 @@ case "$cmd" in
   help|*)
     echo "Usage: $0 {up|down|lint|shell|logs|exec <cmd>}"
     echo ""
-    echo "  up          - Startet PHP 5.6 Apache Container (Port $PORT) mit SQLite"
+    echo "  up          - Startet PHP 7.2 Apache Container (Port $PORT) mit SQLite"
     echo "  down        - Stoppt und löscht Container"
     echo "  lint        - php -l über alle .php Dateien (nur erlaubt Check)"
     echo "  shell       - Bash im Container"
