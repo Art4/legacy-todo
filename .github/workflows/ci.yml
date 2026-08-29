@@ -29,3 +29,17 @@ jobs:
         run: composer update --no-interaction --no-progress --prefer-dist
       - name: Run PHPUnit
         run: vendor/bin/phpunit
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP 7.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.2
+          tools: composer:v2
+      - name: Resolve dependencies
+        run: composer update --no-interaction --no-progress --prefer-dist
+      - name: Audit dependencies
+        run: composer audit

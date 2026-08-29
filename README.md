@@ -25,7 +25,10 @@ Entwicklungstests laufen über PHPUnit (dev-Dependency, wird in CI installiert):
 ```bash
 composer install       # dev-Dependencies installieren (benötigt ein Composer-bekanntes PHP)
 vendor/bin/phpunit     # Tests ausführen
+composer audit         # auf bekannte Sicherheitsadvisories prüfen
 ```
+
+`composer audit` läuft auch als eigener CI-Job (`audit`) und lässt den Build fehlschlagen, wenn eine Abhängigkeit eine bekannte Schwachstelle hat.
 
 ## Fachliche Anforderungen
 
