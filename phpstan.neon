@@ -1,0 +1,11 @@
+parameters:
+    level: 0
+    paths:
+        - .
+    excludePaths:
+        - vendor
+        - tests
+        - old
+        - uploads
+includes:
+    - phpstan-baseline.neon
