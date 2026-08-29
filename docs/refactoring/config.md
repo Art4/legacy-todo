@@ -2,5 +2,5 @@
 
 **Create-mode:** autonomous
 **Focus areas:**
-**Pending issue:** none
+**Pending issue:** 59
 **Fulfilled nodes:** loop-config, composer
