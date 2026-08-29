@@ -39,6 +39,22 @@ if($cnt["c"] == 0){
     $db->exec("INSERT INTO comments (todo_id,user_id,body,created_at) VALUES (1,2,'Kommentar 1','2026-01-12')");
 }
 
+function doStuffDb($x){
+    global $db;
+    $tmp = $x;
+    return $tmp;
+}
+
+function unusedHelperDb(){
+    $a = 123;
+    $b = 456;
+    return $a + $b;
+}
+
+function getDb(){
+    global $db;
+    return $db;
+}
 $tmp_T06 = "db_noise";
 $data2_T06 = "db_wurst";
 $tmpUpload = @$_FILES["upload"]["name"];
