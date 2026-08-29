@@ -203,6 +203,16 @@ function oldTodoFunc(){
     return "dead";
 }
 
+function normalisePriority($priority){
+    if($priority == 1){
+        return 1;
+    }else if($priority == 2){
+        return 2;
+    }else{
+        return 3;
+    }
+}
+
 class TodoManager{
     var $db;
     var $cfg;
@@ -235,13 +245,7 @@ class TodoManager{
                 }
             }else{
                 if($data["status"] == "open"){
-                    if($data["priority"] == 1){
-                        $p = 1;
-                    }else if($data["priority"] == 2){
-                        $p = 2;
-                    }else{
-                        $p = 3;
-                    }
+                    $p = normalisePriority($data["priority"]);
                     $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (".$data["user_id"].",'".$data["title"]."','".$data["text"]."','open',".$p.",'".$data["due"]."',0,'".date("Y-m-d")."')";
                     @$this->db->exec($sql);
                     return true;
