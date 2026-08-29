@@ -1,6 +1,6 @@
 # Refactoring Loop Config
 
-**Last run:** unset
-**Create-mode:** unset
+**Last run:** 2026-08-29
+**Create-mode:** autonomous
 **Focus areas:**
-**Pending issue:** #14
+**Pending issue:** none
