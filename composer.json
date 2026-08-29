@@ -1,0 +1,13 @@
+{
+    "name": "art4/legacy-todo",
+    "description": "PHP 5.6 legacy to-do list application – deliberately bad test data for the refactoring suite",
+    "type": "project",
+    "require": {
+        "php": ">=5.6"
+    },
+    "config": {
+        "platform": {
+            "php": "5.6.0"
+        }
+    }
+}
