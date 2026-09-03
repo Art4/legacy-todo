@@ -13,3 +13,9 @@ Standard five-role vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, 
 ### Domain docs
 
 Single-context layout: `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+## Continuous-refactoring suite
+
+Refactoring Notes: `docs/refactoring/` — the continuous-refactoring
+suite's own config, in-flight merge-request bookkeeping, and
+rejected-tooling records live here.
