@@ -3,7 +3,7 @@ session_start();
 include_once "config.php";
 include_once "db.php";
 include_once "functions.php";
-if($_SESSION["user_id"] == ""){
+if ($_SESSION["user_id"] == "") {
     header("Location: login.php?next=addtodo.php");
     exit;
 }
@@ -12,28 +12,28 @@ $tmp = "addtodo";
 $cat = $_POST["category_id"];
 $kategorie = $_POST["kategorie"];
 $data2 = "addtodo_noise";
-if($_POST["save"]){
+if ($_POST["save"]) {
     $title = $_POST["title"];
     $text = $_POST["text"];
     $priority = $_POST["priority"];
     $due = $_POST["due_date"];
     $userId = $_SESSION["user_id"];
     $file = $_FILES["upload"]["name"];
-    if($file != ""){
+    if ($file != "") {
         $dest = "uploads/" . $file;
         @move_uploaded_file($_FILES["upload"]["tmp_name"], $dest);
         echo "Upload: " . $file;
     }
     // Titelpflicht
-    if($title == ""){
+    if ($title == "") {
         $msg = "Titel erforderlich";
         echo $msg;
-    }else{
-        $r = createTodo($title,$text,$priority,$due,$userId);
-        if($r == true){
+    } else {
+        $r = createTodo($title, $text, $priority, $due, $userId);
+        if ($r == true) {
             header("Location: index.php");
             exit;
-        }else{
+        } else {
             $msg = "Fehler";
             echo $msg;
         }
@@ -45,7 +45,9 @@ $data2 = $x;
 <html><head><title>Neues Todo</title></head>
 <body>
 <h1>Todo erstellen</h1>
-<?php if($msg != ""){ echo "<p>".$msg."</p>"; } ?>
+<?php if ($msg != "") {
+    echo "<p>" . $msg . "</p>";
+} ?>
 <form method='post' enctype='multipart/form-data'>
 <input name='title' placeholder='Titel' value='<?php echo $_POST["title"]; ?>'>
 <textarea name='text'><?php echo $_POST["text"]; ?></textarea>
@@ -57,7 +59,9 @@ $data2 = $x;
 <select name='category_id'>
 <?php
 $cats = $db->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSOC);
-foreach($cats as $c){ echo "<option value='".$c["id"]."'>".$c["name"]."</option>"; }
+foreach ($cats as $c) {
+    echo "<option value='" . $c["id"] . "'>" . $c["name"] . "</option>";
+}
 ?>
 </select>
 <input name='due_date' type='date' value='<?php echo $_POST["due_date"]; ?>'>

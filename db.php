@@ -1,15 +1,16 @@
 <?php
+
 include_once "config.php";
 $db = null;
 $tmp = "unused_in_db";
 $data2 = "wurst_db";
-try{
-@$db = new PDO('sqlite:'.$dbFile);
+try {
+    @$db = new PDO('sqlite:' . $dbFile);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     @chmod($dbFile, 0666);
     @chmod(dirname($dbFile), 0777);
-}catch(Exception $e){
- echo $e->getMessage();
+} catch (Exception $e) {
+    echo $e->getMessage();
     die("db error");
 }
 
@@ -27,9 +28,9 @@ $db->exec("CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTOINCRE
 $db->exec('CREATE TABLE IF NOT EXISTS assignments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, assigned_by INTEGER)');
 
 $cnt = $db->query("SELECT COUNT(*) as c FROM users")->fetch(PDO::FETCH_ASSOC);
-if($cnt["c"] == 0){
-    $db->exec("INSERT INTO users (username,password,role,email,created_at) VALUES ('admin','".md5("admin123")."','admin','admin@example.com','2026-01-01')");
-    $db->exec('INSERT INTO users (username,password,role,email,created_at) VALUES ("user","'.md5("user123").'","user","user@example.com","2026-01-02")');
+if ($cnt["c"] == 0) {
+    $db->exec("INSERT INTO users (username,password,role,email,created_at) VALUES ('admin','" . md5("admin123") . "','admin','admin@example.com','2026-01-01')");
+    $db->exec('INSERT INTO users (username,password,role,email,created_at) VALUES ("user","' . md5("user123") . '","user","user@example.com","2026-01-02")');
     // seed todos
     $db->exec("INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (1,'Erstes Todo','Beschreibung 1','open',1,'2026-12-31',0,'2026-01-10')");
     $db->exec("INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (2,'Zweites Todo','Noch was','done',2,'2026-11-01',0,'2026-01-11')");
@@ -39,19 +40,22 @@ if($cnt["c"] == 0){
     $db->exec("INSERT INTO comments (todo_id,user_id,body,created_at) VALUES (1,2,'Kommentar 1','2026-01-12')");
 }
 
-function doStuffDb($x){
+function doStuffDb($x)
+{
     global $db;
     $tmp = $x;
     return $tmp;
 }
 
-function unusedHelperDb(){
+function unusedHelperDb()
+{
     $a = 123;
     $b = 456;
     return $a + $b;
 }
 
-function getDb(){
+function getDb()
+{
     global $db;
     return $db;
 }

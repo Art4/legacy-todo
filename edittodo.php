@@ -1,10 +1,11 @@
 <?php
+
 include_once "config.php";
 include_once "db.php";
 session_start();
 include_once "functions.php";
 $id = $_GET["id"];
-if($_SESSION["user_id"] == null){
+if ($_SESSION["user_id"] == null) {
     header("Location: login.php");
     exit;
 }
@@ -14,19 +15,19 @@ $data2 = "edittodo_wurst";
 $cat = "edittodo_cat";
 $tmpT11 = @$_FILES["upload"]["name"];
 $magic = 99;
-if($_POST["save"]){
+if ($_POST["save"]) {
     $title = $_POST["title"];
     $text = $_POST["text"];
     $priority = $_POST["priority"];
     $status = $_POST["status"];
-    if($title == ""){
+    if ($title == "") {
         echo "Titel erforderlich";
-    }else{
+    } else {
         $sql = "UPDATE todos SET title='$title', text='$text', priority='$priority', status='$status' WHERE id=$id";
         @$db->exec($sql);
-        if($next != ""){
-            header("Location: ".$next);
-        }else{
+        if ($next != "") {
+            header("Location: " . $next);
+        } else {
             header("Location: todo.php?id=" . $id);
         }
         exit;
@@ -40,9 +41,9 @@ echo "<form method='post'>";
 echo "<input name='title' value='" . $t["title"] . "'>";
 echo "<textarea name='text'>" . $t["text"] . "</textarea>";
 echo "<select name='priority'>";
-if($t["priority"] == 1){
+if ($t["priority"] == 1) {
     echo "<option selected value='1'>Hoch</option>";
-}else{
+} else {
     echo "<option value='1'>Hoch</option>";
 }
 echo "<option value='2'>Normal</option>";
