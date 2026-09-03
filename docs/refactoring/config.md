@@ -6,13 +6,14 @@
 - #78
 **Fulfilled nodes:**
 - git
-- is-php-project
 - loop-config
-- php-minimal-version
+- is-php-project
 - composer
+- php-minimal-version
+- static-code-analyzer
+- ci-runner
 **Skip streak:**
-- ci-runner: 2
-- editorconfig: 2
-- phpunit: 1
-- test-runner-if-missing: 1
-- phpstan-level-0: 1
+- editorconfig: 5
+- phpunit: 4
+- test-runner-if-missing: 4
+- phpstan-level-0: 4
