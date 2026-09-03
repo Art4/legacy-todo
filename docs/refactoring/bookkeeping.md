@@ -4,6 +4,13 @@
 
 **Focus areas:** none
 
+**Pending candidates:**
+- #88 (Tooling tree: PHP CS Fixer)
+
+**Skip streak:**
+- phpunit: 7
+- test-runner-if-missing: 7
+
 **Fulfilled nodes:**
 - git
 - loop-config (#72)
@@ -15,10 +22,3 @@
 - editorconfig (#83)
 - php-cs-fixer (#88)
 - phpstan-level-0 (#85)
-
-**Pending candidates:**
-- #88 (Tooling tree: PHP CS Fixer)
-
-**Skip streak:**
-- phpunit: 7
-- test-runner-if-missing: 7
