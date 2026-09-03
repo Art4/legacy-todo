@@ -9,7 +9,6 @@
 - loop-config
 - is-php-project
 - composer
-- ci-runner
 - php-minimal-version
 - static-code-analyzer
 **Skip streak:**
