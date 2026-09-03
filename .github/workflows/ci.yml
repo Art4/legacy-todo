@@ -9,14 +9,15 @@ jobs:
   lint:
     name: PHP lint
     runs-on: ubuntu-latest
-    container:
-      image: php:5.6-apache
     steps:
       - uses: actions/checkout@v4
 
-      - name: Lint PHP files
+      - name: Validate composer.json
+        run: composer validate --no-check-publish
+
+      - name: Lint PHP files (php 5.6 via Docker)
         run: |
-          set -e
-          for file in $(find . -name "*.php" -not -path "./vendor/*"); do
-            php -l "$file"
-          done
+          docker run --rm -v "$PWD":/app -w /app php:5.6-apache bash -c '
+            set -e
+            find . -name "*.php" -not -path "./vendor/*" -print0 | xargs -0 -n1 php -l
+          '
