@@ -3,7 +3,7 @@
 **Create-mode:** autonomous
 **Focus areas:**
 **Pending candidates:**
-- #92 (Tooling tree: PHPUnit)
+- none
 **Fulfilled nodes:**
 - git
 - loop-config
@@ -14,7 +14,8 @@
 - ci-runner
 - editorconfig
 - php-cs-fixer
+- phpunit
+- test-runner-if-missing
 - phpstan-level-0
 **Skip streak:**
-- phpunit: 7
-- test-runner-if-missing: 7
+- phpstan-level-0: 1
