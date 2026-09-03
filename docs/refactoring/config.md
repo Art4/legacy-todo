@@ -13,7 +13,8 @@
 - static-code-analyzer
 - ci-runner
 - editorconfig
+- phpstan-level-0
 **Skip streak:**
-- phpunit: 5
-- test-runner-if-missing: 5
-- phpstan-level-0: 5
+- phpunit: 6
+- test-runner-if-missing: 6
+- php-cs-fixer: 1
