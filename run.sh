@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Helfer-Script für legacy-todo – PHP 5.6 nur im Docker, nichts auf dem Host installieren.
-# Datenbank: nur SQLite, keine mysqli/pdo_mysql Overhead.
+# Helfer-Script für legacy-todo – startet die App-Laufzeit (aktuell PHP 5.6) über Docker,
+# kein Host-PHP nötig. Datenbank: SQLite.
 set -euo pipefail
 
 IMAGE="php:5.6-apache"
@@ -25,7 +25,8 @@ case "$cmd" in
     docker rm -f "$CONTAINER" 2>/dev/null || echo "Container $CONTAINER nicht gefunden"
     ;;
   lint)
-    # Nur Linting erlaubt, kein Composer, keine Tests
+    # php -l gegen die Laufzeitversion; statische Analyse (PHPStan) und Codestyle
+    # (PHP CS Fixer) laufen separat via Composer/CI, siehe README.md.
     echo "Linting PHP-Dateien in $SRC mit $IMAGE (php -l)..."
     docker run --rm -v "${SRC}:/var/www/html" -w /var/www/html "$IMAGE" bash -c 'find . -name "*.php" -print0 | xargs -0 -n1 php -l'
     ;;
@@ -44,7 +45,7 @@ case "$cmd" in
     echo ""
     echo "  up          - Startet PHP 5.6 Apache Container (Port $PORT) mit SQLite"
     echo "  down        - Stoppt und löscht Container"
-    echo "  lint        - php -l über alle .php Dateien (nur erlaubt Check)"
+    echo "  lint        - php -l über alle .php Dateien"
     echo "  shell       - Bash im Container"
     echo "  exec <cmd>  - Befehl im Container ausführen"
     echo "  logs        - Container-Logs verfolgen"
