@@ -6,7 +6,7 @@ Issues and specs for this repo live as GitHub issues.
 
 ## Conventions
 
-Labels are native on GitHub — no local mirror. The continuous-refactoring suite's `refactor:candidate` and `refactor:delivered` labels, and the triage roles from `docs/agents/triage-labels.md`, apply directly.
+Labels are native on GitHub — no local mirror. The continuous-refactoring suite's `refactor:candidate` label, and the triage roles from `docs/agents/triage-labels.md`, apply directly — no `refactor:delivered` or other in-flight label; a candidate's linked pull request, native to the tracker, is what's in flight.
 
 - **Create an issue**: `./scripts/bot-gh-refactor.sh issue create --title "..." --body "..."`. Use a heredoc for multi-line bodies.
 - **Read an issue**: `./scripts/bot-gh-refactor.sh issue view <number> --comments`, filtering comments by `jq` and also fetching labels.
