@@ -1,0 +1,22 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 0
+    paths:
+        - addtodo.php
+        - admin.php
+        - config.php
+        - db.php
+        - deletetodo.php
+        - edittodo.php
+        - functions.php
+        - helpers.php
+        - includes
+        - index.php
+        - login.php
+        - logout.php
+        - old
+        - todo.php
+    excludePaths:
+        - vendor

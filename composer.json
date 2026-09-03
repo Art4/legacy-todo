@@ -3,5 +3,7 @@
     "description": "Bewusst schlechte PHP-5.6-Legacy-Anwendung To-Do-Liste – Testdaten für Refactoring-Suite",
     "type": "project",
     "license": "proprietary",
-    "require": {}
+    "require-dev": {
+        "phpstan/phpstan": "^2.2"
+    }
 }
