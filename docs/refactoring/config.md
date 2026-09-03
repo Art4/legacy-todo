@@ -9,7 +9,10 @@
 - is-php-project
 - loop-config
 - php-minimal-version
+- composer
 **Skip streak:**
-- ci-runner: 1
-- composer: 1
-- editorconfig: 1
+- ci-runner: 2
+- editorconfig: 2
+- phpunit: 1
+- test-runner-if-missing: 1
+- phpstan-level-0: 1
