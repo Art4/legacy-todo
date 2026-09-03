@@ -21,3 +21,19 @@ jobs:
             set -e
             find . -name "*.php" -not -path "./vendor/*" -print0 | xargs -0 -n1 php -l
           '
+
+  phpstan:
+    name: PHPStan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHPStan analyse (php 8.3 via Docker)
+        run: |
+          docker run --rm -v "$PWD":/app -w /app php:8.3-cli bash -c '
+            set -e
+            apt-get update -qq && apt-get install -y -qq unzip git > /dev/null
+            curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+            composer require --dev phpstan/phpstan --no-interaction --no-progress
+            vendor/bin/phpstan analyse
+          '
