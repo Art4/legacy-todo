@@ -3,7 +3,7 @@
 **Create-mode:** autonomous
 **Focus areas:**
 **Pending candidates:**
-- none
+- #78
 **Fulfilled nodes:**
 - git
 - is-php-project
