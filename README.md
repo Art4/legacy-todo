@@ -1,22 +1,37 @@
 # legacy-todo
 
-Bewusst schlechte PHP-5.6-Legacy-Anwendung **To-Do-Liste** – Testdaten für Refactoring-Suite.
+Eine To-Do-Listen-Anwendung in PHP mit gewachsenem Legacy-Code. Aktuell läuft sie auf **PHP
+5.6** – das ist der heutige Status quo, keine Vorgabe, auf der die Anwendung bleiben soll. Sie
+wird laufend weiterentwickelt und modernisiert; ein PHP-Versions-Upgrade ist ein offener
+Backlog-Punkt (siehe Issue #89 zur Vorbereitung eines Umstiegs auf PHP 7.4).
 
-> **Sicherheitswarnung:** Enthält absichtlich eingebaute Schwachstellen (SQL-Konkatenation, XSS, fehlende Autorisierung etc.) – nur lokal mit Dummy-Daten betreiben, niemals öffentlich deployen.
+> **Sicherheitshinweis:** Die Anwendung hat bekannte, noch nicht behobene Schwachstellen
+> (SQL-Konkatenation, XSS, fehlende Autorisierung etc.) – bis die behoben sind, nur lokal mit
+> Dummy-Daten betreiben, niemals öffentlich deployen.
 
 ## Setup
 
-Kein Host-PHP nötig – alles läuft über Docker (PHP 5.6, kein Composer).
+Kein Host-PHP nötig – die Laufzeit läuft komplett über Docker.
 
 ```bash
 ./run.sh up      # PHP-5.6-Apache-Container starten (Port 8086), SQLite
-./run.sh lint    # php -l über alle .php-Dateien (einzig erlaubter Check bei PHP 5.6)
+./run.sh lint    # php -l über alle .php-Dateien
 ./run.sh shell   # Bash im Container
 ./run.sh logs    # Container-Logs verfolgen
 ./run.sh down    # Container stoppen und löschen
 ```
 
 App: http://localhost:8086/
+
+Composer und statische Analyse (PHPStan, PHP CS Fixer) sind als Dev-Tooling vorhanden und laufen
+in CI – Details siehe `.github/workflows/ci.yml` und `composer.json`. Die Laufzeit selbst bleibt
+vorerst PHP 5.6 im Container.
+
+## Weiterentwicklung
+
+Der laufende Modernisierungs-Fahrplan (welche Tooling- und Struktur-Bausteine schon vorhanden
+sind, was als Nächstes ansteht) steht in `docs/refactoring/bookkeeping.md`. Offene
+Verbesserungs-Vorschläge sind als GitHub-Issues mit dem Label `refactor:candidate` erfasst.
 
 ## Fachliche Anforderungen
 
