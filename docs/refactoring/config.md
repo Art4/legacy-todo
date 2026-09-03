@@ -3,7 +3,7 @@
 **Create-mode:** autonomous
 **Focus areas:**
 **Pending candidates:**
-- #78
+- none
 **Fulfilled nodes:**
 - git
 - loop-config
