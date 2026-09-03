@@ -11,8 +11,9 @@
 - composer
 - php-minimal-version
 - static-code-analyzer
+- ci-runner
 **Skip streak:**
-- editorconfig: 3
-- phpunit: 2
-- test-runner-if-missing: 2
-- phpstan-level-0: 2
+- editorconfig: 4
+- phpunit: 3
+- test-runner-if-missing: 3
+- phpstan-level-0: 3
