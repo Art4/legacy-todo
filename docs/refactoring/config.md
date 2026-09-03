@@ -3,16 +3,17 @@
 **Create-mode:** autonomous
 **Focus areas:**
 **Pending candidates:**
-- #78
+- none
 **Fulfilled nodes:**
 - git
-- is-php-project
 - loop-config
-- php-minimal-version
+- is-php-project
 - composer
+- ci-runner
+- php-minimal-version
+- static-code-analyzer
 **Skip streak:**
-- ci-runner: 2
-- editorconfig: 2
-- phpunit: 1
-- test-runner-if-missing: 1
-- phpstan-level-0: 1
+- editorconfig: 3
+- phpunit: 2
+- test-runner-if-missing: 2
+- phpstan-level-0: 2
