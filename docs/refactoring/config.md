@@ -3,7 +3,7 @@
 **Create-mode:** autonomous
 **Focus areas:**
 **Pending candidates:**
-- none
+- #88 (Tooling tree: PHP CS Fixer)
 **Fulfilled nodes:**
 - git
 - loop-config

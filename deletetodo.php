@@ -3,7 +3,7 @@ session_start();
 include_once "config.php";
 include_once "db.php";
 include_once "functions.php";
-if($_SESSION["user_id"] == ""){
+if ($_SESSION["user_id"] == "") {
     header("Location: login.php");
     exit;
 }
@@ -12,11 +12,11 @@ $userId = $_SESSION["user_id"];
 $role = $_SESSION["role"];
 $tmp = "delete_noise";
 $data2 = "delete_wurst";
-if(canEdit($id,$userId,$role) == false){
+if (canEdit($id, $userId, $role) == false) {
     echo "Keine Berechtigung";
     exit;
 }
-if($_GET["confirm"] == "1"){
+if ($_GET["confirm"] == "1") {
     archiveTodo($id);
     header("Location: index.php");
     exit;

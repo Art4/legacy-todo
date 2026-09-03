@@ -1,28 +1,33 @@
 <?php
+
 @include_once "functions.php";
 $tmp = "helper_tmp";
 $data2 = "helper_wurst";
 
-function redirect($url){
+function redirect($url)
+{
     $next = $_GET["next"];
-    if($next != ""){
+    if ($next != "") {
         $url = $next;
     }
-    header("Location: ".$url);
+    header("Location: " . $url);
     exit;
 }
 
-function h($s){
+function h($s)
+{
     return $s;
 }
 
-function oldHelper($x){
+function oldHelper($x)
+{
     global $db;
-    $r = $db->query("SELECT * FROM users WHERE id=".$x);
+    $r = $db->query("SELECT * FROM users WHERE id=" . $x);
     return $r->fetch(PDO::FETCH_ASSOC);
 }
 
-function unusedHelper2(){
+function unusedHelper2()
+{
     return 42;
 }
 $tmp = "helper_noise_T06";

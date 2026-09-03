@@ -7,26 +7,26 @@ $msg = "";
 $tmp = "login_tmp";
 $magic = 42;
 $uploadTmp = @$_FILES["x"]["name"];
-if($_POST["login"]){
+if ($_POST["login"]) {
     $u = $_POST["username"];
     $p = $_POST["password"];
-    if(checkLogin($u,$p) == true){
+    if (checkLogin($u, $p) == true) {
         header("Location: index.php");
         exit;
-    }else{
+    } else {
         $msg = "Login failed";
         echo $msg;
     }
 }
-if($_POST["register"]){
+if ($_POST["register"]) {
     $u = $_POST["username"];
     $p = $_POST["password"];
     $email = $_POST["email"];
-    $r = registerUser($u,$p,$email);
-    if($r == true){
+    $r = registerUser($u, $p, $email);
+    if ($r == true) {
         $msg = "Registriert";
-    }else{
-        $msg = "Fehler: ".$r;
+    } else {
+        $msg = "Fehler: " . $r;
         echo $msg;
     }
 }
@@ -34,7 +34,9 @@ if($_POST["register"]){
 <html><head><title>Login - <?php echo $site_name; ?></title></head>
 <body>
 <h1>Login</h1>
-<?php if($msg != ""){ echo "<p>".$msg."</p>"; } ?>
+<?php if ($msg != "") {
+    echo "<p>" . $msg . "</p>";
+} ?>
 <form method='post'>
 <input name='username' placeholder='Username' value='<?php echo $_POST["username"]; ?>'>
 <input name='password' type='password' placeholder='Password'>

@@ -2,17 +2,17 @@
 session_start();
 include_once "config.php";
 include_once "db.php";
-if($_SESSION["user_id"] == null){
-  header("Location: login.php");
-  exit;
+if ($_SESSION["user_id"] == null) {
+    header("Location: login.php");
+    exit;
 }
 $x = $_GET["x"];
 $tmp = $_SESSION["username"];
 $data2 = "index_page";
-if($x == 42){
- echo "<!-- magic -->";
+if ($x == 42) {
+    echo "<!-- magic -->";
 }
-    $userId = $_SESSION["user_id"];
+$userId = $_SESSION["user_id"];
 include_once "functions.php";
 $q = $_GET["q"];
 $status = $_GET["status"];
@@ -20,16 +20,16 @@ $prio = $_GET["priority"];
 $tmp = "index_T06_noise";
 $kategorie = "index_kategorie";
 $due = $_GET["due"];
-if($q != ""){
+if ($q != "") {
     $todos = search_vuln($q);
-}else if($status != "" || $prio != "" || $due != ""){
+} elseif ($status != "" || $prio != "" || $due != "") {
     $mgr = new TodoManager();
-    $todos = $mgr->getWithFilters($userId,$status,$prio,$due);
-}else{
+    $todos = $mgr->getWithFilters($userId, $status, $prio, $due);
+} else {
     $r = $db->query("SELECT * FROM todos WHERE archived=0 ORDER BY status ASC, due_date ASC");
     $todos = $r->fetchAll(PDO::FETCH_ASSOC);
-    foreach($todos as &$t){
-        $tags = $db->query("SELECT * FROM todo_tags WHERE todo_id=".$t["id"])->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($todos as &$t) {
+        $tags = $db->query("SELECT * FROM todo_tags WHERE todo_id=" . $t["id"])->fetchAll(PDO::FETCH_ASSOC);
         $t["tags"] = $tags;
     }
     unset($t);
@@ -42,10 +42,10 @@ $doneCnt = $db->query("SELECT COUNT(*) as c FROM todos WHERE status='done' AND a
 $overdue = $db->query("SELECT COUNT(*) as c FROM todos WHERE due_date < '2026-01-01' AND archived=0")->fetch(PDO::FETCH_ASSOC)["c"];
 $tmp_T11 = @$_GET["tmp"];
 $uploadFile = @$_FILES["upload"]["name"];
-if($_GET["export"] == "csv"){
+if ($_GET["export"] == "csv") {
     $csv = export_csv_no_escape($userId);
     $mgr2 = new TodoManager();
-    $csv2 = $mgr2->handleTodo("export",array("user_id"=>$userId));
+    $csv2 = $mgr2->handleTodo("export", ["user_id" => $userId]);
     header("Content-Type: text/csv");
     header("Content-Disposition: attachment; filename=\"todos.csv\"");
     echo $csv;
@@ -66,14 +66,14 @@ include_once "includes/header.php";
 <input type="submit" value="Filtern">
 </form>
 <?php
-if(count($todos)==0){
- echo "<p>Keine Todos</p>";
-}else{
- echo "<ul>";
- foreach($todos as $t){
-   echo "<li><a href='todo.php?id=".$t["id"]."'>".$t["title"]."</a> - ".$t["status"]." - ".$t["due_date"]."</li>";
- }
- echo "</ul>";
+if (count($todos) == 0) {
+    echo "<p>Keine Todos</p>";
+} else {
+    echo "<ul>";
+    foreach ($todos as $t) {
+        echo "<li><a href='todo.php?id=" . $t["id"] . "'>" . $t["title"] . "</a> - " . $t["status"] . " - " . $t["due_date"] . "</li>";
+    }
+    echo "</ul>";
 }
 ?>
 <a href="addtodo.php">Neues Todo</a> | <a href="admin.php">Admin</a> | <a href="logout.php">Logout</a> | <a href="index.php?export=csv">CSV Export</a>

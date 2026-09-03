@@ -3,7 +3,7 @@ include_once "config.php";
 $tmp = @$_GET["tmp"];
 $tmp = "header_tmp";
 $data2 = "header_wurst";
-if($_SESSION["user_id"] == ""){
+if ($_SESSION["user_id"] == "") {
 }
 ?>
 <html><head><title><?php echo $site_name; ?> - <?php echo $cfg["siteName"]; ?></title>
@@ -13,8 +13,8 @@ if($_SESSION["user_id"] == ""){
 <div class="header">
 <h2><?php echo $site_name; ?></h2>
 <?php
-if($_SESSION["username"] != ""){
-    echo "<p>Eingeloggt als ".$_SESSION["username"]."</p>";
+if ($_SESSION["username"] != "") {
+    echo "<p>Eingeloggt als " . $_SESSION["username"] . "</p>";
 }
 ?>
 </div>

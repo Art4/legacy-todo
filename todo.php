@@ -3,7 +3,7 @@ session_start();
 include_once "config.php";
 include_once "db.php";
 include_once "functions.php";
-if($_SESSION["user_id"] == ""){
+if ($_SESSION["user_id"] == "") {
     header("Location: login.php");
     exit;
 }
@@ -13,32 +13,32 @@ $x = $_GET["x"];
 $data2 = "todo_detail";
 $cat = $t["category_id"];
 $kategorie = "kategorie";
-if($t == null){
+if ($t == null) {
     echo "Not found";
     exit;
 }
 $next = $_GET["next"];
-if($_POST["add_comment"]){
+if ($_POST["add_comment"]) {
     $body = $_POST["body"];
     $uid = $_SESSION["user_id"];
-    $db->exec("INSERT INTO comments (todo_id,user_id,body,created_at) VALUES (".$id.",".$uid.",'".$body."','".date("Y-m-d H:i:s")."')");
-    header("Location: todo.php?id=".$id);
+    $db->exec("INSERT INTO comments (todo_id,user_id,body,created_at) VALUES (" . $id . "," . $uid . ",'" . $body . "','" . date("Y-m-d H:i:s") . "')");
+    header("Location: todo.php?id=" . $id);
     exit;
 }
-if($_POST["assign"]){
+if ($_POST["assign"]) {
     $assignee = $_POST["assignee"];
-    $db->exec("INSERT INTO assignments (todo_id,user_id,assigned_by) VALUES (".$id.",".$assignee.",".$_SESSION["user_id"].")");
-    if($next != ""){
-        header("Location: ".$next);
+    $db->exec("INSERT INTO assignments (todo_id,user_id,assigned_by) VALUES (" . $id . "," . $assignee . "," . $_SESSION["user_id"] . ")");
+    if ($next != "") {
+        header("Location: " . $next);
         exit;
     }
 }
-if($_GET["del_comment"]){
+if ($_GET["del_comment"]) {
     $cid = $_GET["del_comment"];
-    $db->exec("DELETE FROM comments WHERE id=".$cid);
+    $db->exec("DELETE FROM comments WHERE id=" . $cid);
 }
-$comments = $db->query("SELECT * FROM comments WHERE todo_id=".$id)->fetchAll(PDO::FETCH_ASSOC);
-$assigns = $db->query("SELECT * FROM assignments WHERE todo_id=".$id)->fetchAll(PDO::FETCH_ASSOC);
+$comments = $db->query("SELECT * FROM comments WHERE todo_id=" . $id)->fetchAll(PDO::FETCH_ASSOC);
+$assigns = $db->query("SELECT * FROM assignments WHERE todo_id=" . $id)->fetchAll(PDO::FETCH_ASSOC);
 $tmp_T11 = @$_FILES["upload"]["name"];
 $magic = 42;
 ?>
@@ -48,19 +48,19 @@ $magic = 42;
 <p><?php echo $t["text"]; ?></p>
 <p>Status: <?php echo $t["status"]; ?> | Prio: <?php echo $t["priority"]; ?> | Fällig: <?php echo $t["due_date"]; ?></p>
 <?php
-if(count($comments) > 0){
+if (count($comments) > 0) {
     echo "<h3>Kommentare</h3>";
-    foreach($comments as $c){
-        echo "<p>".$c["body"]." - User ".$c["user_id"]." <a href='todo.php?id=".$id."&del_comment=".$c["id"]."'>löschen</a></p>";
-        $u = $db->query("SELECT * FROM users WHERE id=".$c["user_id"])->fetch(PDO::FETCH_ASSOC);
-        echo "<small>".$u["username"]."</small>";
+    foreach ($comments as $c) {
+        echo "<p>" . $c["body"] . " - User " . $c["user_id"] . " <a href='todo.php?id=" . $id . "&del_comment=" . $c["id"] . "'>löschen</a></p>";
+        $u = $db->query("SELECT * FROM users WHERE id=" . $c["user_id"])->fetch(PDO::FETCH_ASSOC);
+        echo "<small>" . $u["username"] . "</small>";
     }
 }
-if(count($assigns) > 0){
+if (count($assigns) > 0) {
     echo "<h3>Zuweisungen</h3>";
-    foreach($assigns as $a){
-        $u = $db->query("SELECT * FROM users WHERE id=".$a["user_id"])->fetch(PDO::FETCH_ASSOC);
-        echo "<p>".$u["username"]."</p>";
+    foreach ($assigns as $a) {
+        $u = $db->query("SELECT * FROM users WHERE id=" . $a["user_id"])->fetch(PDO::FETCH_ASSOC);
+        echo "<p>" . $u["username"] . "</p>";
     }
 }
 ?>
@@ -74,8 +74,8 @@ if(count($assigns) > 0){
 <select name="assignee">
 <?php
 $users = $db->query("SELECT * FROM users")->fetchAll(PDO::FETCH_ASSOC);
-foreach($users as $u){
-    echo "<option value='".$u["id"]."'>".$u["username"]."</option>";
+foreach ($users as $u) {
+    echo "<option value='" . $u["id"] . "'>" . $u["username"] . "</option>";
 }
 ?>
 </select>

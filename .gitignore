@@ -10,3 +10,4 @@
 # .claude/skills/<name> -> ../../.agents/skills/<name>.
 .agents/skills/
 .claude/skills/
+.php-cs-fixer.cache
