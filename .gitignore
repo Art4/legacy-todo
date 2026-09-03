@@ -1,6 +1,9 @@
 # Claude Code local settings (personal permission overrides, machine-specific)
 .claude/settings.local.json
 
+# Composer
+/vendor/
+
 # Locally-installed skill symlinks — point outside the repo to
 # ~/projects/continuous-refactoring/skills/*, machine-specific. To reinstall,
 # symlink each skill dir from there into .agents/skills/, then symlink
