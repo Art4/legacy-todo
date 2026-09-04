@@ -7,9 +7,6 @@
 **Pending candidates:**
 - none
 
-**Skip streak:**
-- phpstan-level-1: 2
-
 **Fulfilled nodes:**
 - git
 - loop-config (#72)
