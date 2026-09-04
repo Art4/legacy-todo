@@ -8,11 +8,11 @@ final class LegacySmokeTest extends PHPUnit\Framework\TestCase
 {
     public function testRunnerIsFunctional(): void
     {
-        self::assertTrue(true);
+        $this->assertTrue(true);
     }
 
     public function testLegacyPureFunction(): void
     {
-        self::assertSame(6, doStuff(1, 2));
+        $this->assertSame(6, doStuff(1, 2));
     }
 }

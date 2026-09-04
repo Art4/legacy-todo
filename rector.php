@@ -1,6 +1,7 @@
 <?php
 
 use Rector\Config\RectorConfig;
+use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
 
@@ -19,10 +20,12 @@ return RectorConfig::configure()
         __DIR__ . '/login.php',
         __DIR__ . '/logout.php',
         __DIR__ . '/todo.php',
+        __DIR__ . '/tests',
     ])
     ->withSets([
         LevelSetList::UP_TO_PHP_56,
         SetList::DEAD_CODE,
         SetList::CODE_QUALITY,
         SetList::EARLY_RETURN,
+        PHPUnitSetList::PHPUNIT_CODE_QUALITY,
     ]);
