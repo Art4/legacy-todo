@@ -2,6 +2,7 @@
 
 use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\LevelSetList;
+use Rector\Set\ValueObject\SetList;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -21,4 +22,5 @@ return RectorConfig::configure()
     ])
     ->withSets([
         LevelSetList::UP_TO_PHP_56,
+        SetList::DEAD_CODE,
     ]);
