@@ -5,7 +5,7 @@
 **Focus areas:** none
 
 **Pending candidates:**
-- none
+- Rector: Dead Code Set (#105)
 
 **Fulfilled nodes:**
 - git
