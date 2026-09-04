@@ -1,9 +1,9 @@
 <?php
 
-include_once "config.php";
-include_once "db.php";
+include_once __DIR__ . "/config.php";
+include_once __DIR__ . "/db.php";
 session_start();
-include_once "functions.php";
+include_once __DIR__ . "/functions.php";
 $id = $_GET["id"];
 if ($_SESSION["user_id"] == null) {
     header("Location: login.php");

@@ -1,6 +1,6 @@
 <?php
 
-@include_once "functions.php";
+@include_once __DIR__ . "/functions.php";
 $tmp = "helper_tmp";
 $data2 = "helper_wurst";
 

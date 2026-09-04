@@ -1,7 +1,7 @@
 <?php
 session_start();
-include_once "config.php";
-include_once "db.php";
+include_once __DIR__ . "/config.php";
+include_once __DIR__ . "/db.php";
 if ($_SESSION["user_id"] == null) {
     header("Location: login.php");
     exit;
@@ -13,7 +13,7 @@ if ($x == 42) {
     echo "<!-- magic -->";
 }
 $userId = $_SESSION["user_id"];
-include_once "functions.php";
+include_once __DIR__ . "/functions.php";
 $q = $_GET["q"];
 $status = $_GET["status"];
 $prio = $_GET["priority"];
@@ -51,7 +51,7 @@ if ($_GET["export"] == "csv") {
     echo $csv;
     exit;
 }
-include_once "includes/header.php";
+include_once __DIR__ . "/includes/header.php";
 ?>
 <html><head><title><?php echo $site_name; ?></title></head>
 <body>
@@ -66,7 +66,7 @@ include_once "includes/header.php";
 <input type="submit" value="Filtern">
 </form>
 <?php
-if (count($todos) == 0) {
+if (count($todos) === 0) {
     echo "<p>Keine Todos</p>";
 } else {
     echo "<ul>";
@@ -77,5 +77,5 @@ if (count($todos) == 0) {
 }
 ?>
 <a href="addtodo.php">Neues Todo</a> | <a href="admin.php">Admin</a> | <a href="logout.php">Logout</a> | <a href="index.php?export=csv">CSV Export</a>
-<?php include_once "includes/footer.php"; ?>
+<?php include_once __DIR__ . "/includes/footer.php"; ?>
 </body></html>
