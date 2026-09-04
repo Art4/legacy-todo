@@ -1,6 +1,6 @@
 <?php
 
-include_once "config.php";
+include_once __DIR__ . "/config.php";
 $db = null;
 $tmp = "unused_in_db";
 $data2 = "wurst_db";

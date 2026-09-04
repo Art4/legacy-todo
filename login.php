@@ -1,8 +1,8 @@
 <?php
 session_start();
-include_once "config.php";
-include_once "db.php";
-include_once "functions.php";
+include_once __DIR__ . "/config.php";
+include_once __DIR__ . "/db.php";
+include_once __DIR__ . "/functions.php";
 $msg = "";
 $tmp = "login_tmp";
 $magic = 42;
@@ -13,10 +13,9 @@ if ($_POST["login"]) {
     if (checkLogin($u, $p) == true) {
         header("Location: index.php");
         exit;
-    } else {
-        $msg = "Login failed";
-        echo $msg;
     }
+    $msg = "Login failed";
+    echo $msg;
 }
 if ($_POST["register"]) {
     $u = $_POST["username"];

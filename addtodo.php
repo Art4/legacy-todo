@@ -1,8 +1,8 @@
 <?php
 session_start();
-include_once "config.php";
-include_once "db.php";
-include_once "functions.php";
+include_once __DIR__ . "/config.php";
+include_once __DIR__ . "/db.php";
+include_once __DIR__ . "/functions.php";
 if ($_SESSION["user_id"] == "") {
     header("Location: login.php?next=addtodo.php");
     exit;
@@ -33,10 +33,9 @@ if ($_POST["save"]) {
         if ($r == true) {
             header("Location: index.php");
             exit;
-        } else {
-            $msg = "Fehler";
-            echo $msg;
         }
+        $msg = "Fehler";
+        echo $msg;
     }
 }
 $x = $_FILES["upload"]["name"];
@@ -45,7 +44,7 @@ $data2 = $x;
 <html><head><title>Neues Todo</title></head>
 <body>
 <h1>Todo erstellen</h1>
-<?php if ($msg != "") {
+<?php if ($msg !== "") {
     echo "<p>" . $msg . "</p>";
 } ?>
 <form method='post' enctype='multipart/form-data'>
