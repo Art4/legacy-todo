@@ -5,10 +5,9 @@
 **Focus areas:** none
 
 **Pending candidates:**
-- #88 (Tooling tree: PHP CS Fixer)
+- none
 
 **Skip streak:**
-- phpunit: 7
 - test-runner-if-missing: 7
 
 **Fulfilled nodes:**
