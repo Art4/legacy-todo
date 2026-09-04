@@ -24,4 +24,5 @@ return RectorConfig::configure()
         LevelSetList::UP_TO_PHP_56,
         SetList::DEAD_CODE,
         SetList::CODE_QUALITY,
+        SetList::EARLY_RETURN,
     ]);
