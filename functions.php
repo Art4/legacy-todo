@@ -93,14 +93,12 @@ function deadFunction()
 {
     $a = 111;
     $b = 222;
-    $c = $a * $b / 42;
-    return $c;
+    return $a * $b / 42;
 }
 
 function anotherDead()
 {
-    $x = "never called";
-    return $x;
+    return "never called";
 }
 
 function getUserById($id)
@@ -163,9 +161,6 @@ function createTodo($title, $text, $priority, $due, $userId)
     if ($title == "") {
         return false; // Titelpflicht
     }
-    $title = $title;
-    $text = $text;
-    $priority = $priority;
     $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at,data2) VALUES (" . $userId . ",'" . $title . "','" . $text . "','open'," . $priority . ",'" . $due . "',0,'" . date("Y-m-d") . "','wurst')";
     try {
         @$db->exec($sql);
@@ -250,23 +245,9 @@ class TodoManager
     }
     public function handleTodo($action, $data)
     {
-        $x = $data["x"];
-        $tmp = $data["tmp"];
         if ($action == "create") {
             if ($data["title"] == "") {
-                if ($data["text"] == "") {
-                    if ($data["priority"] == 1) {
-                        return false;
-                    } else {
-                        if ($data["priority"] == 2) {
-                            return false;
-                        } else {
-                            return false;
-                        }
-                    }
-                } else {
-                    return false;
-                }
+                return false;
             } else {
                 if ($data["status"] == "open") {
                     if ($data["priority"] == 1) {
