@@ -25,7 +25,8 @@ App: http://localhost:8086/
 
 Composer und statische Analyse (PHPStan, PHP CS Fixer, Rector) sind als Dev-Tooling vorhanden und
 laufen in CI – Details siehe `.github/workflows/ci.yml` und `composer.json`. Die Laufzeit selbst
-bleibt vorerst PHP 5.6 im Container.
+bleibt vorerst PHP 5.6 im Container. Zur Vorbereitung auf einen PHP-7.4-Umstieg lintet CI den
+Code zusätzlich unter PHP 7.4; die App läuft weiterhin auf PHP 5.6.
 
 ## Weiterentwicklung
 
