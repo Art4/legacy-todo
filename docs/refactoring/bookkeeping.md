@@ -5,7 +5,7 @@
 **Focus areas:** none
 
 **Pending candidates:**
-- none
+- Rector: Code Quality Set (#108)
 
 **Skip streak:**
 - rector-code-quality: 1
