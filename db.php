@@ -1,6 +1,7 @@
 <?php
 
 include_once __DIR__ . "/config.php";
+$dbFile = "database.sqlite";
 $db = null;
 $tmp = "unused_in_db";
 $data2 = "wurst_db";
