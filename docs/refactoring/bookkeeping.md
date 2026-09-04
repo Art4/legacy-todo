@@ -8,10 +8,9 @@
 - none
 
 **Skip streak:**
-- phpstan-level-2: 2
-- phpstan-level-0: 1
-- rector-dead-code: 1
-- rector-code-quality: 1
+- phpstan-level-1: 2
+- rector-dead-code: 2
+- rector-code-quality: 2
 
 **Fulfilled nodes:**
 - git
@@ -28,3 +27,4 @@
 - test-runner-if-missing
 - rector-php-set (#101)
 - rector-phpunit-set (#113)
+- phpstan-level-0
