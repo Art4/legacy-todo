@@ -2,6 +2,7 @@
 session_start();
 include_once __DIR__ . "/config.php";
 include_once __DIR__ . "/db.php";
+$db = getDb();
 if ($_SESSION["user_id"] == null) {
     header("Location: login.php");
     exit;

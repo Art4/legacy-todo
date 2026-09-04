@@ -1,6 +1,7 @@
 <?php
 include_once "../config.php";
 include_once "../db.php";
+$db = getDb();
 session_start();
 $id = $_GET["id"];
 if($_SESSION["user_id"] == ""){

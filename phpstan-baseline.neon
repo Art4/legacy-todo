@@ -1,18 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Variable \$db might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: addtodo.php
-
-		-
-			message: '#^Variable \$db might not be defined\.$#'
-			identifier: variable.undefined
-			count: 5
-			path: admin.php
-
-		-
 			message: '#^Variable \$site_name might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
@@ -23,12 +11,6 @@ parameters:
 			identifier: variable.undefined
 			count: 3
 			path: db.php
-
-		-
-			message: '#^Variable \$db might not be defined\.$#'
-			identifier: variable.undefined
-			count: 2
-			path: edittodo.php
 
 		-
 			message: '#^Variable \$version might not be defined\.$#'
@@ -49,12 +31,6 @@ parameters:
 			path: includes/header.php
 
 		-
-			message: '#^Variable \$db might not be defined\.$#'
-			identifier: variable.undefined
-			count: 6
-			path: index.php
-
-		-
 			message: '#^Variable \$site_name might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
@@ -65,15 +41,3 @@ parameters:
 			identifier: variable.undefined
 			count: 1
 			path: login.php
-
-		-
-			message: '#^Variable \$db might not be defined\.$#'
-			identifier: variable.undefined
-			count: 2
-			path: old/todo_old.php
-
-		-
-			message: '#^Variable \$db might not be defined\.$#'
-			identifier: variable.undefined
-			count: 8
-			path: todo.php

@@ -2,6 +2,7 @@
 
 include_once __DIR__ . "/config.php";
 include_once __DIR__ . "/db.php";
+$db = getDb();
 session_start();
 include_once __DIR__ . "/functions.php";
 $id = $_GET["id"];
