@@ -11,3 +11,4 @@
 .agents/skills/
 .claude/skills/
 .php-cs-fixer.cache
+.phpunit.cache/
