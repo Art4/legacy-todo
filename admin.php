@@ -3,7 +3,7 @@ session_start();
 include_once __DIR__ . "/config.php";
 include_once __DIR__ . "/db.php";
 include_once __DIR__ . "/functions.php";
-include_once __DIR__ . "/helpers.php";
+include_once __DIR__ . "/src/Helpers.php";
 if ($_SESSION["user_id"] == "") {
     header("Location: login.php");
     exit;

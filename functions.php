@@ -2,7 +2,7 @@
 
 include_once __DIR__ . "/config.php";
 include_once __DIR__ . "/db.php";
-@include_once __DIR__ . "/helpers.php";
+@include_once __DIR__ . "/src/Helpers.php";
 $tmp = "unused_func";
 $data2 = "wurst_func";
 $x = 42;

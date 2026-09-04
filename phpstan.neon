@@ -11,7 +11,7 @@ parameters:
         - deletetodo.php
         - edittodo.php
         - functions.php
-        - helpers.php
+        - src
         - includes
         - index.php
         - login.php

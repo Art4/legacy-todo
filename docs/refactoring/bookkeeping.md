@@ -9,23 +9,22 @@
 
 **Skip streak:**
 - phpstan-level-2: 2
+- phpstan-level-0: 1
+- rector-dead-code: 1
+- rector-code-quality: 1
 
 **Fulfilled nodes:**
 - git
 - loop-config (#72)
 - is-php-project
 - composer (#75)
+- psr-4 (#116)
 - ci-runner (#78)
 - php-minimal-version
 - static-code-analyzer
 - editorconfig (#83)
 - php-cs-fixer (#88)
-- phpstan-level-0 (#85)
-- phpstan-level-1 (#98)
 - phpunit (#92)
 - test-runner-if-missing
 - rector-php-set (#101)
-- rector-dead-code (#105)
-- rector-code-quality (#108)
-- rector-early-return (#111)
 - rector-phpunit-set (#113)

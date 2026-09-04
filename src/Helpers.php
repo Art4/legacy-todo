@@ -1,6 +1,8 @@
 <?php
 
-@include_once __DIR__ . "/functions.php";
+namespace Art4\LegacyTodo;
+
+@include_once __DIR__ . "/../functions.php";
 $tmp = "helper_tmp";
 $data2 = "helper_wurst";
 
@@ -23,7 +25,7 @@ function oldHelper($x)
 {
     global $db;
     $r = $db->query("SELECT * FROM users WHERE id=" . $x);
-    return $r->fetch(PDO::FETCH_ASSOC);
+    return $r->fetch(\PDO::FETCH_ASSOC);
 }
 
 function unusedHelper2()
