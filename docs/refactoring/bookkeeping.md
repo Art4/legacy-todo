@@ -5,7 +5,11 @@
 **Focus areas:** none
 
 **Pending candidates:**
-- Rector: Dead Code Set (#105)
+- none
+
+**Skip streak:**
+- rector-code-quality: 1
+- rector-early-return: 1
 
 **Fulfilled nodes:**
 - git
