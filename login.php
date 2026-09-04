@@ -1,6 +1,7 @@
 <?php
 session_start();
 include_once __DIR__ . "/config.php";
+$site_name = "Legacy Todo";
 include_once __DIR__ . "/db.php";
 include_once __DIR__ . "/functions.php";
 $msg = "";
