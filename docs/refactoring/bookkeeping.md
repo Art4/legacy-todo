@@ -21,3 +21,4 @@
 - editorconfig (#83)
 - php-cs-fixer (#88)
 - phpstan-level-0 (#85)
+- phpunit (#92)
