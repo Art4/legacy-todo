@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Variable \$site_name might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: admin.php
-
-		-
 			message: '#^Variable \$dbFile might not be defined\.$#'
 			identifier: variable.undefined
 			count: 3
@@ -23,21 +17,3 @@ parameters:
 			identifier: variable.undefined
 			count: 1
 			path: includes/header.php
-
-		-
-			message: '#^Variable \$site_name might not be defined\.$#'
-			identifier: variable.undefined
-			count: 2
-			path: includes/header.php
-
-		-
-			message: '#^Variable \$site_name might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: index.php
-
-		-
-			message: '#^Variable \$site_name might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: login.php
