@@ -5,10 +5,7 @@
 **Focus areas:** none
 
 **Pending candidates:**
-- none
-
-**Skip streak:**
-- rector-php-set: 1
+- Tooling tree: Rector: PHP Set (#101)
 
 **Fulfilled nodes:**
 - git
@@ -21,5 +18,6 @@
 - editorconfig (#83)
 - php-cs-fixer (#88)
 - phpstan-level-0 (#85)
+- phpstan-level-1 (#98)
 - phpunit (#92)
 - test-runner-if-missing
