@@ -5,11 +5,12 @@
 **Focus areas:** none
 
 **Pending candidates:**
-- Rector: Code Quality Set (#108)
+- none
 
 **Skip streak:**
-- rector-code-quality: 1
-- rector-early-return: 1
+- phpstan-level-0: 1
+- rector-dead-code: 1
+- rector-early-return: 2
 
 **Fulfilled nodes:**
 - git
@@ -26,3 +27,4 @@
 - phpunit (#92)
 - test-runner-if-missing
 - rector-php-set (#101)
+- rector-code-quality (#108)
