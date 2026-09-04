@@ -1,5 +1,6 @@
 <?php
 include_once __DIR__ . "/config.php";
+$site_name = "Legacy Todo";
 $tmp = "header_tmp";
 $data2 = "header_wurst";
 ?>
