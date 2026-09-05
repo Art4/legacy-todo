@@ -8,8 +8,8 @@
 - none
 
 **Skip streak:**
-- rector-type-coverage: 2
-- psalm-taint-analysis: 1
+- rector-type-coverage: 3
+- psalm-taint-analysis: 2
 
 **Fulfilled nodes:**
 - git
@@ -19,18 +19,19 @@
 - psr-4 (#116)
 - ci-runner (#78)
 - php-minimal-version
-- static-code-analyzer
 - editorconfig (#83)
 - php-cs-fixer (#88)
 - phpunit (#92)
 - test-runner-if-missing
-- rector-php-set (#101)
-- rector-phpunit-set (#113)
+- static-code-analyzer
 - phpstan-level-0
 - phpstan-level-1
 - phpstan-level-2 (#134)
 - phpstan-level-3 (#136)
 - phpstan-level-4 (#138)
 - phpstan-level-5 (#140)
+- phpstan-deprecation-rules (#144)
 - rector-dead-code
+- rector-php-set (#101)
 - rector-code-quality
+- rector-phpunit-set (#113)
