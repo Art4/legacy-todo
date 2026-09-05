@@ -13,7 +13,7 @@ function checkLogin($u, $p)
     $sql = "SELECT * FROM users WHERE username='" . $u . "' AND password='" . md5($p) . "'";
     $r = $db->query($sql);
     if ($r == false) {
-        echo $r->errorInfo();
+        echo $db->errorInfo()[2];
         return false;
     }
     $row = $r->fetch(PDO::FETCH_ASSOC);
