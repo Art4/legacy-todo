@@ -1,7 +1,2 @@
 parameters:
-	ignoreErrors:
-		-
-			message: '#^Variable \$cfg might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: includes/header.php
+	ignoreErrors: []
