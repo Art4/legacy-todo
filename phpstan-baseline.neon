@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Variable \$dbFile might not be defined\.$#'
-			identifier: variable.undefined
-			count: 3
-			path: db.php
-
-		-
 			message: '#^Variable \$version might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
