@@ -25,5 +25,6 @@
 - phpstan-level-0
 - phpstan-level-1
 - phpstan-level-2 (#134)
+- phpstan-level-3 (#136)
 - rector-dead-code
 - rector-code-quality
