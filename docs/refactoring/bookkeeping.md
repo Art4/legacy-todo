@@ -8,7 +8,8 @@
 - none
 
 **Skip streak:**
-- rector-type-coverage: 1
+- rector-type-coverage: 2
+- psalm-taint-analysis: 1
 
 **Fulfilled nodes:**
 - git
@@ -30,5 +31,6 @@
 - phpstan-level-2 (#134)
 - phpstan-level-3 (#136)
 - phpstan-level-4 (#138)
+- phpstan-level-5 (#140)
 - rector-dead-code
 - rector-code-quality
