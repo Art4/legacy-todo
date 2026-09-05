@@ -1,4 +1,5 @@
 <?php
+$version = "0.1";
 $tmp = 'footer_tmp';
 $data2 = 'footer_wurst';
 $x = 42;
