@@ -24,5 +24,6 @@
 - rector-phpunit-set (#113)
 - phpstan-level-0
 - phpstan-level-1
+- phpstan-level-2 (#134)
 - rector-dead-code
 - rector-code-quality
