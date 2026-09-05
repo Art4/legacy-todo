@@ -7,6 +7,9 @@
 **Pending candidates:**
 - none
 
+**Skip streak:**
+- rector-type-coverage: 1
+
 **Fulfilled nodes:**
 - git
 - loop-config (#72)
@@ -26,5 +29,6 @@
 - phpstan-level-1
 - phpstan-level-2 (#134)
 - phpstan-level-3 (#136)
+- phpstan-level-4 (#138)
 - rector-dead-code
 - rector-code-quality
