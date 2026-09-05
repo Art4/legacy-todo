@@ -7,9 +7,6 @@
 **Pending candidates:**
 - none
 
-**Skip streak:**
-- psalm-taint-analysis: 3
-
 **Fulfilled nodes:**
 - git
 - loop-config (#72)
@@ -35,3 +32,4 @@
 - rector-php-set (#101)
 - rector-code-quality
 - rector-phpunit-set (#113)
+- psalm-taint-analysis (#150)
