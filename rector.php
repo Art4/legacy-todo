@@ -22,6 +22,7 @@ return RectorConfig::configure()
         __DIR__ . '/todo.php',
         __DIR__ . '/tests',
     ])
+    ->withTypeCoverageLevel(0)
     ->withSets([
         LevelSetList::UP_TO_PHP_56,
         SetList::DEAD_CODE,
