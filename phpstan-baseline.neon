@@ -1,2 +1,493 @@
 parameters:
-	ignoreErrors: []
+	ignoreErrors:
+		-
+			message: '#^Function doStuffDb\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: db.php
+
+		-
+			message: '#^Function doStuffDb\(\) has parameter \$x with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: db.php
+
+		-
+			message: '#^Function getDb\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: db.php
+
+		-
+			message: '#^Function unusedHelperDb\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: db.php
+
+		-
+			message: '#^Function anotherDead\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function archiveTodo\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function archiveTodo\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function canEdit\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function canEdit\(\) has parameter \$role with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function canEdit\(\) has parameter \$todoId with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function canEdit\(\) has parameter \$userId with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function checkLogin\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function checkLogin\(\) has parameter \$p with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function checkLogin\(\) has parameter \$u with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function createTodo\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function createTodo\(\) has parameter \$due with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function createTodo\(\) has parameter \$priority with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function createTodo\(\) has parameter \$text with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function createTodo\(\) has parameter \$title with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function createTodo\(\) has parameter \$userId with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function deadFunction\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function doStuff\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function doStuff\(\) has parameter \$a with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function doStuff\(\) has parameter \$b with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function doStuff2\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function doStuff2\(\) has parameter \$a with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function doStuff2\(\) has parameter \$b with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function export_csv_no_escape\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function export_csv_no_escape\(\) has parameter \$userId with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function fetchTodos\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function fetchTodos\(\) has parameter \$userId with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function getTodoById\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function getTodoById\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function getTodos\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function getTodos\(\) has parameter \$userId with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function getUserById\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function getUserById\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function isAdmin\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function isLoggedIn\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function oldTodoFunc\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function registerUser\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function registerUser\(\) has parameter \$email with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function registerUser\(\) has parameter \$p with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function registerUser\(\) has parameter \$u with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function search_vuln\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function search_vuln\(\) has parameter \$q with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function updateTodo\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function updateTodo\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function updateTodo\(\) has parameter \$priority with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function updateTodo\(\) has parameter \$status with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function updateTodo\(\) has parameter \$text with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function updateTodo\(\) has parameter \$title with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Method TodoManager\:\:doAdminStuff\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Method TodoManager\:\:doAdminStuff\(\) has parameter \$userId with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Method TodoManager\:\:errorDisplay\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Method TodoManager\:\:getWithFilters\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Method TodoManager\:\:getWithFilters\(\) has parameter \$due with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Method TodoManager\:\:getWithFilters\(\) has parameter \$prio with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Method TodoManager\:\:getWithFilters\(\) has parameter \$status with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Method TodoManager\:\:getWithFilters\(\) has parameter \$userId with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Method TodoManager\:\:handleTodo\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Method TodoManager\:\:handleTodo\(\) has parameter \$action with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Method TodoManager\:\:handleTodo\(\) has parameter \$data with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Method TodoManager\:\:legacyUploadHandler\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Property TodoManager\:\:\$cfg has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Property TodoManager\:\:\$data2 has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Property TodoManager\:\:\$db has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Property TodoManager\:\:\$tmp has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: functions.php
+
+		-
+			message: '#^Function backupDead\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: old/backup.php
+
+		-
+			message: '#^Function backupHelper\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: old/backup.php
+
+		-
+			message: '#^Function backupHelper\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: old/backup.php
+
+		-
+			message: '#^Function doStuff\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: old/backup.php
+
+		-
+			message: '#^Function doStuff\(\) has parameter \$a with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: old/backup.php
+
+		-
+			message: '#^Function doStuff\(\) has parameter \$b with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: old/backup.php
+
+		-
+			message: '#^Function oldTodoFunc\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: old/todo_old.php
+
+		-
+			message: '#^Function Art4\\LegacyTodo\\h\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Helpers.php
+
+		-
+			message: '#^Function Art4\\LegacyTodo\\h\(\) has parameter \$s with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Helpers.php
+
+		-
+			message: '#^Function Art4\\LegacyTodo\\oldHelper\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Helpers.php
+
+		-
+			message: '#^Function Art4\\LegacyTodo\\oldHelper\(\) has parameter \$x with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Helpers.php
+
+		-
+			message: '#^Function Art4\\LegacyTodo\\redirect\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Helpers.php
+
+		-
+			message: '#^Function Art4\\LegacyTodo\\redirect\(\) has parameter \$url with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Helpers.php
+
+		-
+			message: '#^Function Art4\\LegacyTodo\\unusedHelper2\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Helpers.php
