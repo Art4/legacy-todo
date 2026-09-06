@@ -111,4 +111,29 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertArrayNotHasKey("cat", $row);
         $this->assertArrayNotHasKey("tags", $row);
     }
+
+    public function testFindReturnsRowOrNull(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => "Detail", "text" => "Beschreibung", "status" => "open", "priority" => 2, "due_date" => "2026-06-01", "archived" => 0]);
+        $archivedId = $this->seedTodo(["user_id" => 1, "title" => "Archived detail", "text" => "", "status" => "done", "priority" => 3, "due_date" => "2026-01-01", "archived" => 1]);
+
+        $row = $this->todos->find($id);
+
+        $this->assertSame("Detail", $row["title"]);
+        $this->assertSame("Beschreibung", $row["text"]);
+        $this->assertSame($id, $row["id"]);
+        $this->assertNull($this->todos->find($id + 99));
+        $this->assertNotNull($this->todos->find($archivedId));
+    }
+
+    public function testArchiveMarksTodoArchivedWithoutDeleting(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => "Wird archiviert", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+
+        $this->assertTrue($this->todos->archive($id));
+
+        $row = $this->pdo->query("SELECT * FROM todos WHERE id=" . $id)->fetch(\PDO::FETCH_ASSOC);
+        $this->assertSame(1, $row["archived"]);
+        $this->assertSame("Wird archiviert", $row["title"]);
+    }
 }

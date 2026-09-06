@@ -61,4 +61,23 @@ class Todos
 
         return $this->pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+    /** @return array<string, mixed>|null */
+    public function find($id)
+    {
+        $row = $this->pdo->query("SELECT * FROM todos WHERE id=" . $id)->fetch(\PDO::FETCH_ASSOC);
+        if ($row == false) {
+            return null;
+        }
+
+        return $row;
+    }
+
+    /** @return bool */
+    public function archive($id)
+    {
+        $this->pdo->exec("UPDATE todos SET archived=1 WHERE id=" . $id);
+
+        return true;
+    }
 }

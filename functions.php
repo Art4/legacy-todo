@@ -100,17 +100,6 @@ function getUserById($id)
     return $r->fetch(PDO::FETCH_ASSOC);
 }
 
-function getTodoById($id)
-{
-    global $db;
-    $r = @$db->query("SELECT * FROM todos WHERE id=" . $id);
-    if ($r == false) {
-        echo "error";
-        return null;
-    }
-    return $r->fetch(PDO::FETCH_ASSOC);
-}
-
 function createTodo($title, $text, $priority, $due, $userId)
 {
     global $db;
@@ -136,26 +125,6 @@ function updateTodo($id, $title, $text, $priority, $status)
     $sql = "UPDATE todos SET title='" . $title . "', text='" . $text . "', priority='" . $priority . "', status='" . $status . "' WHERE id=" . $id;
     @$db->exec($sql);
     return true;
-}
-
-function archiveTodo($id)
-{
-    global $db;
-    $db->exec("UPDATE todos SET archived=1 WHERE id=" . $id);
-    return true;
-}
-
-function canEdit($todoId, $userId, $role)
-{
-    global $db;
-    $t = getTodoById($todoId);
-    if ($t == null) {
-        return false;
-    }
-    if ($role == "admin") {
-        return true;
-    }
-    return $t["user_id"] == $userId;
 }
 
 function export_csv_no_escape($userId)
