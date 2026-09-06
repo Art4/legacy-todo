@@ -33,3 +33,4 @@
 - rector-code-quality
 - rector-phpunit-set (#113)
 - psalm-taint-analysis (#150)
+- composer-audit (#153)
