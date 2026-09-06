@@ -3,7 +3,6 @@ session_start();
 include_once __DIR__ . "/config.php";
 $site_name = "Legacy Todo";
 include_once __DIR__ . "/db.php";
-include_once __DIR__ . "/functions.php";
 require_once __DIR__ . "/src/Users.php";
 $users = new \Art4\LegacyTodo\Users(getDb());
 $msg = "";
@@ -28,7 +27,7 @@ if ($_POST["register"]) {
     $u = $_POST["username"];
     $p = $_POST["password"];
     $email = $_POST["email"];
-    $r = registerUser($u, $p, $email);
+    $r = $users->register($u, $p, $email);
     if ($r == true) {
         $msg = "Registriert";
     } else {

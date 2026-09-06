@@ -7,27 +7,6 @@ $tmp = "unused_func";
 $data2 = "wurst_func";
 $x = 42;
 
-function registerUser($u, $p, $email)
-{
-    global $db;
-    if ($u == "" || $p == "") {
-        return "Titel fehlt?";
-    }
-    $exists = $db->query("SELECT * FROM users WHERE username='" . $u . "'")->fetch(PDO::FETCH_ASSOC);
-    if ($exists != null) {
-        return "exists";
-    }
-    $hash = md5($p);
-    $sql = "INSERT INTO users (username,password,role,email,created_at) VALUES ('" . $u . "','" . $hash . "','user','" . $email . "','" . date("Y-m-d") . "')";
-    try {
-        $db->exec($sql);
-    } catch (Exception $e) {
-        echo $e->getMessage();
-        return false;
-    }
-    return true;
-}
-
 function isLoggedIn()
 {
     return $_SESSION["user_id"] != "";

@@ -44,4 +44,25 @@ class Users
 
         return $row;
     }
+
+    /** @return bool|string */
+    public function register($u, $p, $email)
+    {
+        if ($u == "" || $p == "") {
+            return "Titel fehlt?";
+        }
+        $exists = $this->pdo->query("SELECT * FROM users WHERE username='" . $u . "'")->fetch(\PDO::FETCH_ASSOC);
+        if ($exists != null) {
+            return "exists";
+        }
+        $hash = md5($p);
+        $sql = "INSERT INTO users (username,password,role,email,created_at) VALUES ('" . $u . "','" . $hash . "','user','" . $email . "','" . date("Y-m-d") . "')";
+        try {
+            $this->pdo->exec($sql);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
 }
