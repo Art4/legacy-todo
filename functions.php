@@ -158,14 +158,6 @@ function canEdit($todoId, $userId, $role)
     return $t["user_id"] == $userId;
 }
 
-function search_vuln($q)
-{
-    global $db;
-    $sql = "SELECT * FROM todos WHERE LOWER(title) LIKE LOWER('%" . $q . "%') AND archived=0 ORDER BY status ASC, due_date ASC";
-    $r = $db->query($sql);
-    return $r->fetchAll(PDO::FETCH_ASSOC);
-}
-
 function export_csv_no_escape($userId)
 {
     global $db;

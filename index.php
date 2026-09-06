@@ -25,7 +25,7 @@ $tmp = "index_T06_noise";
 $kategorie = "index_kategorie";
 $due = $_GET["due"];
 if ($q != "") {
-    $todos = search_vuln($q);
+    $todos = $todosRepo->search($q);
 } elseif ($status != "" || $prio != "" || $due != "") {
     $todos = $todosRepo->listFiltered($status, $prio, $due);
 } else {

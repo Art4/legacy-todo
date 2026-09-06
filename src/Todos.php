@@ -53,4 +53,12 @@ class Todos
 
         return $out;
     }
+
+    /** @return array<int, array<string, mixed>> */
+    public function search($q)
+    {
+        $sql = "SELECT * FROM todos WHERE LOWER(title) LIKE LOWER('%" . $q . "%') AND archived=0 ORDER BY status ASC, due_date ASC";
+
+        return $this->pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }

@@ -90,4 +90,25 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertSame([["todo_id" => $uncategorized, "tag_id" => 9]], $rows[$uncategorized]["tags"]);
         $this->assertSame([], $rows[$categorized]["tags"]);
     }
+
+    public function testSearchMatchesCaseInsensitiveOnTitleIgnoringArchived(): void
+    {
+        $this->seedTodo(["user_id" => 1, "title" => "Erstes Todo", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-12-31", "archived" => 0]);
+        $this->seedTodo(["user_id" => 2, "title" => "noch was", "text" => "", "status" => "done", "priority" => 2, "due_date" => "2026-11-01", "archived" => 0]);
+        $this->seedTodo(["user_id" => 3, "title" => "Erstes TODO archiviert", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 1]);
+
+        $this->assertSame(["Erstes Todo"], array_column($this->todos->search("ERSTES"), "title"));
+        $this->assertSame(["noch was"], array_column($this->todos->search("NOCH"), "title"));
+        $this->assertSame(["Erstes Todo"], array_column($this->todos->search("todo"), "title"));
+    }
+
+    public function testSearchRowsCarryNeitherCatNorTags(): void
+    {
+        $this->seedTodo(["user_id" => 1, "title" => "Treffer", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+
+        $row = $this->todos->search("tref")[0];
+
+        $this->assertArrayNotHasKey("cat", $row);
+        $this->assertArrayNotHasKey("tags", $row);
+    }
 }
