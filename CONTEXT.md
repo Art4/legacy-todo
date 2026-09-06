@@ -27,3 +27,7 @@ _Avoid_: creator, assignee
 **Users**:
 The single data-access module (`Art4\LegacyTodo\Users`) that owns every read and mutation of a User's auth data — find by id or username, authenticate, register, create, list. Login state (user id, username, role) is written to the session by the page, not by the module.
 _Avoid_: UserManager, per-page user SQL
+
+**TodoActivity**:
+The single data-access module (`Art4\LegacyTodo\TodoActivity`) that owns every read and mutation of a Todo's comments and assignments — comments for a todo, add comment, remove comment, assignments for a todo, assign.
+_Avoid_: per-page comment/assignment SQL
