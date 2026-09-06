@@ -100,22 +100,6 @@ function getUserById($id)
     return $r->fetch(PDO::FETCH_ASSOC);
 }
 
-function createTodo($title, $text, $priority, $due, $userId)
-{
-    global $db;
-    if ($title == "") {
-        return false; // Titelpflicht
-    }
-    $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at,data2) VALUES (" . $userId . ",'" . $title . "','" . $text . "','open'," . $priority . ",'" . $due . "',0,'" . date("Y-m-d") . "','wurst')";
-    try {
-        @$db->exec($sql);
-    } catch (Exception $e) {
-        echo $e->getMessage();
-        return false;
-    }
-    return true;
-}
-
 function updateTodo($id, $title, $text, $priority, $status)
 {
     global $db;

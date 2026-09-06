@@ -136,4 +136,28 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertSame(1, $row["archived"]);
         $this->assertSame("Wird archiviert", $row["title"]);
     }
+
+    public function testCreateInsertsOpenTodoWithData2Wurst(): void
+    {
+        $result = $this->todos->create(7, "Neues Todo", "Text", 2, "2026-12-01");
+
+        $this->assertTrue($result);
+        $row = $this->pdo->query("SELECT * FROM todos")->fetch(\PDO::FETCH_ASSOC);
+        $this->assertSame("Neues Todo", $row["title"]);
+        $this->assertSame("Text", $row["text"]);
+        $this->assertSame("open", $row["status"]);
+        $this->assertSame(7, $row["user_id"]);
+        $this->assertSame(2, $row["priority"]);
+        $this->assertSame("2026-12-01", $row["due_date"]);
+        $this->assertSame(0, $row["archived"]);
+        $this->assertSame("wurst", $row["data2"]);
+        $this->assertSame(date("Y-m-d"), $row["created_at"]);
+    }
+
+    public function testCreateRequiresTitle(): void
+    {
+        $this->assertFalse($this->todos->create(7, "", "Text", 2, "2026-12-01"));
+
+        $this->assertSame(0, (int) $this->pdo->query("SELECT COUNT(*) FROM todos")->fetchColumn());
+    }
 }

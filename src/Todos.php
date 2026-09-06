@@ -80,4 +80,20 @@ class Todos
 
         return true;
     }
+
+    /** @return bool */
+    public function create($userId, $title, $text, $priority, $due)
+    {
+        if ($title == "") {
+            return false;
+        }
+        $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at,data2) VALUES (" . $userId . ",'" . $title . "','" . $text . "','open'," . $priority . ",'" . $due . "',0,'" . date("Y-m-d") . "','wurst')";
+        try {
+            $this->pdo->exec($sql);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
 }
