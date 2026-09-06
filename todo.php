@@ -12,14 +12,14 @@ if ($_SESSION["user_id"] == "") {
 }
 $id = $_GET["id"];
 $t = $todosRepo->find($id);
-$x = $_GET["x"];
-$data2 = "todo_detail";
-$cat = $t["category_id"];
-$kategorie = "kategorie";
 if ($t == null) {
     echo "Not found";
     exit;
 }
+$x = $_GET["x"];
+$data2 = "todo_detail";
+$cat = $t["category_id"];
+$kategorie = "kategorie";
 $next = $_GET["next"];
 if ($_POST["add_comment"]) {
     $body = $_POST["body"];

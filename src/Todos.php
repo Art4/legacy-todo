@@ -16,12 +16,8 @@ class Todos
     public function listActive()
     {
         $rows = $this->pdo->query("SELECT * FROM todos WHERE archived=0 ORDER BY status ASC, due_date ASC")->fetchAll(\PDO::FETCH_ASSOC);
-        foreach ($rows as &$row) {
-            $row["tags"] = $this->pdo->query("SELECT * FROM todo_tags WHERE todo_id=" . $row["id"])->fetchAll(\PDO::FETCH_ASSOC);
-        }
-        unset($row);
 
-        return $rows;
+        return $this->withTags($rows);
     }
 
     /** @return array<int, array<string, mixed>> */
@@ -47,11 +43,23 @@ class Todos
                 $cat = $this->pdo->query("SELECT * FROM categories WHERE id=" . $row["category_id"])->fetch(\PDO::FETCH_ASSOC);
             }
             $row["cat"] = $cat["name"];
-            $row["tags"] = $this->pdo->query("SELECT * FROM todo_tags WHERE todo_id=" . $row["id"])->fetchAll(\PDO::FETCH_ASSOC);
             $out[] = $row;
         }
 
-        return $out;
+        return $this->withTags($out);
+    }
+
+    /** @param array<int, array<string, mixed>> $rows
+     *  @return array<int, array<string, mixed>>
+     */
+    private function withTags($rows)
+    {
+        foreach ($rows as &$row) {
+            $row["tags"] = $this->pdo->query("SELECT * FROM todo_tags WHERE todo_id=" . $row["id"])->fetchAll(\PDO::FETCH_ASSOC);
+        }
+        unset($row);
+
+        return $rows;
     }
 
     /** @return array<int, array<string, mixed>> */
