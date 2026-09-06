@@ -27,8 +27,7 @@ $due = $_GET["due"];
 if ($q != "") {
     $todos = search_vuln($q);
 } elseif ($status != "" || $prio != "" || $due != "") {
-    $mgr = new TodoManager();
-    $todos = $mgr->getWithFilters($userId, $status, $prio, $due);
+    $todos = $todosRepo->listFiltered($status, $prio, $due);
 } else {
     $todos = $todosRepo->listActive();
 }

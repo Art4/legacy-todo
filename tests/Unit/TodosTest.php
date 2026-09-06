@@ -54,4 +54,40 @@ final class TodosTest extends PHPUnit\Framework\TestCase
 
         $this->assertSame([["todo_id" => $id, "tag_id" => 7]], $row["tags"]);
     }
+
+    public function testListFilteredAppliesStatusPriorityAndDueFilters(): void
+    {
+        $this->seedTodo(["user_id" => 1, "title" => "Low done", "text" => "", "status" => "done", "priority" => 3, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->seedTodo(["user_id" => 2, "title" => "High open", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-06-01", "archived" => 0]);
+        $this->seedTodo(["user_id" => 3, "title" => "Medium open late", "text" => "", "status" => "open", "priority" => 2, "due_date" => "2026-12-31", "archived" => 0]);
+        $this->seedTodo(["user_id" => 4, "title" => "Archived hidden", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 1]);
+
+        $this->assertSame(
+            ["Low done", "High open", "Medium open late"],
+            array_column($this->todos->listFiltered("", "", ""), "title"),
+        );
+        $this->assertSame(["Low done"], array_column($this->todos->listFiltered("done", "", ""), "title"));
+        $this->assertSame(["High open"], array_column($this->todos->listFiltered("", "1", ""), "title"));
+        $this->assertSame(["Low done", "High open"], array_column($this->todos->listFiltered("", "", "2026-06-15"), "title"));
+        $this->assertSame(["Medium open late"], array_column($this->todos->listFiltered("open", "2", ""), "title"));
+    }
+
+    public function testListFilteredBoltsCatAndTagsOntoEachRow(): void
+    {
+        $uncategorized = $this->seedTodo(["user_id" => 1, "title" => "No category", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->pdo->exec('INSERT INTO categories (name,user_id) VALUES ("Arbeit",1)');
+        $categorized = $this->seedTodo(["user_id" => 1, "title" => "Categorized", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-02", "archived" => 0]);
+        $this->pdo->exec("UPDATE todos SET category_id=1 WHERE id=" . $categorized);
+        $this->pdo->exec("INSERT INTO todo_tags (todo_id, tag_id) VALUES (" . $uncategorized . ", 9)");
+
+        $rows = [];
+        foreach ($this->todos->listFiltered("", "", "") as $row) {
+            $rows[$row["id"]] = $row;
+        }
+
+        $this->assertSame("", $rows[$uncategorized]["cat"]);
+        $this->assertSame("Arbeit", $rows[$categorized]["cat"]);
+        $this->assertSame([["todo_id" => $uncategorized, "tag_id" => 9]], $rows[$uncategorized]["tags"]);
+        $this->assertSame([], $rows[$categorized]["tags"]);
+    }
 }

@@ -23,4 +23,34 @@ class Todos
 
         return $rows;
     }
+
+    /** @return array<int, array<string, mixed>> */
+    public function listFiltered($status, $prio, $due)
+    {
+        $sql = "SELECT * FROM todos WHERE archived=0";
+        if ($status != "") {
+            $sql .= " AND status='" . $status . "'";
+        }
+        if ($prio != "") {
+            $sql .= " AND priority=" . $prio;
+        }
+        if ($due != "") {
+            $sql .= " AND due_date<'" . $due . "'";
+        }
+        $sql .= " ORDER BY status ASC, due_date ASC";
+        $rows = $this->pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+        $out = [];
+        foreach ($rows as $row) {
+            if ($row["category_id"] == "") {
+                $cat = ["name" => ""];
+            } else {
+                $cat = $this->pdo->query("SELECT * FROM categories WHERE id=" . $row["category_id"])->fetch(\PDO::FETCH_ASSOC);
+            }
+            $row["cat"] = $cat["name"];
+            $row["tags"] = $this->pdo->query("SELECT * FROM todo_tags WHERE todo_id=" . $row["id"])->fetchAll(\PDO::FETCH_ASSOC);
+            $out[] = $row;
+        }
+
+        return $out;
+    }
 }
