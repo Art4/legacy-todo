@@ -16,6 +16,8 @@ if ($x == 42) {
 }
 $userId = $_SESSION["user_id"];
 include_once __DIR__ . "/functions.php";
+require_once __DIR__ . "/src/Todos.php";
+$todosRepo = new \Art4\LegacyTodo\Todos(getDb());
 $q = $_GET["q"];
 $status = $_GET["status"];
 $prio = $_GET["priority"];
@@ -28,13 +30,7 @@ if ($q != "") {
     $mgr = new TodoManager();
     $todos = $mgr->getWithFilters($userId, $status, $prio, $due);
 } else {
-    $r = $db->query("SELECT * FROM todos WHERE archived=0 ORDER BY status ASC, due_date ASC");
-    $todos = $r->fetchAll(PDO::FETCH_ASSOC);
-    foreach ($todos as &$t) {
-        $tags = $db->query("SELECT * FROM todo_tags WHERE todo_id=" . $t["id"])->fetchAll(PDO::FETCH_ASSOC);
-        $t["tags"] = $tags;
-    }
-    unset($t);
+    $todos = $todosRepo->listActive();
 }
 $r2 = $db->query("SELECT COUNT(*) as c FROM todos WHERE archived=0");
 $cnt = $r2->fetch(PDO::FETCH_ASSOC);

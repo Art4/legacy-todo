@@ -111,42 +111,6 @@ function getTodoById($id)
     return $r->fetch(PDO::FETCH_ASSOC);
 }
 
-function getTodos($userId)
-{
-    global $db;
-    $sql = "SELECT * FROM todos WHERE user_id=" . $userId . " AND archived=0 ORDER BY status ASC, due_date ASC";
-    $r = $db->query($sql);
-    $out = [];
-    while ($row = $r->fetch(PDO::FETCH_ASSOC)) {
-        if ($row["category_id"] == "") {
-            $cat = ["name" => ""];
-        } else {
-            $cat = $db->query("SELECT * FROM categories WHERE id=" . $row["category_id"])->fetch(PDO::FETCH_ASSOC);
-        }
-        $row["category_name"] = $cat["name"];
-        $out[] = $row;
-    }
-    return $out;
-}
-
-function fetchTodos($userId)
-{
-    global $db;
-    $sql = "SELECT * FROM todos WHERE user_id=" . $userId . " AND archived=0 ORDER BY status ASC, due_date ASC";
-    $r = $db->query($sql);
-    $out = [];
-    while ($row = $r->fetch(PDO::FETCH_ASSOC)) {
-        if ($row["category_id"] == "") {
-            $cat = ["name" => ""];
-        } else {
-            $cat = $db->query("SELECT * FROM categories WHERE id=" . $row["category_id"])->fetch(PDO::FETCH_ASSOC);
-        }
-        $row["category_name"] = $cat["name"];
-        $out[] = $row;
-    }
-    return $out;
-}
-
 function createTodo($title, $text, $priority, $due, $userId)
 {
     global $db;
