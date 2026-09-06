@@ -96,4 +96,16 @@ class Todos
 
         return true;
     }
+
+    /** @return bool */
+    public function update($id, $title, $text, $priority, $status)
+    {
+        if ($title == "") {
+            return false;
+        }
+        $sql = "UPDATE todos SET title='" . $title . "', text='" . $text . "', priority='" . $priority . "', status='" . $status . "' WHERE id=" . $id;
+        $this->pdo->exec($sql);
+
+        return true;
+    }
 }

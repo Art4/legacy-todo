@@ -100,17 +100,6 @@ function getUserById($id)
     return $r->fetch(PDO::FETCH_ASSOC);
 }
 
-function updateTodo($id, $title, $text, $priority, $status)
-{
-    global $db;
-    if ($title == "") {
-        return false;
-    }
-    $sql = "UPDATE todos SET title='" . $title . "', text='" . $text . "', priority='" . $priority . "', status='" . $status . "' WHERE id=" . $id;
-    @$db->exec($sql);
-    return true;
-}
-
 function export_csv_no_escape($userId)
 {
     global $db;

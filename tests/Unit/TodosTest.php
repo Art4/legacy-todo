@@ -160,4 +160,29 @@ final class TodosTest extends PHPUnit\Framework\TestCase
 
         $this->assertSame(0, (int) $this->pdo->query("SELECT COUNT(*) FROM todos")->fetchColumn());
     }
+
+    public function testUpdateChangesTitleTextPriorityAndStatus(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => "Alt", "text" => "alter text", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+
+        $result = $this->todos->update($id, "Neu", "neuer text", 3, "done");
+
+        $this->assertTrue($result);
+        $row = $this->pdo->query("SELECT * FROM todos WHERE id=" . $id)->fetch(\PDO::FETCH_ASSOC);
+        $this->assertSame("Neu", $row["title"]);
+        $this->assertSame("neuer text", $row["text"]);
+        $this->assertSame("done", $row["status"]);
+        $this->assertSame(3, $row["priority"]);
+    }
+
+    public function testUpdateRequiresTitle(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => "Alt", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+
+        $this->assertFalse($this->todos->update($id, "", "neu", 2, "done"));
+
+        $row = $this->pdo->query("SELECT * FROM todos WHERE id=" . $id)->fetch(\PDO::FETCH_ASSOC);
+        $this->assertSame("Alt", $row["title"]);
+        $this->assertSame("open", $row["status"]);
+    }
 }
