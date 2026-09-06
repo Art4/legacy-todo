@@ -1,9 +1,9 @@
 # legacy-todo
 
 Eine To-Do-Listen-Anwendung in PHP mit gewachsenem Legacy-Code. Aktuell läuft sie auf **PHP
-5.6** – das ist der heutige Status quo, keine Vorgabe, auf der die Anwendung bleiben soll. Sie
-wird laufend weiterentwickelt und modernisiert; ein PHP-Versions-Upgrade ist ein offener
-Backlog-Punkt (siehe Issue #89 zur Vorbereitung eines Umstiegs auf PHP 7.4).
+7.4** – das ist der heutige Status quo, keine Vorgabe, auf der die Anwendung bleiben soll. Sie
+wird laufend weiterentwickelt und modernisiert; ein weiteres PHP-Versions-Upgrade (etwa auf 8.x)
+bleibt ein offener Backlog-Punkt.
 
 > **Sicherheitshinweis:** Die Anwendung hat bekannte, noch nicht behobene Schwachstellen
 > (SQL-Konkatenation, XSS, fehlende Autorisierung etc.) – bis die behoben sind, nur lokal mit
@@ -14,7 +14,7 @@ Backlog-Punkt (siehe Issue #89 zur Vorbereitung eines Umstiegs auf PHP 7.4).
 Kein Host-PHP nötig – die Laufzeit läuft komplett über Docker.
 
 ```bash
-./run.sh up      # PHP-5.6-Apache-Container starten (Port 8086), SQLite
+./run.sh up      # PHP-7.4-Apache-Container starten (Port 8086), SQLite
 ./run.sh lint    # php -l über alle .php-Dateien
 ./run.sh shell   # Bash im Container
 ./run.sh logs    # Container-Logs verfolgen
@@ -25,8 +25,7 @@ App: http://localhost:8086/
 
 Composer und statische Analyse (PHPStan, PHP CS Fixer, Rector) sind als Dev-Tooling vorhanden und
 laufen in CI – Details siehe `.github/workflows/ci.yml` und `composer.json`. Die Laufzeit selbst
-bleibt vorerst PHP 5.6 im Container. Zur Vorbereitung auf einen PHP-7.4-Umstieg lintet CI den
-Code zusätzlich unter PHP 7.4; die App läuft weiterhin auf PHP 5.6.
+läuft auf PHP 7.4 im Container; CI lintet und testet unter derselben PHP-Version.
 
 ## Weiterentwicklung
 
