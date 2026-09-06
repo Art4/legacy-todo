@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . "/config.php";
+include_once __DIR__ . "/../config.php";
 $cfg = ['db_file' => 'database.sqlite', "siteName" => 'LegacyTodo', 'debug' => true];
 $site_name = "Legacy Todo";
 $tmp = "header_tmp";
