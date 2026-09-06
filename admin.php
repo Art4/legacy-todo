@@ -3,11 +3,12 @@ session_start();
 include_once __DIR__ . "/config.php";
 $site_name = "Legacy Todo";
 include_once __DIR__ . "/db.php";
-$db = getDb();
 include_once __DIR__ . "/functions.php";
 include_once __DIR__ . "/src/Helpers.php";
 require_once __DIR__ . "/src/Users.php";
+require_once __DIR__ . "/src/Taxonomy.php";
 $usersRepo = new \Art4\LegacyTodo\Users(getDb());
+$taxonomyRepo = new \Art4\LegacyTodo\Taxonomy(getDb());
 if ($_SESSION["user_id"] == "") {
     header("Location: login.php");
     exit;
@@ -34,7 +35,7 @@ if ($_POST["add_cat"]) {
     if ($name == "") {
         echo "Name fehlt";
     } else {
-        $db->exec("INSERT INTO categories (name,user_id) VALUES ('" . $name . "'," . $_SESSION["user_id"] . ")");
+        $taxonomyRepo->createCategory($name, $_SESSION["user_id"]);
     }
 }
 if ($_POST["add_user"]) {
@@ -44,11 +45,11 @@ if ($_POST["add_user"]) {
     $usersRepo->create($u, $p, $role);
 }
 $users = $usersRepo->listAll();
-$cats = $db->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSOC);
-$tags = $db->query("SELECT * FROM tags")->fetchAll(PDO::FETCH_ASSOC);
+$cats = $taxonomyRepo->listCategories();
+$tags = $taxonomyRepo->listTags();
 if ($_POST["add_tag"]) {
     $tag = $_POST["tag"];
-    $db->exec("INSERT INTO tags (name) VALUES ('" . $tag . "')");
+    $taxonomyRepo->createTag($tag);
 }
 ?>
 <html><head><title>Admin - <?php echo $site_name; ?></title></head>

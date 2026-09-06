@@ -2,10 +2,11 @@
 session_start();
 include_once __DIR__ . "/config.php";
 include_once __DIR__ . "/db.php";
-$db = getDb();
 include_once __DIR__ . "/functions.php";
 require_once __DIR__ . "/src/Todos.php";
+require_once __DIR__ . "/src/Taxonomy.php";
 $todosRepo = new \Art4\LegacyTodo\Todos(getDb());
+$taxonomyRepo = new \Art4\LegacyTodo\Taxonomy(getDb());
 if ($_SESSION["user_id"] == "") {
     header("Location: login.php?next=addtodo.php");
     exit;
@@ -60,7 +61,7 @@ $data2 = $x;
 </select>
 <select name='category_id'>
 <?php
-$cats = $db->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSOC);
+$cats = $taxonomyRepo->listCategories();
 foreach ($cats as $c) {
     echo "<option value='" . $c["id"] . "'>" . $c["name"] . "</option>";
 }
