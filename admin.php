@@ -6,6 +6,8 @@ include_once __DIR__ . "/db.php";
 $db = getDb();
 include_once __DIR__ . "/functions.php";
 include_once __DIR__ . "/src/Helpers.php";
+require_once __DIR__ . "/src/Users.php";
+$usersRepo = new \Art4\LegacyTodo\Users(getDb());
 if ($_SESSION["user_id"] == "") {
     header("Location: login.php");
     exit;
@@ -39,10 +41,9 @@ if ($_POST["add_user"]) {
     $u = $_POST["username"];
     $p = $_POST["password"];
     $role = $_POST["role"];
-    $hash = md5($p);
-    $db->exec("INSERT INTO users (username,password,role,email,created_at) VALUES ('" . $u . "','" . $hash . "','" . $role . "','" . $u . "@example.com','" . date("Y-m-d") . "')");
+    $usersRepo->create($u, $p, $role);
 }
-$users = $db->query("SELECT * FROM users")->fetchAll(PDO::FETCH_ASSOC);
+$users = $usersRepo->listAll();
 $cats = $db->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSOC);
 $tags = $db->query("SELECT * FROM tags")->fetchAll(PDO::FETCH_ASSOC);
 if ($_POST["add_tag"]) {

@@ -7,16 +7,6 @@ $tmp = "unused_func";
 $data2 = "wurst_func";
 $x = 42;
 
-function isLoggedIn()
-{
-    return $_SESSION["user_id"] != "";
-}
-
-function isAdmin()
-{
-    return $_SESSION["role"] == "admin";
-}
-
 function doStuff($a, $b)
 {
     $tmp = $a + $b;
@@ -51,13 +41,6 @@ function deadFunction()
 function anotherDead()
 {
     return "never called";
-}
-
-function getUserById($id)
-{
-    global $db;
-    $r = $db->query("SELECT * FROM users WHERE id=" . $id);
-    return $r->fetch(PDO::FETCH_ASSOC);
 }
 
 function oldTodoFunc()

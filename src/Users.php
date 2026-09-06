@@ -65,4 +65,24 @@ class Users
 
         return true;
     }
+
+    /** @return bool */
+    public function create($username, $password, $role)
+    {
+        $hash = md5($password);
+        $sql = "INSERT INTO users (username,password,role,email,created_at) VALUES ('" . $username . "','" . $hash . "','" . $role . "','" . $username . "@example.com','" . date("Y-m-d") . "')";
+        try {
+            $this->pdo->exec($sql);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /** @return array<int, array<string, mixed>> */
+    public function listAll()
+    {
+        return $this->pdo->query("SELECT * FROM users")->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }

@@ -105,4 +105,28 @@ final class UsersTest extends PHPUnit\Framework\TestCase
         $this->assertCount(1, $rows);
         $this->assertSame(md5("pw"), $rows[0]["password"]);
     }
+
+    public function testCreateInsertsUserWithGivenRoleAndExampleComEmail(): void
+    {
+        $result = $this->users->create("frank", "pw456", "admin");
+
+        $this->assertTrue($result);
+        $row = $this->pdo->query("SELECT * FROM users")->fetch(\PDO::FETCH_ASSOC);
+        $this->assertSame("frank", $row["username"]);
+        $this->assertSame(md5("pw456"), $row["password"]);
+        $this->assertSame("admin", $row["role"]);
+        $this->assertSame("frank@example.com", $row["email"]);
+        $this->assertSame(date("Y-m-d"), $row["created_at"]);
+    }
+
+    public function testListReturnsAllUsers(): void
+    {
+        $aliceId = $this->seedUser(["username" => "alice", "password" => "a", "role" => "user", "email" => "a@example.com"]);
+        $bobId = $this->seedUser(["username" => "bob", "password" => "b", "role" => "admin", "email" => "b@example.com"]);
+
+        $rows = $this->users->listAll();
+
+        $this->assertCount(2, $rows);
+        $this->assertSame([$aliceId, $bobId], array_column($rows, "id"));
+    }
 }
