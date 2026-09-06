@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Helfer-Script für legacy-todo – startet die App-Laufzeit (aktuell PHP 5.6) über Docker,
+# Helfer-Script für legacy-todo – startet die App-Laufzeit (aktuell PHP 7.4) über Docker,
 # kein Host-PHP nötig. Datenbank: SQLite.
 set -euo pipefail
 
-IMAGE="php:5.6-apache"
-CONTAINER="legacy-todo-php56"
+IMAGE="php:7.4-apache"
+CONTAINER="legacy-todo-php74"
 PORT="${PORT:-8086}"
 SRC="$(cd "$(dirname "$0")" && pwd)"
 
@@ -43,7 +43,7 @@ case "$cmd" in
   help|*)
     echo "Usage: $0 {up|down|lint|shell|logs|exec <cmd>}"
     echo ""
-    echo "  up          - Startet PHP 5.6 Apache Container (Port $PORT) mit SQLite"
+    echo "  up          - Startet PHP 7.4 Apache Container (Port $PORT) mit SQLite"
     echo "  down        - Stoppt und löscht Container"
     echo "  lint        - php -l über alle .php Dateien"
     echo "  shell       - Bash im Container"
