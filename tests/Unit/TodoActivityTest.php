@@ -103,4 +103,17 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
         $this->assertSame([], $this->activity->assignmentsForTodo(1));
         $this->assertCount(1, $this->activity->assignmentsForTodo(2));
     }
+
+    public function testAssignInsertsScopedToTodo(): void
+    {
+        $assigneeId = $this->seedUser("frank");
+
+        $result = $this->activity->assign(4, $assigneeId, 5);
+
+        $this->assertTrue($result);
+        $row = $this->pdo->query("SELECT * FROM assignments WHERE todo_id=4")->fetch(\PDO::FETCH_ASSOC);
+        $this->assertSame(4, $row["todo_id"]);
+        $this->assertSame($assigneeId, $row["user_id"]);
+        $this->assertSame(5, $row["assigned_by"]);
+    }
 }

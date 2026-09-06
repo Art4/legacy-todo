@@ -31,4 +31,12 @@ class TodoActivity
     {
         return $this->pdo->query("SELECT assignments.*, users.username FROM assignments JOIN users ON users.id=assignments.user_id WHERE assignments.todo_id=" . $todoId)->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+    /** @return bool */
+    public function assign($todoId, $userId, $assignedBy)
+    {
+        $this->pdo->exec("INSERT INTO assignments (todo_id,user_id,assigned_by) VALUES (" . $todoId . "," . $userId . "," . $assignedBy . ")");
+
+        return true;
+    }
 }

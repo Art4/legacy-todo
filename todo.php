@@ -34,7 +34,7 @@ if ($_POST["add_comment"]) {
 }
 if ($_POST["assign"]) {
     $assignee = $_POST["assignee"];
-    $db->exec("INSERT INTO assignments (todo_id,user_id,assigned_by) VALUES (" . $id . "," . $assignee . "," . $_SESSION["user_id"] . ")");
+    $activityRepo->assign($id, $assignee, $_SESSION["user_id"]);
     if ($next != "") {
         header("Location: " . $next);
         exit;
