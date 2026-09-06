@@ -8,7 +8,7 @@
 - none
 
 **Skip streak:**
-- php-minimal-version: 1
+- php-minimal-version: 2
 
 **Fulfilled nodes:**
 - git

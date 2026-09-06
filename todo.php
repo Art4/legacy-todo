@@ -6,8 +6,10 @@ $db = getDb();
 include_once __DIR__ . "/functions.php";
 require_once __DIR__ . "/src/Todos.php";
 require_once __DIR__ . "/src/Users.php";
+require_once __DIR__ . "/src/TodoActivity.php";
 $todosRepo = new \Art4\LegacyTodo\Todos(getDb());
 $usersRepo = new \Art4\LegacyTodo\Users(getDb());
+$activityRepo = new \Art4\LegacyTodo\TodoActivity(getDb());
 if ($_SESSION["user_id"] == "") {
     header("Location: login.php");
     exit;
@@ -26,13 +28,13 @@ $next = $_GET["next"];
 if ($_POST["add_comment"]) {
     $body = $_POST["body"];
     $uid = $_SESSION["user_id"];
-    $db->exec("INSERT INTO comments (todo_id,user_id,body,created_at) VALUES (" . $id . "," . $uid . ",'" . $body . "','" . date("Y-m-d H:i:s") . "')");
+    $activityRepo->addComment($id, $uid, $body);
     header("Location: todo.php?id=" . $id);
     exit;
 }
 if ($_POST["assign"]) {
     $assignee = $_POST["assignee"];
-    $db->exec("INSERT INTO assignments (todo_id,user_id,assigned_by) VALUES (" . $id . "," . $assignee . "," . $_SESSION["user_id"] . ")");
+    $activityRepo->assign($id, $assignee, $_SESSION["user_id"]);
     if ($next != "") {
         header("Location: " . $next);
         exit;
@@ -40,10 +42,10 @@ if ($_POST["assign"]) {
 }
 if ($_GET["del_comment"]) {
     $cid = $_GET["del_comment"];
-    $db->exec("DELETE FROM comments WHERE id=" . $cid);
+    $activityRepo->removeComment($cid);
 }
-$comments = $db->query("SELECT * FROM comments WHERE todo_id=" . $id)->fetchAll(PDO::FETCH_ASSOC);
-$assigns = $db->query("SELECT * FROM assignments WHERE todo_id=" . $id)->fetchAll(PDO::FETCH_ASSOC);
+$comments = $activityRepo->commentsForTodo($id);
+$assigns = $activityRepo->assignmentsForTodo($id);
 $tmp_T11 = @$_FILES["upload"]["name"];
 $magic = 42;
 ?>
@@ -57,15 +59,13 @@ if (count($comments) > 0) {
     echo "<h3>Kommentare</h3>";
     foreach ($comments as $c) {
         echo "<p>" . $c["body"] . " - User " . $c["user_id"] . " <a href='todo.php?id=" . $id . "&del_comment=" . $c["id"] . "'>löschen</a></p>";
-        $u = $usersRepo->findById($c["user_id"]);
-        echo "<small>" . $u["username"] . "</small>";
+        echo "<small>" . $c["username"] . "</small>";
     }
 }
 if (count($assigns) > 0) {
     echo "<h3>Zuweisungen</h3>";
     foreach ($assigns as $a) {
-        $u = $usersRepo->findById($a["user_id"]);
-        echo "<p>" . $u["username"] . "</p>";
+        echo "<p>" . $a["username"] . "</p>";
     }
 }
 ?>
