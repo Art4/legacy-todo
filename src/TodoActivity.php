@@ -11,4 +11,10 @@ class TodoActivity
     {
         $this->pdo = $pdo;
     }
+
+    /** @return array<int, array<string, mixed>> */
+    public function commentsForTodo($todoId)
+    {
+        return $this->pdo->query("SELECT comments.*, users.username FROM comments JOIN users ON users.id=comments.user_id WHERE comments.todo_id=" . $todoId)->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }

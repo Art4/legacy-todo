@@ -6,8 +6,10 @@ $db = getDb();
 include_once __DIR__ . "/functions.php";
 require_once __DIR__ . "/src/Todos.php";
 require_once __DIR__ . "/src/Users.php";
+require_once __DIR__ . "/src/TodoActivity.php";
 $todosRepo = new \Art4\LegacyTodo\Todos(getDb());
 $usersRepo = new \Art4\LegacyTodo\Users(getDb());
+$activityRepo = new \Art4\LegacyTodo\TodoActivity(getDb());
 if ($_SESSION["user_id"] == "") {
     header("Location: login.php");
     exit;
@@ -42,7 +44,7 @@ if ($_GET["del_comment"]) {
     $cid = $_GET["del_comment"];
     $db->exec("DELETE FROM comments WHERE id=" . $cid);
 }
-$comments = $db->query("SELECT * FROM comments WHERE todo_id=" . $id)->fetchAll(PDO::FETCH_ASSOC);
+$comments = $activityRepo->commentsForTodo($id);
 $assigns = $db->query("SELECT * FROM assignments WHERE todo_id=" . $id)->fetchAll(PDO::FETCH_ASSOC);
 $tmp_T11 = @$_FILES["upload"]["name"];
 $magic = 42;
@@ -57,8 +59,7 @@ if (count($comments) > 0) {
     echo "<h3>Kommentare</h3>";
     foreach ($comments as $c) {
         echo "<p>" . $c["body"] . " - User " . $c["user_id"] . " <a href='todo.php?id=" . $id . "&del_comment=" . $c["id"] . "'>löschen</a></p>";
-        $u = $usersRepo->findById($c["user_id"]);
-        echo "<small>" . $u["username"] . "</small>";
+        echo "<small>" . $c["username"] . "</small>";
     }
 }
 if (count($assigns) > 0) {
