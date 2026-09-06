@@ -61,4 +61,18 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
         $this->assertSame([], $this->activity->commentsForTodo(1));
         $this->assertCount(1, $this->activity->commentsForTodo(2));
     }
+
+    public function testAddCommentInsertsScopedToTodoWithBodyAuthorAndCreatedAt(): void
+    {
+        $authorId = $this->seedUser("carol");
+
+        $result = $this->activity->addComment(3, $authorId, "Neuer Kommentar");
+
+        $this->assertTrue($result);
+        $row = $this->pdo->query("SELECT * FROM comments WHERE todo_id=3")->fetch(\PDO::FETCH_ASSOC);
+        $this->assertSame(3, $row["todo_id"]);
+        $this->assertSame($authorId, $row["user_id"]);
+        $this->assertSame("Neuer Kommentar", $row["body"]);
+        $this->assertSame(date("Y-m-d H:i:s"), $row["created_at"]);
+    }
 }

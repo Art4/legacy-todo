@@ -28,7 +28,7 @@ $next = $_GET["next"];
 if ($_POST["add_comment"]) {
     $body = $_POST["body"];
     $uid = $_SESSION["user_id"];
-    $db->exec("INSERT INTO comments (todo_id,user_id,body,created_at) VALUES (" . $id . "," . $uid . ",'" . $body . "','" . date("Y-m-d H:i:s") . "')");
+    $activityRepo->addComment($id, $uid, $body);
     header("Location: todo.php?id=" . $id);
     exit;
 }
