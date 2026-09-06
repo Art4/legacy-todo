@@ -2,9 +2,10 @@
 
 include_once __DIR__ . "/config.php";
 include_once __DIR__ . "/db.php";
-$db = getDb();
 session_start();
 include_once __DIR__ . "/functions.php";
+require_once __DIR__ . "/src/Todos.php";
+$todosRepo = new \Art4\LegacyTodo\Todos(getDb());
 $id = $_GET["id"];
 if ($_SESSION["user_id"] == null) {
     header("Location: login.php");
@@ -24,8 +25,7 @@ if ($_POST["save"]) {
     if ($title == "") {
         echo "Titel erforderlich";
     } else {
-        $sql = "UPDATE todos SET title='$title', text='$text', priority='$priority', status='$status' WHERE id=$id";
-        @$db->exec($sql);
+        $todosRepo->update($id, $title, $text, $priority, $status);
         if ($next != "") {
             header("Location: " . $next);
         } else {
@@ -34,8 +34,7 @@ if ($_POST["save"]) {
         exit;
     }
 }
-$r = @$db->query("SELECT * FROM todos WHERE id=" . $id);
-$t = $r->fetch(PDO::FETCH_ASSOC);
+$t = $todosRepo->find($id);
 echo "<html><body>";
 echo "<h1>Todo bearbeiten</h1>";
 echo "<form method='post'>";
