@@ -75,4 +75,32 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
         $this->assertSame("Neuer Kommentar", $row["body"]);
         $this->assertSame(date("Y-m-d H:i:s"), $row["created_at"]);
     }
+
+    public function testAssignmentsForTodoReturnsAssigneesWithUsernamesInInsertionOrder(): void
+    {
+        $assigneeId = $this->seedUser("dave");
+        $this->pdo->exec("INSERT INTO assignments (todo_id,user_id,assigned_by) VALUES (1," . $assigneeId . ",2)");
+        $this->pdo->exec("INSERT INTO assignments (todo_id,user_id,assigned_by) VALUES (1," . $assigneeId . ",3)");
+
+        $rows = $this->activity->assignmentsForTodo(1);
+
+        $this->assertCount(2, $rows);
+        $this->assertSame("dave", $rows[0]["username"]);
+        $this->assertSame(2, $rows[0]["assigned_by"]);
+        $this->assertSame(3, $rows[1]["assigned_by"]);
+    }
+
+    public function testAssignmentsForTodoIsEmptyForTodoWithoutAssignments(): void
+    {
+        $this->assertSame([], $this->activity->assignmentsForTodo(1));
+    }
+
+    public function testAssignmentsForTodoIsScopedToTodo(): void
+    {
+        $assigneeId = $this->seedUser("erin");
+        $this->pdo->exec("INSERT INTO assignments (todo_id,user_id,assigned_by) VALUES (2," . $assigneeId . ",4)");
+
+        $this->assertSame([], $this->activity->assignmentsForTodo(1));
+        $this->assertCount(1, $this->activity->assignmentsForTodo(2));
+    }
 }

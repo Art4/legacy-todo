@@ -45,7 +45,7 @@ if ($_GET["del_comment"]) {
     $db->exec("DELETE FROM comments WHERE id=" . $cid);
 }
 $comments = $activityRepo->commentsForTodo($id);
-$assigns = $db->query("SELECT * FROM assignments WHERE todo_id=" . $id)->fetchAll(PDO::FETCH_ASSOC);
+$assigns = $activityRepo->assignmentsForTodo($id);
 $tmp_T11 = @$_FILES["upload"]["name"];
 $magic = 42;
 ?>
@@ -65,8 +65,7 @@ if (count($comments) > 0) {
 if (count($assigns) > 0) {
     echo "<h3>Zuweisungen</h3>";
     foreach ($assigns as $a) {
-        $u = $usersRepo->findById($a["user_id"]);
-        echo "<p>" . $u["username"] . "</p>";
+        echo "<p>" . $a["username"] . "</p>";
     }
 }
 ?>

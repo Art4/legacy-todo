@@ -25,4 +25,10 @@ class TodoActivity
 
         return true;
     }
+
+    /** @return array<int, array<string, mixed>> */
+    public function assignmentsForTodo($todoId)
+    {
+        return $this->pdo->query("SELECT assignments.*, users.username FROM assignments JOIN users ON users.id=assignments.user_id WHERE assignments.todo_id=" . $todoId)->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }
