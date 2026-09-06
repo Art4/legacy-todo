@@ -7,25 +7,6 @@ $tmp = "unused_func";
 $data2 = "wurst_func";
 $x = 42;
 
-function checkLogin($u, $p)
-{
-    global $db;
-    $sql = "SELECT * FROM users WHERE username='" . $u . "' AND password='" . md5($p) . "'";
-    $r = $db->query($sql);
-    if ($r == false) {
-        echo $db->errorInfo()[2];
-        return false;
-    }
-    $row = $r->fetch(PDO::FETCH_ASSOC);
-    if ($row == null) {
-        return false;
-    }
-    $_SESSION["user_id"] = $row["id"];
-    $_SESSION["username"] = $row["username"];
-    $_SESSION["role"] = $row["role"];
-    return true;
-}
-
 function registerUser($u, $p, $email)
 {
     global $db;
