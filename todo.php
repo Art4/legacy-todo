@@ -5,7 +5,9 @@ include_once __DIR__ . "/db.php";
 $db = getDb();
 include_once __DIR__ . "/functions.php";
 require_once __DIR__ . "/src/Todos.php";
+require_once __DIR__ . "/src/Users.php";
 $todosRepo = new \Art4\LegacyTodo\Todos(getDb());
+$usersRepo = new \Art4\LegacyTodo\Users(getDb());
 if ($_SESSION["user_id"] == "") {
     header("Location: login.php");
     exit;
@@ -55,14 +57,14 @@ if (count($comments) > 0) {
     echo "<h3>Kommentare</h3>";
     foreach ($comments as $c) {
         echo "<p>" . $c["body"] . " - User " . $c["user_id"] . " <a href='todo.php?id=" . $id . "&del_comment=" . $c["id"] . "'>löschen</a></p>";
-        $u = $db->query("SELECT * FROM users WHERE id=" . $c["user_id"])->fetch(PDO::FETCH_ASSOC);
+        $u = $usersRepo->findById($c["user_id"]);
         echo "<small>" . $u["username"] . "</small>";
     }
 }
 if (count($assigns) > 0) {
     echo "<h3>Zuweisungen</h3>";
     foreach ($assigns as $a) {
-        $u = $db->query("SELECT * FROM users WHERE id=" . $a["user_id"])->fetch(PDO::FETCH_ASSOC);
+        $u = $usersRepo->findById($a["user_id"]);
         echo "<p>" . $u["username"] . "</p>";
     }
 }
@@ -76,7 +78,7 @@ if (count($assigns) > 0) {
 <form method="post">
 <select name="assignee">
 <?php
-$users = $db->query("SELECT * FROM users")->fetchAll(PDO::FETCH_ASSOC);
+$users = $usersRepo->listAll();
 foreach ($users as $u) {
     echo "<option value='" . $u["id"] . "'>" . $u["username"] . "</option>";
 }

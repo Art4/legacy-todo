@@ -1,6 +1,6 @@
 # Legacy Todo
 
-A small PHP/SQLite to-do application. All todo data access lives behind one module.
+A small PHP/SQLite to-do application. All todo data access lives behind one module, and all user/auth data access behind another.
 
 ## Language
 
@@ -23,3 +23,7 @@ _Avoid_: —
 **Owner**:
 The User a Todo belongs to. The Owner or an Administrator may edit or archive a Todo; anyone else is refused permission.
 _Avoid_: creator, assignee
+
+**Users**:
+The single data-access module (`Art4\LegacyTodo\Users`) that owns every read and mutation of a User's auth data — find by id or username, authenticate, register, create, list. Login state (user id, username, role) is written to the session by the page, not by the module.
+_Avoid_: UserManager, per-page user SQL

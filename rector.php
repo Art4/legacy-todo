@@ -23,6 +23,11 @@ return RectorConfig::configure()
         __DIR__ . '/tests',
     ])
     ->withTypeCoverageLevel(0)
+    ->withSkip([
+        Rector\TypeDeclaration\Rector\StmtsAwareInterface\SafeDeclareStrictTypesRector::class => [
+            __DIR__ . '/functions.php',
+        ],
+    ])
     ->withSets([
         LevelSetList::UP_TO_PHP_56,
         SetList::DEAD_CODE,

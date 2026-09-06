@@ -3,7 +3,8 @@ session_start();
 include_once __DIR__ . "/config.php";
 $site_name = "Legacy Todo";
 include_once __DIR__ . "/db.php";
-include_once __DIR__ . "/functions.php";
+require_once __DIR__ . "/src/Users.php";
+$users = new \Art4\LegacyTodo\Users(getDb());
 $msg = "";
 $tmp = "login_tmp";
 $magic = 42;
@@ -11,7 +12,11 @@ $uploadTmp = @$_FILES["x"]["name"];
 if ($_POST["login"]) {
     $u = $_POST["username"];
     $p = $_POST["password"];
-    if (checkLogin($u, $p) == true) {
+    $user = $users->authenticate($u, $p);
+    if ($user !== null) {
+        $_SESSION["user_id"] = $user["id"];
+        $_SESSION["username"] = $user["username"];
+        $_SESSION["role"] = $user["role"];
         header("Location: index.php");
         exit;
     }
@@ -22,7 +27,7 @@ if ($_POST["register"]) {
     $u = $_POST["username"];
     $p = $_POST["password"];
     $email = $_POST["email"];
-    $r = registerUser($u, $p, $email);
+    $r = $users->register($u, $p, $email);
     if ($r == true) {
         $msg = "Registriert";
     } else {
