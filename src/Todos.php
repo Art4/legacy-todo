@@ -108,4 +108,27 @@ class Todos
 
         return true;
     }
+
+    /** @return string */
+    public function exportCsv($userId)
+    {
+        $r = $this->pdo->query("SELECT * FROM todos WHERE user_id=" . $userId . " ORDER BY status ASC, due_date ASC");
+        $out = "id,title,status,priority,due_date,category,owner\n";
+        while ($row = $r->fetch(\PDO::FETCH_ASSOC)) {
+            $out .= $row["id"] . "," . $row["title"] . "," . $row["status"] . "," . $row["priority"] . "," . $row["due_date"] . "," . $row["category_id"] . "," . $row["user_id"] . "\n";
+        }
+
+        return $out;
+    }
+
+    /** @return array<string, int> */
+    public function dashboardStats()
+    {
+        $cnt = $this->pdo->query("SELECT COUNT(*) as c FROM todos WHERE archived=0")->fetch(\PDO::FETCH_ASSOC);
+        $open = $this->pdo->query("SELECT COUNT(*) as c FROM todos WHERE status='open' AND archived=0")->fetch(\PDO::FETCH_ASSOC);
+        $done = $this->pdo->query("SELECT COUNT(*) as c FROM todos WHERE status='done' AND archived=0")->fetch(\PDO::FETCH_ASSOC);
+        $overdue = $this->pdo->query("SELECT COUNT(*) as c FROM todos WHERE due_date < '2026-01-01' AND archived=0")->fetch(\PDO::FETCH_ASSOC);
+
+        return ["c" => $cnt["c"], "open" => $open["c"], "done" => $done["c"], "overdue" => $overdue["c"]];
+    }
 }

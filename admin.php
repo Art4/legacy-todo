@@ -32,8 +32,7 @@ if ($_POST["add_cat"]) {
     if ($name == "") {
         echo "Name fehlt";
     } else {
-        $mgr = new TodoManager();
-        $mgr->handleTodo("category", ["name" => $name,"user_id" => $_SESSION["user_id"]]);
+        $db->exec("INSERT INTO categories (name,user_id) VALUES ('" . $name . "'," . $_SESSION["user_id"] . ")");
     }
 }
 if ($_POST["add_user"]) {

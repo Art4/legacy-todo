@@ -185,4 +185,35 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertSame("Alt", $row["title"]);
         $this->assertSame("open", $row["status"]);
     }
+
+    public function testExportCsvReturnsFixedColumnsForUserTodosIncludingArchived(): void
+    {
+        $mine = $this->seedTodo(["user_id" => 1, "title" => "Eins", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->seedTodo(["user_id" => 2, "title" => "Fremdes", "text" => "", "status" => "open", "priority" => 2, "due_date" => "2026-01-02", "archived" => 0]);
+        $archived = $this->seedTodo(["user_id" => 1, "title" => "Archiviert", "text" => "", "status" => "done", "priority" => 3, "due_date" => "2026-01-03", "archived" => 1]);
+
+        $csv = $this->todos->exportCsv(1);
+
+        $this->assertSame(
+            "id,title,status,priority,due_date,category,owner\n"
+            . $archived . ",Archiviert,done,3,2026-01-03,,1\n"
+            . $mine . ",Eins,open,1,2026-01-01,,1\n",
+            $csv,
+        );
+    }
+
+    public function testDashboardStatsCountsActiveOpenDoneAndOverdue(): void
+    {
+        $this->seedTodo(["user_id" => 1, "title" => "Offen früh", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2025-12-31", "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Offen spät", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-06-01", "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Erledigt", "text" => "", "status" => "done", "priority" => 1, "due_date" => "2026-01-02", "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Archiviert alt", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2025-01-01", "archived" => 1]);
+
+        $stats = $this->todos->dashboardStats();
+
+        $this->assertSame(3, $stats["c"]);
+        $this->assertSame(2, $stats["open"]);
+        $this->assertSame(1, $stats["done"]);
+        $this->assertSame(1, $stats["overdue"]);
+    }
 }
