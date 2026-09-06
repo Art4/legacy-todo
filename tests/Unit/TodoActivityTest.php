@@ -116,4 +116,19 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
         $this->assertSame($assigneeId, $row["user_id"]);
         $this->assertSame(5, $row["assigned_by"]);
     }
+
+    public function testRemoveCommentDeletesByIdAndIsIdempotent(): void
+    {
+        $authorId = $this->seedUser("gina");
+        $this->pdo->exec("INSERT INTO comments (todo_id,user_id,body,created_at) VALUES (5," . $authorId . ",'Kommentar','2026-02-01 10:00:00')");
+        $commentId = (int) $this->pdo->lastInsertId();
+
+        $this->assertTrue($this->activity->removeComment($commentId));
+
+        $row = $this->pdo->query("SELECT * FROM comments WHERE id=" . $commentId)->fetch(\PDO::FETCH_ASSOC);
+        $this->assertFalse($row);
+
+        $this->assertTrue($this->activity->removeComment($commentId));
+        $this->assertSame(0, (int) $this->pdo->query("SELECT COUNT(*) FROM comments WHERE id=" . $commentId)->fetchColumn());
+    }
 }

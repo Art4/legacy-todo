@@ -42,7 +42,7 @@ if ($_POST["assign"]) {
 }
 if ($_GET["del_comment"]) {
     $cid = $_GET["del_comment"];
-    $db->exec("DELETE FROM comments WHERE id=" . $cid);
+    $activityRepo->removeComment($cid);
 }
 $comments = $activityRepo->commentsForTodo($id);
 $assigns = $activityRepo->assignmentsForTodo($id);

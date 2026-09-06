@@ -39,4 +39,12 @@ class TodoActivity
 
         return true;
     }
+
+    /** @return bool */
+    public function removeComment($commentId)
+    {
+        $this->pdo->exec("DELETE FROM comments WHERE id=" . $commentId);
+
+        return true;
+    }
 }
