@@ -24,8 +24,9 @@ Kein Host-PHP nötig – die Laufzeit läuft komplett über Docker.
 App: http://localhost:8086/
 
 Composer und statische Analyse (PHPStan, PHP CS Fixer, Rector) sind als Dev-Tooling vorhanden und
-laufen in CI – Details siehe `.github/workflows/ci.yml` und `composer.json`. Die Laufzeit selbst
-läuft auf PHP 7.4 im Container; CI lintet und testet unter derselben PHP-Version.
+laufen in CI – Details siehe `.github/workflows/ci.yml` und `composer.json`. `composer.json`
+verlangt PHP >= 8.3; der lokale Laufzeit-Container läuft weiterhin auf PHP 7.4, das Upgrade der
+Container-Laufzeit bleibt ein offener Backlog-Punkt.
 
 ## Weiterentwicklung
 
