@@ -204,6 +204,27 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->assertFalse($this->auth->canManage(9999));
     }
 
+    public function testRedirectFallsBackToGivenUrlWithoutNext(): void
+    {
+        $output = $this->runCli('$auth->redirect("todo.php?id=5");', [], []);
+
+        $this->assertSame("Location: todo.php?id=5", $output);
+    }
+
+    public function testRedirectHonoursNonEmptyNext(): void
+    {
+        $output = $this->runCli('$auth->redirect("index.php");', [], ["next" => "admin.php"]);
+
+        $this->assertSame("Location: admin.php", $output);
+    }
+
+    public function testRedirectIgnoresEmptyNext(): void
+    {
+        $output = $this->runCli('$auth->redirect("index.php");', [], ["next" => ""]);
+
+        $this->assertSame("Location: index.php", $output);
+    }
+
     private function runCli(string $body, array $session, array $get): string
     {
         $script = 'namespace Art4\\LegacyTodo { function header($line) { echo $line; } }'

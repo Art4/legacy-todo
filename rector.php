@@ -14,7 +14,6 @@ return RectorConfig::configure()
         __DIR__ . '/deletetodo.php',
         __DIR__ . '/edittodo.php',
         __DIR__ . '/functions.php',
-        __DIR__ . '/src/Helpers.php',
         __DIR__ . '/includes',
         __DIR__ . '/index.php',
         __DIR__ . '/login.php',

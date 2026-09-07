@@ -24,7 +24,6 @@ $x = $_GET["x"];
 $data2 = "todo_detail";
 $cat = $t["category_id"];
 $kategorie = "kategorie";
-$next = $_GET["next"];
 if ($_POST["add_comment"]) {
     $body = $_POST["body"];
     $uid = $auth->currentUser()["user_id"];
@@ -35,9 +34,8 @@ if ($_POST["add_comment"]) {
 if ($_POST["assign"]) {
     $assignee = $_POST["assignee"];
     $activityRepo->assign($id, $assignee, $auth->currentUser()["user_id"]);
-    if ($next != "") {
-        header("Location: " . $next);
-        exit;
+    if (($_GET["next"] ?? "") != "") {
+        $auth->redirect("todo.php?id=" . $id);
     }
 }
 if ($_GET["del_comment"]) {

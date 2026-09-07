@@ -10,7 +10,6 @@ $todosRepo = new \Art4\LegacyTodo\Todos(getDb());
 $id = $_GET["id"];
 $auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
 $auth->requireLogin();
-$next = $_GET["next"];
 $tmp_T06 = "edittodo_noise";
 $data2 = "edittodo_wurst";
 $cat = "edittodo_cat";
@@ -25,12 +24,7 @@ if ($_POST["save"]) {
         echo "Titel erforderlich";
     } else {
         $todosRepo->update($id, $title, $text, $priority, $status);
-        if ($next != "") {
-            header("Location: " . $next);
-        } else {
-            header("Location: todo.php?id=" . $id);
-        }
-        exit;
+        $auth->redirect("todo.php?id=" . $id);
     }
 }
 $t = $todosRepo->find($id);

@@ -4,7 +4,6 @@ include_once __DIR__ . "/config.php";
 $site_name = "Legacy Todo";
 include_once __DIR__ . "/db.php";
 include_once __DIR__ . "/functions.php";
-include_once __DIR__ . "/src/Helpers.php";
 require_once __DIR__ . "/src/Auth.php";
 require_once __DIR__ . "/src/Users.php";
 require_once __DIR__ . "/src/Taxonomy.php";

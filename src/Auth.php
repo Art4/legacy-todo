@@ -126,4 +126,14 @@ class Auth
 
         return $found != null && $found["user_id"] == $userId;
     }
+
+    public function redirect($url)
+    {
+        $next = $_GET["next"] ?? "";
+        if ($next != "") {
+            $url = $next;
+        }
+        header("Location: " . $url);
+        exit;
+    }
 }
