@@ -158,6 +158,52 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->assertSame("Keine Rechte", $output);
     }
 
+    private function seedTodo(array $row): int
+    {
+        $this->pdo->exec(
+            "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES ("
+            . $row["user_id"] . ",'" . $row["title"] . "','" . $row["text"] . "','" . $row["status"] . "',"
+            . $row["priority"] . ",'" . $row["due_date"] . "'," . $row["archived"] . ",'2026-01-10')",
+        );
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    public function testCanManageAllowsAdminForAnyTodo(): void
+    {
+        $id = $this->seedTodo(["user_id" => 7, "title" => "Fremdes", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->session["user_id"] = 1;
+        $this->session["role"] = "admin";
+
+        $this->assertTrue($this->auth->canManage($id));
+    }
+
+    public function testCanManageAllowsOwnerForOwnTodo(): void
+    {
+        $id = $this->seedTodo(["user_id" => 5, "title" => "Eigenes", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->session["user_id"] = 5;
+        $this->session["role"] = "user";
+
+        $this->assertTrue($this->auth->canManage($id));
+    }
+
+    public function testCanManageDeniesNonOwnerNonAdmin(): void
+    {
+        $id = $this->seedTodo(["user_id" => 5, "title" => "Fremdes", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->session["user_id"] = 9;
+        $this->session["role"] = "user";
+
+        $this->assertFalse($this->auth->canManage($id));
+    }
+
+    public function testCanManageDeniesForUnknownTodo(): void
+    {
+        $this->session["user_id"] = 5;
+        $this->session["role"] = "user";
+
+        $this->assertFalse($this->auth->canManage(9999));
+    }
+
     private function runCli(string $body, array $session, array $get): string
     {
         $script = 'namespace Art4\\LegacyTodo { function header($line) { echo $line; } }'

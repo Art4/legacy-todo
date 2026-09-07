@@ -111,4 +111,19 @@ class Auth
             exit;
         }
     }
+
+    /** @return bool */
+    public function canManage($todoId)
+    {
+        if (($this->session["role"] ?? null) == "admin") {
+            return true;
+        }
+        $userId = $this->session["user_id"] ?? null;
+        if ($userId == null || $userId == "") {
+            return false;
+        }
+        $found = $this->todos()->find($todoId);
+
+        return $found != null && $found["user_id"] == $userId;
+    }
 }
