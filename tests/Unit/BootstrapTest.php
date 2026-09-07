@@ -97,4 +97,15 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
     {
         $this->assertNull($this->bootstrap->currentUser());
     }
+
+    public function testStartBootsRealRequestContext(): void
+    {
+        $app = Bootstrap::start();
+
+        $this->assertInstanceOf(Bootstrap::class, $app);
+        $this->assertInstanceOf(Auth::class, $app->auth());
+
+        session_destroy();
+        session_write_close();
+    }
 }

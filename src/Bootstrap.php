@@ -60,7 +60,12 @@ class Bootstrap
         require_once __DIR__ . "/../db.php";
         require_once __DIR__ . "/../functions.php";
 
-        return new self(getDb(), $_SESSION, $site_name);
+        $pdo = getDb();
+        if ($pdo === null) {
+            $pdo = new \PDO('sqlite:database.sqlite');
+        }
+
+        return new self($pdo, $_SESSION, $site_name);
     }
 
     /** @return string */
