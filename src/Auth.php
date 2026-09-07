@@ -97,7 +97,7 @@ class Auth
         }
 
         $target = "login.php";
-        if ($next != null && $next != "") {
+        if ($next != null) {
             $target = "login.php?next=" . $next;
         }
         header("Location: " . $target);
