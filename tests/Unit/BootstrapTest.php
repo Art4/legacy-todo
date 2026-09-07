@@ -108,4 +108,83 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
         session_destroy();
         session_write_close();
     }
+
+    public function testStartWithTempDbCreatesSchema(): void
+    {
+        $dbFile = $this->tempDb();
+
+        Bootstrap::start(['db_file' => $dbFile]);
+
+        $pdo = new \PDO('sqlite:' . $dbFile);
+        $tables = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name")->fetchAll(\PDO::FETCH_COLUMN);
+        @unlink($dbFile);
+
+        $this->assertSame(
+            ['assignments', 'categories', 'comments', 'tags', 'todo_tags', 'todos', 'users'],
+            $tables,
+        );
+    }
+
+    public function testStartWithTempDbSeedsWhenEmpty(): void
+    {
+        $dbFile = $this->tempDb();
+
+        Bootstrap::start(['db_file' => $dbFile]);
+
+        $pdo = new \PDO('sqlite:' . $dbFile);
+        $users = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
+        $todos = (int) $pdo->query('SELECT COUNT(*) FROM todos')->fetchColumn();
+        $categories = (int) $pdo->query('SELECT COUNT(*) FROM categories')->fetchColumn();
+        $tags = (int) $pdo->query('SELECT COUNT(*) FROM tags')->fetchColumn();
+        $comments = (int) $pdo->query('SELECT COUNT(*) FROM comments')->fetchColumn();
+        @unlink($dbFile);
+
+        $this->assertSame(2, $users);
+        $this->assertSame(3, $todos);
+        $this->assertSame(1, $categories);
+        $this->assertSame(1, $tags);
+        $this->assertSame(1, $comments);
+    }
+
+    public function testStartDoesNotReseedPopulatedDb(): void
+    {
+        $dbFile = $this->tempDb();
+        $seed = new \PDO('sqlite:' . $dbFile);
+        $seed->exec('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT)');
+        $seed->exec("INSERT INTO users (username) VALUES ('alice')");
+        unset($seed);
+
+        Bootstrap::start(['db_file' => $dbFile]);
+
+        $pdo = new \PDO('sqlite:' . $dbFile);
+        $users = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
+        @unlink($dbFile);
+
+        $this->assertSame(1, $users);
+    }
+
+    public function testStartDefaultsToLegacyTodoSiteName(): void
+    {
+        $dbFile = $this->tempDb();
+
+        $app = Bootstrap::start(['db_file' => $dbFile]);
+        @unlink($dbFile);
+
+        $this->assertSame('Legacy Todo', $app->siteName());
+    }
+
+    public function testStartHonoursCustomSiteName(): void
+    {
+        $dbFile = $this->tempDb();
+
+        $app = Bootstrap::start(['db_file' => $dbFile, 'siteName' => 'Custom Site']);
+        @unlink($dbFile);
+
+        $this->assertSame('Custom Site', $app->siteName());
+    }
+
+    private function tempDb(): string
+    {
+        return tempnam(sys_get_temp_dir(), 'legacy-todo-') . '.sqlite';
+    }
 }
