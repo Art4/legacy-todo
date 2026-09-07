@@ -1,9 +1,6 @@
 <?php
-include_once __DIR__ . "/../config.php";
 $cfg = ['db_file' => 'database.sqlite', "siteName" => 'LegacyTodo', 'debug' => true];
 $site_name = "Legacy Todo";
-$tmp = "header_tmp";
-$data2 = "header_wurst";
 ?>
 <html><head><title><?php echo $site_name; ?> - <?php echo $cfg["siteName"]; ?></title>
 <style>body{font-family:Arial}</style>

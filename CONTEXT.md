@@ -17,7 +17,7 @@ The lifecycle action that flags a Todo as archived instead of deleting it. Archi
 _Avoid_: delete, löschen (as the storage operation)
 
 **Bootstrap**:
-The single module (`Art4\LegacyTodo\Bootstrap`) that owns how a page starts — `Bootstrap::start()` boots the session, loads the config/DB/function globals the legacy code still expects, and returns the page's module instances via `auth()`, `todos()`, `users()`, `todoActivity()`, `taxonomy()` and `siteName()`. Pages are thin: they call `Bootstrap::start()`, run their request logic through the modules, and render.
+The single module (`Art4\LegacyTodo\Bootstrap`) that owns how a page starts — `Bootstrap::start(array $config = [])` boots the session, timezone, and SQLite DB itself (connect, schema, seed, all idempotent on the default `database.sqlite`), then returns the page's module instances via `auth()`, `todos()`, `users()`, `todoActivity()`, `taxonomy()` and `siteName()`. Pages are thin: they call `Bootstrap::start()`, run their request logic through the modules, and render.
 _Avoid_: per-page `session_start()`, per-page `include_once` of `config.php` / `db.php` / `functions.php`, per-page module construction
 
 **Dashboard**:

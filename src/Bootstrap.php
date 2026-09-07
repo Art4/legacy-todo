@@ -47,25 +47,58 @@ class Bootstrap
     }
 
     /**
+     * @param array{db_file?: string, siteName?: string} $config
      * @return self
      */
-    public static function start()
+    public static function start(array $config = [])
     {
-        global $db, $cfg, $site_name;
-
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        require_once __DIR__ . "/../config.php";
-        require_once __DIR__ . "/../db.php";
-        require_once __DIR__ . "/../functions.php";
+        date_default_timezone_set('UTC');
 
-        $pdo = getDb();
-        if ($pdo === null) {
-            $pdo = new \PDO('sqlite:database.sqlite');
+        $pdo = self::connect($config['db_file'] ?? 'database.sqlite');
+        self::createSchema($pdo);
+        self::seedIfEmpty($pdo);
+
+        return new self($pdo, $_SESSION, $config['siteName'] ?? 'Legacy Todo');
+    }
+
+    /** @param string $dbFile */
+    private static function connect($dbFile): \PDO
+    {
+        $pdo = new \PDO('sqlite:' . $dbFile);
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        @chmod($dbFile, 0666);
+        @chmod(dirname($dbFile), 0777);
+
+        return $pdo;
+    }
+
+    private static function createSchema(\PDO $pdo): void
+    {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, role TEXT, email TEXT, created_at TEXT, data2 TEXT, x_status INTEGER)");
+        $pdo->exec('CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, title TEXT, text TEXT, status TEXT, priority INTEGER, due_date TEXT, category_id INTEGER, archived INTEGER DEFAULT 0, created_at TEXT, data2 TEXT, x_status INTEGER)');
+        $pdo->exec("CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, user_id INTEGER)");
+        $pdo->exec('CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)');
+        $pdo->exec("CREATE TABLE IF NOT EXISTS todo_tags (todo_id INTEGER, tag_id INTEGER)");
+        $pdo->exec("CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, body TEXT, created_at TEXT)");
+        $pdo->exec('CREATE TABLE IF NOT EXISTS assignments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, assigned_by INTEGER)');
+    }
+
+    private static function seedIfEmpty(\PDO $pdo): void
+    {
+        $cnt = $pdo->query("SELECT COUNT(*) as c FROM users")->fetch(\PDO::FETCH_ASSOC);
+        if ($cnt['c'] == 0) {
+            $pdo->exec("INSERT INTO users (username,password,role,email,created_at) VALUES ('admin','" . md5('admin123') . "','admin','admin@example.com','2026-01-01')");
+            $pdo->exec("INSERT INTO users (username,password,role,email,created_at) VALUES ('user','" . md5('user123') . "','user','user@example.com','2026-01-02')");
+            $pdo->exec("INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (1,'Erstes Todo','Beschreibung 1','open',1,'2026-12-31',0,'2026-01-10')");
+            $pdo->exec("INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (2,'Zweites Todo','Noch was','done',2,'2026-11-01',0,'2026-01-11')");
+            $pdo->exec("INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (1,'Archiviertes','Altes erledigtes','done',3,'2026-01-01',1,'2026-01-05')");
+            $pdo->exec("INSERT INTO categories (name,user_id) VALUES ('Allgemein',1)");
+            $pdo->exec("INSERT INTO tags (name) VALUES ('wichtig')");
+            $pdo->exec("INSERT INTO comments (todo_id,user_id,body,created_at) VALUES (1,2,'Kommentar 1','2026-01-12')");
         }
-
-        return new self($pdo, $_SESSION, $site_name);
     }
 
     /** @return string */
