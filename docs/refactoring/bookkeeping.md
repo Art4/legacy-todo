@@ -7,9 +7,6 @@
 **Pending candidates:**
 - none
 
-**Skip streak:**
-- php-minimal-version: 3
-
 **Fulfilled nodes:**
 - git
 - loop-config (#72)
