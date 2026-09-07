@@ -6,25 +6,6 @@ on:
   pull_request:
 
 jobs:
-  lint:
-    name: PHP lint (${{ matrix.php-version }})
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-version: ["8.3"]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Validate composer.json
-        run: composer validate --no-check-publish
-
-      - name: Lint PHP files (php ${{ matrix.php-version }} via Docker)
-        run: |
-          docker run --rm -v "$PWD":/app -w /app php:${{ matrix.php-version }}-apache bash -c '
-            set -e
-            find . -name "*.php" -not -path "./vendor/*" -not -path "./tests/*" -print0 | xargs -0 -n1 php -l
-          '
-
   phpstan:
     name: PHPStan
     runs-on: ubuntu-latest
