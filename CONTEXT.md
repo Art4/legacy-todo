@@ -31,3 +31,7 @@ _Avoid_: UserManager, per-page user SQL
 **TodoActivity**:
 The single data-access module (`Art4\LegacyTodo\TodoActivity`) that owns every read and mutation of a Todo's comments and assignments — comments for a todo, add comment, remove comment, assignments for a todo, assign.
 _Avoid_: per-page comment/assignment SQL
+
+**Taxonomy**:
+The single data-access module (`Art4\LegacyTodo\Taxonomy`) that owns every read and mutation of the Todo classification data — the `categories`, `tags`, and `todo_tags` tables: list categories, list tags, create category, create tag, category names for a batch of todos, tags for a batch of todos.
+_Avoid_: per-page category/tag SQL

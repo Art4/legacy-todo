@@ -15,6 +15,7 @@ if ($x == 42) {
 }
 $userId = $_SESSION["user_id"];
 include_once __DIR__ . "/functions.php";
+require_once __DIR__ . "/src/Taxonomy.php";
 require_once __DIR__ . "/src/Todos.php";
 $todosRepo = new \Art4\LegacyTodo\Todos(getDb());
 $q = $_GET["q"];

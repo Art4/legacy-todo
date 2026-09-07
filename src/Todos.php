@@ -7,9 +7,21 @@ class Todos
     /** @var \PDO */
     private $pdo;
 
+    /** @var Taxonomy|null */
+    private $taxonomy;
+
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
+    }
+
+    private function taxonomy(): Taxonomy
+    {
+        if ($this->taxonomy === null) {
+            $this->taxonomy = new Taxonomy($this->pdo);
+        }
+
+        return $this->taxonomy;
     }
 
     /** @return array<int, array<string, mixed>> */
@@ -17,7 +29,7 @@ class Todos
     {
         $rows = $this->pdo->query("SELECT * FROM todos WHERE archived=0 ORDER BY status ASC, due_date ASC")->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $this->withTags($rows);
+        return $this->decorate($rows);
     }
 
     /** @return array<int, array<string, mixed>> */
@@ -35,27 +47,27 @@ class Todos
         }
         $sql .= " ORDER BY status ASC, due_date ASC";
         $rows = $this->pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
-        $out = [];
-        foreach ($rows as $row) {
-            if ($row["category_id"] == "") {
-                $cat = ["name" => ""];
-            } else {
-                $cat = $this->pdo->query("SELECT * FROM categories WHERE id=" . $row["category_id"])->fetch(\PDO::FETCH_ASSOC);
-            }
-            $row["cat"] = $cat["name"];
-            $out[] = $row;
-        }
 
-        return $this->withTags($out);
+        return $this->decorate($rows);
     }
 
     /** @param array<int, array<string, mixed>> $rows
      *  @return array<int, array<string, mixed>>
      */
-    private function withTags($rows)
+    private function decorate($rows)
     {
+        $ids = [];
+        foreach ($rows as $row) {
+            $ids[] = (int) $row["id"];
+        }
+        if ($ids === []) {
+            return $rows;
+        }
+        $catNames = $this->taxonomy()->categoryNamesForTodos($ids);
+        $tagsMap = $this->taxonomy()->tagsForTodos($ids);
         foreach ($rows as &$row) {
-            $row["tags"] = $this->pdo->query("SELECT * FROM todo_tags WHERE todo_id=" . $row["id"])->fetchAll(\PDO::FETCH_ASSOC);
+            $row["cat"] = $catNames[(int) $row["id"]] ?? "";
+            $row["tags"] = $tagsMap[(int) $row["id"]] ?? [];
         }
         unset($row);
 
