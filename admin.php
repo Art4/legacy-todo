@@ -4,19 +4,14 @@ include_once __DIR__ . "/config.php";
 $site_name = "Legacy Todo";
 include_once __DIR__ . "/db.php";
 include_once __DIR__ . "/functions.php";
-include_once __DIR__ . "/src/Helpers.php";
+require_once __DIR__ . "/src/Auth.php";
 require_once __DIR__ . "/src/Users.php";
 require_once __DIR__ . "/src/Taxonomy.php";
 $usersRepo = new \Art4\LegacyTodo\Users(getDb());
 $taxonomyRepo = new \Art4\LegacyTodo\Taxonomy(getDb());
-if ($_SESSION["user_id"] == "") {
-    header("Location: login.php");
-    exit;
-}
-if ($_SESSION["role"] != "admin") {
-    echo "Keine Rechte";
-    exit;
-}
+$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
+$auth->requireLogin();
+$auth->requireRole("admin");
 $tmp = "admin_tmp";
 $data2 = "admin_wurst";
 $magic = 42;
@@ -35,7 +30,7 @@ if ($_POST["add_cat"]) {
     if ($name == "") {
         echo "Name fehlt";
     } else {
-        $taxonomyRepo->createCategory($name, $_SESSION["user_id"]);
+        $taxonomyRepo->createCategory($name, $auth->currentUser()["user_id"]);
     }
 }
 if ($_POST["add_user"]) {

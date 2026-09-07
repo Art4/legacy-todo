@@ -3,14 +3,13 @@ session_start();
 include_once __DIR__ . "/config.php";
 include_once __DIR__ . "/db.php";
 include_once __DIR__ . "/functions.php";
+require_once __DIR__ . "/src/Auth.php";
 require_once __DIR__ . "/src/Todos.php";
 require_once __DIR__ . "/src/Taxonomy.php";
 $todosRepo = new \Art4\LegacyTodo\Todos(getDb());
 $taxonomyRepo = new \Art4\LegacyTodo\Taxonomy(getDb());
-if ($_SESSION["user_id"] == "") {
-    header("Location: login.php?next=addtodo.php");
-    exit;
-}
+$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
+$auth->requireLogin("addtodo.php");
 $msg = "";
 $tmp = "addtodo";
 $cat = $_POST["category_id"];
@@ -21,7 +20,7 @@ if ($_POST["save"]) {
     $text = $_POST["text"];
     $priority = $_POST["priority"];
     $due = $_POST["due_date"];
-    $userId = $_SESSION["user_id"];
+    $userId = $auth->currentUser()["user_id"];
     $file = $_FILES["upload"]["name"];
     if ($file != "") {
         $dest = "uploads/" . $file;

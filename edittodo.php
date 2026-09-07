@@ -4,14 +4,12 @@ include_once __DIR__ . "/config.php";
 include_once __DIR__ . "/db.php";
 session_start();
 include_once __DIR__ . "/functions.php";
+require_once __DIR__ . "/src/Auth.php";
 require_once __DIR__ . "/src/Todos.php";
 $todosRepo = new \Art4\LegacyTodo\Todos(getDb());
 $id = $_GET["id"];
-if ($_SESSION["user_id"] == null) {
-    header("Location: login.php");
-    exit;
-}
-$next = $_GET["next"];
+$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
+$auth->requireLogin();
 $tmp_T06 = "edittodo_noise";
 $data2 = "edittodo_wurst";
 $cat = "edittodo_cat";
@@ -26,12 +24,7 @@ if ($_POST["save"]) {
         echo "Titel erforderlich";
     } else {
         $todosRepo->update($id, $title, $text, $priority, $status);
-        if ($next != "") {
-            header("Location: " . $next);
-        } else {
-            header("Location: todo.php?id=" . $id);
-        }
-        exit;
+        $auth->redirect("todo.php?id=" . $id);
     }
 }
 $t = $todosRepo->find($id);

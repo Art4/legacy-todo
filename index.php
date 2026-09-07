@@ -3,17 +3,16 @@ session_start();
 include_once __DIR__ . "/config.php";
 $site_name = "Legacy Todo";
 include_once __DIR__ . "/db.php";
-if ($_SESSION["user_id"] == null) {
-    header("Location: login.php");
-    exit;
-}
+require_once __DIR__ . "/src/Auth.php";
+$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
+$auth->requireLogin();
 $x = $_GET["x"];
-$tmp = $_SESSION["username"];
+$tmp = $auth->currentUser()["username"];
 $data2 = "index_page";
 if ($x == 42) {
     echo "<!-- magic -->";
 }
-$userId = $_SESSION["user_id"];
+$userId = $auth->currentUser()["user_id"];
 include_once __DIR__ . "/functions.php";
 require_once __DIR__ . "/src/Taxonomy.php";
 require_once __DIR__ . "/src/Todos.php";

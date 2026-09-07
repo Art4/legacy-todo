@@ -3,7 +3,8 @@ session_start();
 include_once __DIR__ . "/config.php";
 $site_name = "Legacy Todo";
 include_once __DIR__ . "/db.php";
-require_once __DIR__ . "/src/Users.php";
+require_once __DIR__ . "/src/Auth.php";
+$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
 $users = new \Art4\LegacyTodo\Users(getDb());
 $msg = "";
 $tmp = "login_tmp";
@@ -12,11 +13,7 @@ $uploadTmp = @$_FILES["x"]["name"];
 if ($_POST["login"]) {
     $u = $_POST["username"];
     $p = $_POST["password"];
-    $user = $users->authenticate($u, $p);
-    if ($user !== null) {
-        $_SESSION["user_id"] = $user["id"];
-        $_SESSION["username"] = $user["username"];
-        $_SESSION["role"] = $user["role"];
+    if ($auth->login($u, $p)) {
         header("Location: index.php");
         exit;
     }

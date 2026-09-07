@@ -20,12 +20,6 @@
       <code><![CDATA[$id]]></code>
     </TaintedTextWithQuotes>
   </file>
-  <file src="edittodo.php">
-    <TaintedHeader>
-      <code><![CDATA["Location: " . $next]]></code>
-      <code><![CDATA["Location: todo.php?id=" . $id]]></code>
-    </TaintedHeader>
-  </file>
   <file src="index.php">
     <TaintedHtml>
       <code><![CDATA[$_GET["q"]]]></code>
@@ -44,14 +38,13 @@
       <code><![CDATA[$_POST["username"]]]></code>
     </TaintedTextWithQuotes>
   </file>
-  <file src="src/Helpers.php">
+  <file src="src/Auth.php">
     <TaintedHeader>
       <code><![CDATA["Location: " . $url]]></code>
     </TaintedHeader>
   </file>
   <file src="todo.php">
     <TaintedHeader>
-      <code><![CDATA["Location: " . $next]]></code>
       <code><![CDATA["Location: todo.php?id=" . $id]]></code>
     </TaintedHeader>
     <TaintedHtml>

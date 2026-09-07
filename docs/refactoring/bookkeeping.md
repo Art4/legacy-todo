@@ -34,3 +34,5 @@
 - rector-code-quality
 - rector-phpunit-set (#113)
 - composer-audit (#153)
+- php-structural-scan (#171)
+- structural-scan (#171)
