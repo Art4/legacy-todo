@@ -14,6 +14,17 @@ Standard five-role vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, 
 
 Single-context layout: `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
 
+## Environment
+
+### No host installs — tools run in Docker
+
+Never install packages, PHP extensions, or other tooling on the host system (`apt-get install`, `pecl
+install`, `sudo` anything, etc.). This project's own tooling — PHPStan, Rector, Psalm, PHPUnit,
+Composer, and the app runtime itself — always runs inside Docker, matching `run.sh` and
+`.github/workflows/ci.yml`. If a tool isn't available on the host, run it the way CI does instead:
+`docker run --rm -v "$PWD":/app -w /app php:8.3-cli ...` (see `.github/workflows/ci.yml` for the exact
+command per tool) — never reach for the host's package manager to work around a missing extension.
+
 ## Continuous-refactoring suite
 
 Refactoring Notes: `docs/refactoring/` — the continuous-refactoring
