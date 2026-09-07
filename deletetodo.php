@@ -3,11 +3,10 @@ session_start();
 include_once __DIR__ . "/config.php";
 include_once __DIR__ . "/db.php";
 include_once __DIR__ . "/functions.php";
+require_once __DIR__ . "/src/Auth.php";
 require_once __DIR__ . "/src/Todos.php";
-if ($_SESSION["user_id"] == "") {
-    header("Location: login.php");
-    exit;
-}
+$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
+$auth->requireLogin();
 $id = $_GET["id"];
 $userId = $_SESSION["user_id"];
 $role = $_SESSION["role"];

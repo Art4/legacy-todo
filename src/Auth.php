@@ -88,4 +88,27 @@ class Auth
     {
         $this->session = [];
     }
+
+    /** @param string|null $next */
+    public function requireLogin($next = null)
+    {
+        if ($this->loggedIn()) {
+            return;
+        }
+
+        $target = "login.php";
+        if ($next != null && $next != "") {
+            $target = "login.php?next=" . $next;
+        }
+        header("Location: " . $target);
+        exit;
+    }
+
+    public function requireRole($role)
+    {
+        if (($this->session["role"] ?? null) != $role) {
+            echo "Keine Rechte";
+            exit;
+        }
+    }
 }

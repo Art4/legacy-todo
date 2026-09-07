@@ -4,13 +4,12 @@ include_once __DIR__ . "/config.php";
 include_once __DIR__ . "/db.php";
 session_start();
 include_once __DIR__ . "/functions.php";
+require_once __DIR__ . "/src/Auth.php";
 require_once __DIR__ . "/src/Todos.php";
 $todosRepo = new \Art4\LegacyTodo\Todos(getDb());
 $id = $_GET["id"];
-if ($_SESSION["user_id"] == null) {
-    header("Location: login.php");
-    exit;
-}
+$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
+$auth->requireLogin();
 $next = $_GET["next"];
 $tmp_T06 = "edittodo_noise";
 $data2 = "edittodo_wurst";

@@ -115,4 +115,64 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->assertFalse($this->auth->loggedIn());
         $this->assertSame([], $this->session);
     }
+
+    public function testRequireLoginDoesNothingWhenLoggedIn(): void
+    {
+        $this->session["user_id"] = 1;
+
+        $this->auth->requireLogin();
+
+        $this->assertTrue($this->auth->loggedIn());
+    }
+
+    public function testRequireLoginRedirectsToLoginPhp(): void
+    {
+        $output = $this->runCli('$auth->requireLogin();', [], []);
+
+        $this->assertSame("Location: login.php", $output);
+    }
+
+    public function testRequireLoginRedirectsToLoginPhpWithNext(): void
+    {
+        $output = $this->runCli('$auth->requireLogin("addtodo.php");', [], []);
+
+        $this->assertSame("Location: login.php?next=addtodo.php", $output);
+    }
+
+    public function testRequireRoleAllowsAdmin(): void
+    {
+        $this->session["role"] = "admin";
+
+        $this->auth->requireRole("admin");
+
+        $this->assertTrue(true);
+    }
+
+    public function testRequireRoleStopsNonAdminPage(): void
+    {
+        $this->session["user_id"] = 1;
+        $this->session["role"] = "user";
+
+        $output = $this->runCli('$auth->requireRole("admin");', $this->session, []);
+
+        $this->assertSame("Keine Rechte", $output);
+    }
+
+    private function runCli(string $body, array $session, array $get): string
+    {
+        $script = 'namespace Art4\\LegacyTodo { function header($line) { echo $line; } }'
+            . 'namespace {'
+            . 'require ' . var_export(__DIR__ . '/../../vendor/autoload.php', true) . ';'
+            . '$_SESSION = ' . var_export($session, true) . ';'
+            . '$_GET = ' . var_export($get, true) . ';'
+            . '$auth = new Art4\\LegacyTodo\\Auth(new PDO("sqlite::memory:"), $_SESSION);'
+            . $body
+            . '}';
+
+        exec(PHP_BINARY . ' -r ' . escapeshellarg($script), $lines, $code);
+
+        $this->assertSame(0, $code, implode("\n", $lines));
+
+        return trim(implode("", $lines));
+    }
 }

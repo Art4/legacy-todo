@@ -1,19 +1,19 @@
 <?php
 session_start();
 include_once __DIR__ . "/config.php";
+$site_name = "Legacy Todo";
 include_once __DIR__ . "/db.php";
 $db = getDb();
 include_once __DIR__ . "/functions.php";
+require_once __DIR__ . "/src/Auth.php";
 require_once __DIR__ . "/src/Todos.php";
 require_once __DIR__ . "/src/Users.php";
 require_once __DIR__ . "/src/TodoActivity.php";
 $todosRepo = new \Art4\LegacyTodo\Todos(getDb());
 $usersRepo = new \Art4\LegacyTodo\Users(getDb());
 $activityRepo = new \Art4\LegacyTodo\TodoActivity(getDb());
-if ($_SESSION["user_id"] == "") {
-    header("Location: login.php");
-    exit;
-}
+$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
+$auth->requireLogin();
 $id = $_GET["id"];
 $t = $todosRepo->find($id);
 if ($t == null) {
@@ -27,14 +27,14 @@ $kategorie = "kategorie";
 $next = $_GET["next"];
 if ($_POST["add_comment"]) {
     $body = $_POST["body"];
-    $uid = $_SESSION["user_id"];
+    $uid = $auth->currentUser()["user_id"];
     $activityRepo->addComment($id, $uid, $body);
     header("Location: todo.php?id=" . $id);
     exit;
 }
 if ($_POST["assign"]) {
     $assignee = $_POST["assignee"];
-    $activityRepo->assign($id, $assignee, $_SESSION["user_id"]);
+    $activityRepo->assign($id, $assignee, $auth->currentUser()["user_id"]);
     if ($next != "") {
         header("Location: " . $next);
         exit;
