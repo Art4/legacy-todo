@@ -70,4 +70,49 @@ final class AuthTest extends PHPUnit\Framework\TestCase
 
         $this->assertTrue($this->auth->loggedIn());
     }
+
+    private function seedUser(array $row): int
+    {
+        $this->pdo->exec(
+            "INSERT INTO users (username,password,role,email,created_at) VALUES ("
+            . "'" . $row["username"] . "','" . md5($row["password"]) . "','" . $row["role"] . "','" . $row["email"] . "','2026-01-01')",
+        );
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    public function testLoginWritesSessionOnSuccess(): void
+    {
+        $id = $this->seedUser(["username" => "alice", "password" => "secret", "role" => "user", "email" => "alice@example.com"]);
+
+        $loggedIn = $this->auth->login("alice", "secret");
+
+        $this->assertTrue($loggedIn);
+        $this->assertSame($id, $this->session["user_id"]);
+        $this->assertSame("alice", $this->session["username"]);
+        $this->assertSame("user", $this->session["role"]);
+    }
+
+    public function testLoginReturnsFalseAndLeavesSessionUntouchedOnFailure(): void
+    {
+        $this->seedUser(["username" => "alice", "password" => "secret", "role" => "user", "email" => "alice@example.com"]);
+        $this->session["keep"] = "value";
+
+        $this->assertFalse($this->auth->login("alice", "wrong"));
+        $this->assertFalse($this->auth->login("ghost", "secret"));
+
+        $this->assertSame(["keep" => "value"], $this->session);
+    }
+
+    public function testLogoutClearsSession(): void
+    {
+        $this->session["user_id"] = 1;
+        $this->session["username"] = "alice";
+        $this->session["role"] = "user";
+
+        $this->auth->logout();
+
+        $this->assertFalse($this->auth->loggedIn());
+        $this->assertSame([], $this->session);
+    }
 }
