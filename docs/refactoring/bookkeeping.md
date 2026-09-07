@@ -5,7 +5,7 @@
 **Focus areas:** none
 
 **Pending candidates:**
-- #175
+- none
 
 **Fulfilled nodes:**
 - git
