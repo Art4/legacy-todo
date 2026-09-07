@@ -1,11 +1,8 @@
 <?php
-session_start();
-include_once __DIR__ . "/config.php";
-$site_name = "Legacy Todo";
-include_once __DIR__ . "/db.php";
-require_once __DIR__ . "/src/Auth.php";
-$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
-$users = new \Art4\LegacyTodo\Users(getDb());
+require_once __DIR__ . "/src/Bootstrap.php";
+$app = \Art4\LegacyTodo\Bootstrap::start();
+$auth = $app->auth();
+$users = $app->users();
 $msg = "";
 $tmp = "login_tmp";
 $magic = 42;
@@ -33,7 +30,7 @@ if ($_POST["register"]) {
     }
 }
 ?>
-<html><head><title>Login - <?php echo $site_name; ?></title></head>
+<html><head><title>Login - <?php echo $app->siteName(); ?></title></head>
 <body>
 <h1>Login</h1>
 <?php if ($msg != "") {

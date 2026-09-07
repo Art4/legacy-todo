@@ -2,6 +2,12 @@
 
 namespace Art4\LegacyTodo;
 
+require_once __DIR__ . "/Auth.php";
+require_once __DIR__ . "/Todos.php";
+require_once __DIR__ . "/Users.php";
+require_once __DIR__ . "/TodoActivity.php";
+require_once __DIR__ . "/Taxonomy.php";
+
 class Bootstrap
 {
     /** @var \PDO */
@@ -9,6 +15,9 @@ class Bootstrap
 
     /** @var array<string, mixed> */
     private $session;
+
+    /** @var string */
+    private $siteName;
 
     /** @var Auth|null */
     private $auth;
@@ -25,9 +34,11 @@ class Bootstrap
     /** @var Taxonomy|null */
     private $taxonomy;
 
-    public function __construct(\PDO $pdo, &$session = null)
+    /** @param string|null $siteName */
+    public function __construct(\PDO $pdo, &$session = null, $siteName = "Legacy Todo")
     {
         $this->pdo = $pdo;
+        $this->siteName = $siteName;
         if ($session === null) {
             $this->session = &$_SESSION;
         } else {
@@ -40,6 +51,8 @@ class Bootstrap
      */
     public static function start()
     {
+        global $db, $cfg, $site_name;
+
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -47,7 +60,13 @@ class Bootstrap
         require_once __DIR__ . "/../db.php";
         require_once __DIR__ . "/../functions.php";
 
-        return new self(getDb(), $_SESSION);
+        return new self(getDb(), $_SESSION, $site_name);
+    }
+
+    /** @return string */
+    public function siteName()
+    {
+        return $this->siteName;
     }
 
     public function auth(): Auth

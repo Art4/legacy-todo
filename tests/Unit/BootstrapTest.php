@@ -11,9 +11,6 @@ use Art4\LegacyTodo\Users;
 
 final class BootstrapTest extends PHPUnit\Framework\TestCase
 {
-    /** @var \PDO */
-    private $pdo;
-
     /** @var array<string, mixed> */
     private $session;
 
@@ -22,10 +19,15 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
 
     protected function setUp(): void
     {
-        $this->pdo = new \PDO('sqlite::memory:');
-        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $pdo = new \PDO('sqlite::memory:');
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $this->session = [];
-        $this->bootstrap = new Bootstrap($this->pdo, $this->session);
+        $this->bootstrap = new Bootstrap($pdo, $this->session);
+    }
+
+    public function testSiteNameReturnsConfiguredSiteName(): void
+    {
+        $this->assertSame('Legacy Todo', $this->bootstrap->siteName());
     }
 
     public function testAuthReturnsAuthModule(): void

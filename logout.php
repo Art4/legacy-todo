@@ -1,11 +1,8 @@
 <?php
 
-session_start();
-include_once __DIR__ . "/config.php";
-include_once __DIR__ . "/db.php";
-require_once __DIR__ . "/src/Auth.php";
-$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
-$auth->logout();
+require_once __DIR__ . "/src/Bootstrap.php";
+$app = \Art4\LegacyTodo\Bootstrap::start();
+$app->auth()->logout();
 session_destroy();
 header("Location: login.php");
 exit;
