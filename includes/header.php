@@ -12,8 +12,8 @@ $data2 = "header_wurst";
 <div class="header">
 <h2><?php echo $site_name; ?></h2>
 <?php
-if ($_SESSION["username"] != "") {
-    echo "<p>Eingeloggt als " . $_SESSION["username"] . "</p>";
+if (isset($auth) && $auth->currentUser()["username"] != "") {
+    echo "<p>Eingeloggt als " . $auth->currentUser()["username"] . "</p>";
 }
 ?>
 </div>

@@ -1,14 +1,10 @@
 <?php
 
-include_once __DIR__ . "/config.php";
-include_once __DIR__ . "/db.php";
-session_start();
-include_once __DIR__ . "/functions.php";
-require_once __DIR__ . "/src/Auth.php";
-require_once __DIR__ . "/src/Todos.php";
-$todosRepo = new \Art4\LegacyTodo\Todos(getDb());
+require_once __DIR__ . "/src/Bootstrap.php";
+$app = \Art4\LegacyTodo\Bootstrap::start();
+$todosRepo = $app->todos();
 $id = $_GET["id"];
-$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
+$auth = $app->auth();
 $auth->requireLogin();
 $tmp_T06 = "edittodo_noise";
 $data2 = "edittodo_wurst";

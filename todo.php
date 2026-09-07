@@ -1,18 +1,10 @@
 <?php
-session_start();
-include_once __DIR__ . "/config.php";
-$site_name = "Legacy Todo";
-include_once __DIR__ . "/db.php";
-$db = getDb();
-include_once __DIR__ . "/functions.php";
-require_once __DIR__ . "/src/Auth.php";
-require_once __DIR__ . "/src/Todos.php";
-require_once __DIR__ . "/src/Users.php";
-require_once __DIR__ . "/src/TodoActivity.php";
-$todosRepo = new \Art4\LegacyTodo\Todos(getDb());
-$usersRepo = new \Art4\LegacyTodo\Users(getDb());
-$activityRepo = new \Art4\LegacyTodo\TodoActivity(getDb());
-$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
+require_once __DIR__ . "/src/Bootstrap.php";
+$app = \Art4\LegacyTodo\Bootstrap::start();
+$todosRepo = $app->todos();
+$usersRepo = $app->users();
+$activityRepo = $app->todoActivity();
+$auth = $app->auth();
 $auth->requireLogin();
 $id = $_GET["id"];
 $t = $todosRepo->find($id);

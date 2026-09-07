@@ -1,15 +1,9 @@
 <?php
-session_start();
-include_once __DIR__ . "/config.php";
-$site_name = "Legacy Todo";
-include_once __DIR__ . "/db.php";
-include_once __DIR__ . "/functions.php";
-require_once __DIR__ . "/src/Auth.php";
-require_once __DIR__ . "/src/Users.php";
-require_once __DIR__ . "/src/Taxonomy.php";
-$usersRepo = new \Art4\LegacyTodo\Users(getDb());
-$taxonomyRepo = new \Art4\LegacyTodo\Taxonomy(getDb());
-$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
+require_once __DIR__ . "/src/Bootstrap.php";
+$app = \Art4\LegacyTodo\Bootstrap::start();
+$usersRepo = $app->users();
+$taxonomyRepo = $app->taxonomy();
+$auth = $app->auth();
 $auth->requireLogin();
 $auth->requireRole("admin");
 $tmp = "admin_tmp";
@@ -47,7 +41,7 @@ if ($_POST["add_tag"]) {
     $taxonomyRepo->createTag($tag);
 }
 ?>
-<html><head><title>Admin - <?php echo $site_name; ?></title></head>
+<html><head><title>Admin - <?php echo $app->siteName(); ?></title></head>
 <body>
 <h1>Admin</h1>
 <h2>Benutzer</h2>

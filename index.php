@@ -1,10 +1,7 @@
 <?php
-session_start();
-include_once __DIR__ . "/config.php";
-$site_name = "Legacy Todo";
-include_once __DIR__ . "/db.php";
-require_once __DIR__ . "/src/Auth.php";
-$auth = new \Art4\LegacyTodo\Auth(getDb(), $_SESSION);
+require_once __DIR__ . "/src/Bootstrap.php";
+$app = \Art4\LegacyTodo\Bootstrap::start();
+$auth = $app->auth();
 $auth->requireLogin();
 $x = $_GET["x"];
 $tmp = $auth->currentUser()["username"];
@@ -13,10 +10,7 @@ if ($x == 42) {
     echo "<!-- magic -->";
 }
 $userId = $auth->currentUser()["user_id"];
-include_once __DIR__ . "/functions.php";
-require_once __DIR__ . "/src/Taxonomy.php";
-require_once __DIR__ . "/src/Todos.php";
-$todosRepo = new \Art4\LegacyTodo\Todos(getDb());
+$todosRepo = $app->todos();
 $q = $_GET["q"];
 $status = $_GET["status"];
 $prio = $_GET["priority"];
@@ -47,7 +41,7 @@ if ($_GET["export"] == "csv") {
 }
 include_once __DIR__ . "/includes/header.php";
 ?>
-<html><head><title><?php echo $site_name; ?></title></head>
+<html><head><title><?php echo $app->siteName(); ?></title></head>
 <body>
 <h1>Dashboard</h1>
 <p>Offene: <?php echo $openCnt; ?> | Erledigte: <?php echo $doneCnt; ?> | Überfällig: <?php echo $overdue; ?></p>
