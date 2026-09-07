@@ -8,7 +8,7 @@
 - none
 
 **Skip streak:**
-- php-minimal-version: 2
+- php-minimal-version: 3
 
 **Fulfilled nodes:**
 - git
@@ -22,7 +22,13 @@
 - phpunit (#92)
 - test-runner-if-missing
 - static-code-analyzer
+- psalm
 - phpstan-level-0
+- phpstan-level-1
+- phpstan-level-2 (#134)
+- phpstan-level-3 (#136)
+- phpstan-level-4 (#138)
+- phpstan-level-5 (#140)
 - phpstan-deprecation-rules (#144)
 - psalm-taint-analysis (#150)
 - rector-dead-code
