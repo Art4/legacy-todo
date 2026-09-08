@@ -8,7 +8,8 @@
 - none
 
 **Skip streak:**
-- phpmd: 1
+- phpmd: 2
+- secret-detection: 1
 
 **Fulfilled nodes:**
 - git
@@ -17,7 +18,6 @@
 - composer (#75)
 - psr-4 (#116)
 - ci-runner (#78)
-- secret-detection
 - editorconfig (#83)
 - php-cs-fixer (#88)
 - phpunit (#92)
