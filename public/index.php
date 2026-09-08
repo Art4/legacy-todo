@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/src/Bootstrap.php";
+require_once __DIR__ . "/../src/Bootstrap.php";
 $app = \Art4\LegacyTodo\Bootstrap::start();
 $auth = $app->auth();
 $auth->requireLogin();
@@ -13,7 +13,7 @@ if ($_GET["export"] == "csv") {
     exit;
 }
 $overview = $dashboard->overview($_GET);
-include_once __DIR__ . "/includes/header.php";
+include_once __DIR__ . "/../includes/header.php";
 ?>
 <html><head><title><?php echo $app->siteName(); ?></title></head>
 <body>
@@ -39,5 +39,5 @@ if (count($todos) === 0) {
 }
 ?>
 <a href="addtodo.php">Neues Todo</a> | <a href="admin.php">Admin</a> | <a href="logout.php">Logout</a> | <a href="index.php?export=csv">CSV Export</a>
-<?php include_once __DIR__ . "/includes/footer.php"; ?>
+<?php include_once __DIR__ . "/../includes/footer.php"; ?>
 </body></html>

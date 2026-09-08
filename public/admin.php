@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/src/Bootstrap.php";
+require_once __DIR__ . "/../src/Bootstrap.php";
 $app = \Art4\LegacyTodo\Bootstrap::start();
 $usersRepo = $app->users();
 $taxonomyRepo = $app->taxonomy();

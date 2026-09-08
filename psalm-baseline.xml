@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="6.16.1@f1f5de594dc76faf8784e02d3dc4716c91c6f6ac">
-  <file src="addtodo.php">
+  <file src="public/addtodo.php">
     <TaintedHtml>
       <code><![CDATA[$_POST["due_date"]]]></code>
       <code><![CDATA[$_POST["text"]]]></code>
@@ -12,7 +12,7 @@
       <code><![CDATA[$_POST["title"]]]></code>
     </TaintedTextWithQuotes>
   </file>
-  <file src="deletetodo.php">
+  <file src="public/deletetodo.php">
     <TaintedHtml>
       <code><![CDATA[$id]]></code>
     </TaintedHtml>
@@ -20,7 +20,7 @@
       <code><![CDATA[$id]]></code>
     </TaintedTextWithQuotes>
   </file>
-  <file src="index.php">
+  <file src="public/index.php">
     <TaintedHtml>
       <code><![CDATA[$_GET["q"]]]></code>
     </TaintedHtml>
@@ -28,7 +28,7 @@
       <code><![CDATA[$_GET["q"]]]></code>
     </TaintedTextWithQuotes>
   </file>
-  <file src="login.php">
+  <file src="public/login.php">
     <TaintedHtml>
       <code><![CDATA[$_POST["email"]]]></code>
       <code><![CDATA[$_POST["username"]]]></code>
@@ -43,7 +43,7 @@
       <code><![CDATA["Location: " . $url]]></code>
     </TaintedHeader>
   </file>
-  <file src="todo.php">
+  <file src="public/todo.php">
     <TaintedHeader>
       <code><![CDATA["Location: todo.php?id=" . $id]]></code>
     </TaintedHeader>
