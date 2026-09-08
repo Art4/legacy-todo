@@ -7,6 +7,9 @@
 **Pending candidates:**
 - none
 
+**Skip streak:**
+- phpmd: 1
+
 **Fulfilled nodes:**
 - git
 - loop-config (#72)
@@ -14,6 +17,7 @@
 - composer (#75)
 - psr-4 (#116)
 - ci-runner (#78)
+- secret-detection
 - editorconfig (#83)
 - php-cs-fixer (#88)
 - phpunit (#92)
