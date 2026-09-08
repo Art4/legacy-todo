@@ -7,18 +7,18 @@ use Rector\Set\ValueObject\SetList;
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__ . '/addtodo.php',
-        __DIR__ . '/admin.php',
+        __DIR__ . '/public/addtodo.php',
+        __DIR__ . '/public/admin.php',
         __DIR__ . '/config.php',
         __DIR__ . '/db.php',
-        __DIR__ . '/deletetodo.php',
-        __DIR__ . '/edittodo.php',
+        __DIR__ . '/public/deletetodo.php',
+        __DIR__ . '/public/edittodo.php',
         __DIR__ . '/functions.php',
         __DIR__ . '/includes',
-        __DIR__ . '/index.php',
-        __DIR__ . '/login.php',
-        __DIR__ . '/logout.php',
-        __DIR__ . '/todo.php',
+        __DIR__ . '/public/index.php',
+        __DIR__ . '/public/login.php',
+        __DIR__ . '/public/logout.php',
+        __DIR__ . '/public/todo.php',
         __DIR__ . '/tests',
     ])
     ->withTypeCoverageLevel(0)

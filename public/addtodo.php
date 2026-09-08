@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/src/Bootstrap.php";
+require_once __DIR__ . "/../src/Bootstrap.php";
 $app = \Art4\LegacyTodo\Bootstrap::start();
 $todosRepo = $app->todos();
 $taxonomyRepo = $app->taxonomy();
@@ -18,7 +18,7 @@ if ($_POST["save"]) {
     $userId = $auth->currentUser()["user_id"];
     $file = $_FILES["upload"]["name"];
     if ($file != "") {
-        $dest = "uploads/" . $file;
+        $dest = __DIR__ . "/uploads/" . $file;
         @move_uploaded_file($_FILES["upload"]["tmp_name"], $dest);
         echo "Upload: " . $file;
     }

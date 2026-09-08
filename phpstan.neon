@@ -5,19 +5,19 @@ includes:
 parameters:
     level: 5
     paths:
-        - addtodo.php
-        - admin.php
+        - public/addtodo.php
+        - public/admin.php
         - config.php
         - db.php
-        - deletetodo.php
-        - edittodo.php
+        - public/deletetodo.php
+        - public/edittodo.php
         - functions.php
         - src
         - includes
-        - index.php
-        - login.php
-        - logout.php
+        - public/index.php
+        - public/login.php
+        - public/logout.php
         - old
-        - todo.php
+        - public/todo.php
     excludePaths:
         - vendor

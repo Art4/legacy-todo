@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . "/src/Bootstrap.php";
+require_once __DIR__ . "/../src/Bootstrap.php";
 $app = \Art4\LegacyTodo\Bootstrap::start();
 $todosRepo = $app->todos();
 $id = $_GET["id"];

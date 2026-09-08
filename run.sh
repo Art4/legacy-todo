@@ -16,8 +16,11 @@ case "$cmd" in
       echo "Container $CONTAINER existiert bereits – starte neu..."
       docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
     fi
-    echo "Starte $IMAGE auf Port $PORT -> $SRC:/var/www/html"
-    docker run -d --name "$CONTAINER" -p "${PORT}:80" -v "${SRC}:/var/www/html" "$IMAGE" >/dev/null
+    echo "Starte $IMAGE auf Port $PORT -> $SRC:/var/www/html (Webroot: public/)"
+    docker run -d --name "$CONTAINER" -p "${PORT}:80" \
+      -v "${SRC}:/var/www/html" \
+      -v "${SRC}/docker/000-default.conf:/etc/apache2/sites-available/000-default.conf" \
+      "$IMAGE" >/dev/null
     echo "-> http://localhost:${PORT}/"
     docker ps --filter "name=${CONTAINER}"
     ;;
