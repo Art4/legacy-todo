@@ -15,13 +15,17 @@ class TodoActivity
     /** @return array<int, array<string, mixed>> */
     public function commentsForTodo($todoId)
     {
-        return $this->pdo->query("SELECT comments.*, users.username FROM comments JOIN users ON users.id=comments.user_id WHERE comments.todo_id=" . $todoId)->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("SELECT comments.*, users.username FROM comments JOIN users ON users.id=comments.user_id WHERE comments.todo_id=?");
+        $stmt->execute([(int) $todoId]);
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /** @return bool */
     public function addComment($todoId, $userId, $body)
     {
-        $this->pdo->exec("INSERT INTO comments (todo_id,user_id,body,created_at) VALUES (" . $todoId . "," . $userId . ",'" . $body . "','" . date("Y-m-d H:i:s") . "')");
+        $stmt = $this->pdo->prepare("INSERT INTO comments (todo_id,user_id,body,created_at) VALUES (?,?,?,?)");
+        $stmt->execute([(int) $todoId, (int) $userId, $body, date("Y-m-d H:i:s")]);
 
         return true;
     }
@@ -29,13 +33,17 @@ class TodoActivity
     /** @return array<int, array<string, mixed>> */
     public function assignmentsForTodo($todoId)
     {
-        return $this->pdo->query("SELECT assignments.*, users.username FROM assignments JOIN users ON users.id=assignments.user_id WHERE assignments.todo_id=" . $todoId)->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("SELECT assignments.*, users.username FROM assignments JOIN users ON users.id=assignments.user_id WHERE assignments.todo_id=?");
+        $stmt->execute([(int) $todoId]);
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /** @return bool */
     public function assign($todoId, $userId, $assignedBy)
     {
-        $this->pdo->exec("INSERT INTO assignments (todo_id,user_id,assigned_by) VALUES (" . $todoId . "," . $userId . "," . $assignedBy . ")");
+        $stmt = $this->pdo->prepare("INSERT INTO assignments (todo_id,user_id,assigned_by) VALUES (?,?,?)");
+        $stmt->execute([(int) $todoId, (int) $userId, (int) $assignedBy]);
 
         return true;
     }
@@ -43,7 +51,8 @@ class TodoActivity
     /** @return bool */
     public function removeComment($commentId)
     {
-        $this->pdo->exec("DELETE FROM comments WHERE id=" . $commentId);
+        $stmt = $this->pdo->prepare("DELETE FROM comments WHERE id=?");
+        $stmt->execute([(int) $commentId]);
 
         return true;
     }

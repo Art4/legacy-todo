@@ -36,17 +36,23 @@ class Todos
     public function listFiltered($status, $prio, $due)
     {
         $sql = "SELECT * FROM todos WHERE archived=0";
-        if ($status != "") {
-            $sql .= " AND status='" . $status . "'";
+        $params = [];
+        if ($status !== "") {
+            $sql .= " AND status=?";
+            $params[] = $status;
         }
-        if ($prio != "") {
-            $sql .= " AND priority=" . $prio;
+        if ($prio !== "") {
+            $sql .= " AND priority=?";
+            $params[] = (int) $prio;
         }
-        if ($due != "") {
-            $sql .= " AND due_date<'" . $due . "'";
+        if ($due !== "") {
+            $sql .= " AND due_date<?";
+            $params[] = $due;
         }
         $sql .= " ORDER BY status ASC, due_date ASC";
-        $rows = $this->pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         return $this->decorate($rows);
     }
@@ -77,15 +83,18 @@ class Todos
     /** @return array<int, array<string, mixed>> */
     public function search($q)
     {
-        $sql = "SELECT * FROM todos WHERE LOWER(title) LIKE LOWER('%" . $q . "%') AND archived=0 ORDER BY status ASC, due_date ASC";
+        $stmt = $this->pdo->prepare("SELECT * FROM todos WHERE LOWER(title) LIKE LOWER(?) AND archived=0 ORDER BY status ASC, due_date ASC");
+        $stmt->execute(["%" . $q . "%"]);
 
-        return $this->pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /** @return array<string, mixed>|null */
     public function find($id)
     {
-        $row = $this->pdo->query("SELECT * FROM todos WHERE id=" . $id)->fetch(\PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("SELECT * FROM todos WHERE id=?");
+        $stmt->execute([(int) $id]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($row == false) {
             return null;
         }
@@ -96,7 +105,8 @@ class Todos
     /** @return bool */
     public function archive($id)
     {
-        $this->pdo->exec("UPDATE todos SET archived=1 WHERE id=" . $id);
+        $stmt = $this->pdo->prepare("UPDATE todos SET archived=1 WHERE id=?");
+        $stmt->execute([(int) $id]);
 
         return true;
     }
@@ -107,9 +117,10 @@ class Todos
         if ($title == "") {
             return false;
         }
-        $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at,data2) VALUES (" . $userId . ",'" . $title . "','" . $text . "','open'," . $priority . ",'" . $due . "',0,'" . date("Y-m-d") . "','wurst')";
+        $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at,data2) VALUES (?,?,?,'open',?,?,0,?,?)";
         try {
-            $this->pdo->exec($sql);
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([(int) $userId, $title, $text, (int) $priority, $due, date("Y-m-d"), "wurst"]);
         } catch (\Exception $e) {
             return false;
         }
@@ -123,8 +134,9 @@ class Todos
         if ($title == "") {
             return false;
         }
-        $sql = "UPDATE todos SET title='" . $title . "', text='" . $text . "', priority='" . $priority . "', status='" . $status . "' WHERE id=" . $id;
-        $this->pdo->exec($sql);
+        $sql = "UPDATE todos SET title=?, text=?, priority=?, status=? WHERE id=?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$title, $text, $priority, $status, (int) $id]);
 
         return true;
     }
@@ -132,9 +144,10 @@ class Todos
     /** @return string */
     public function exportCsv($userId)
     {
-        $r = $this->pdo->query("SELECT * FROM todos WHERE user_id=" . $userId . " ORDER BY status ASC, due_date ASC");
+        $stmt = $this->pdo->prepare("SELECT * FROM todos WHERE user_id=? ORDER BY status ASC, due_date ASC");
+        $stmt->execute([(int) $userId]);
         $out = "id,title,status,priority,due_date,category,owner\n";
-        while ($row = $r->fetch(\PDO::FETCH_ASSOC)) {
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $out .= $row["id"] . "," . $row["title"] . "," . $row["status"] . "," . $row["priority"] . "," . $row["due_date"] . "," . $row["category_id"] . "," . $row["user_id"] . "\n";
         }
 

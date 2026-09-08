@@ -91,6 +91,25 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertSame([], $rows[$categorized]["tags"]);
     }
 
+    public function testListFilteredRejectsInjectedStatus(): void
+    {
+        $this->seedTodo(["user_id" => 1, "title" => "Eins", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-12-31", "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Zwei", "text" => "", "status" => "done", "priority" => 2, "due_date" => "2026-01-01", "archived" => 0]);
+
+        $rows = $this->todos->listFiltered("open' OR 1=1--", "", "");
+
+        $this->assertSame([], $rows);
+    }
+
+    public function testSearchRejectsInjectedQuery(): void
+    {
+        $this->seedTodo(["user_id" => 1, "title" => "Eins", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-12-31", "archived" => 0]);
+
+        $rows = $this->todos->search("' OR 1=1--");
+
+        $this->assertSame([], $rows);
+    }
+
     public function testSearchMatchesCaseInsensitiveOnTitleIgnoringArchived(): void
     {
         $this->seedTodo(["user_id" => 1, "title" => "Erstes Todo", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-12-31", "archived" => 0]);

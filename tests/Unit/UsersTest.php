@@ -75,6 +75,22 @@ final class UsersTest extends PHPUnit\Framework\TestCase
         $this->assertNull($this->users->authenticate("ghost", "pw"));
     }
 
+    public function testAuthenticateRejectsInjectedUsername(): void
+    {
+        $this->seedUser(["username" => "admin", "password" => "pw", "role" => "admin", "email" => "admin@example.com"]);
+
+        $this->assertNull($this->users->authenticate("admin' OR '1'='1", "x"));
+    }
+
+    public function testRegisterRejectsInjectedUsername(): void
+    {
+        $result = $this->users->register("a'--", "pw", "e@e.com");
+
+        $this->assertTrue($result);
+        $row = $this->pdo->query("SELECT * FROM users")->fetch(\PDO::FETCH_ASSOC);
+        $this->assertSame("a'--", $row["username"]);
+    }
+
     public function testRegisterInsertsUserWithUserRole(): void
     {
         $result = $this->users->register("dave", "pw123", "dave@example.com");
