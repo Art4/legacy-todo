@@ -21,8 +21,8 @@ The single module (`Art4\LegacyTodo\Bootstrap`) that owns how a page starts — 
 _Avoid_: per-page `session_start()`, per-page `include_once` of `config.php` / `db.php` / `functions.php`, per-page module construction
 
 **Dashboard**:
-The index page's overview of the active To-dos: total/open/done/overdue counts plus the active list, sorted open-first and then by due date.
-_Avoid_: —
+The single module (`Art4\LegacyTodo\Dashboard`) that owns the index page's overview composition — it picks which list answers the request (search wins over the `status`/`priority`/`due` filters; otherwise filtered; otherwise the active list) via `overview(array $query)`, reads the total/open/done/overdue counts, and produces the CSV export body. Depends only on `Todos`; pages pass the request query and render.
+_Avoid_: page-local filter precedence, per-page stats/list reads
 
 **Owner**:
 The User a Todo belongs to. The Owner or an Administrator may edit or archive a Todo; anyone else is refused permission.
