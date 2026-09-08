@@ -51,4 +51,60 @@ class Page
             . "</div>\n"
             . "</body></html>\n";
     }
+
+    /**
+     * @param array<string, mixed> $post
+     * @return string
+     */
+    public function login(array $post)
+    {
+        $auth = $this->app->auth();
+        $users = $this->app->users();
+        $out = "";
+        $msg = "";
+        if (!empty($post["login"])) {
+            $u = $post["username"] ?? "";
+            $p = $post["password"] ?? "";
+            if ($auth->login($u, $p)) {
+                header("Location: index.php");
+                exit;
+            }
+            $msg = "Login failed";
+            $out .= $msg;
+        }
+        if (!empty($post["register"])) {
+            $u = $post["username"] ?? "";
+            $p = $post["password"] ?? "";
+            $email = $post["email"] ?? "";
+            $r = $users->register($u, $p, $email);
+            if ($r == true) {
+                $msg = "Registriert";
+            } else {
+                $msg = "Fehler: " . $r;
+                $out .= $msg;
+            }
+        }
+        $siteName = $this->text($this->app->siteName());
+        $out .= "<html><head><title>Login - " . $siteName . "</title></head>\n";
+        $out .= "<body>\n";
+        $out .= "<h1>Login</h1>\n";
+        if ($msg != "") {
+            $out .= "<p>" . $this->text($msg) . "</p>\n";
+        }
+        $out .= "<form method='post'>\n";
+        $out .= "<input name='username' placeholder='Username' value='" . $this->attr($post["username"] ?? "") . "'>\n";
+        $out .= "<input name='password' type='password' placeholder='Password'>\n";
+        $out .= "<input type='submit' name='login' value='Login'>\n";
+        $out .= "</form>\n";
+        $out .= "<h2>Registrieren</h2>\n";
+        $out .= "<form method=\"post\">\n";
+        $out .= "<input name=\"username\" placeholder=\"Username\">\n";
+        $out .= "<input name=\"password\" type=\"password\" placeholder=\"Password\">\n";
+        $out .= "<input name=\"email\" placeholder=\"Email\" value=\"" . $this->attr($post["email"] ?? "") . "\">\n";
+        $out .= "<input type=\"submit\" name=\"register\" value=\"Registrieren\">\n";
+        $out .= "</form>\n";
+        $out .= "</body></html>\n";
+
+        return $out;
+    }
 }
