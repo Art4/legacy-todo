@@ -52,4 +52,25 @@ final class DashboardTest extends PHPUnit\Framework\TestCase
         $this->assertSame(["Erledigt", "Offen früh", "Offen spät"], array_column($overview["todos"], "title"));
         $this->assertSame(["c" => 3, "open" => 2, "done" => 1, "overdue" => 1], $overview["stats"]);
     }
+
+    public function testOverviewSearchWinsOverFiltersWhenQueryNonEmpty(): void
+    {
+        $this->seedTodo(["user_id" => 1, "title" => "Diskussion", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Meeting fertig", "text" => "", "status" => "done", "priority" => 2, "due_date" => "2026-01-01", "archived" => 0]);
+
+        $overview = $this->dashboard()->overview(["q" => "meeting", "status" => "open", "priority" => "1", "due" => "2026-01-01"]);
+
+        $this->assertSame(["Meeting fertig"], array_column($overview["todos"], "title"));
+        $this->assertSame(["c" => 2, "open" => 1, "done" => 1, "overdue" => 0], $overview["stats"]);
+    }
+
+    public function testOverviewFiltersWhenQueryEmptyAndFiltersPresent(): void
+    {
+        $this->seedTodo(["user_id" => 1, "title" => "Offen", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->seedTodo(["user_id" => 2, "title" => "Erledigt", "text" => "", "status" => "done", "priority" => 1, "due_date" => "2026-01-02", "archived" => 0]);
+
+        $overview = $this->dashboard()->overview(["status" => "open"]);
+
+        $this->assertSame(["Offen"], array_column($overview["todos"], "title"));
+    }
 }

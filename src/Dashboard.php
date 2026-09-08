@@ -20,7 +20,18 @@ class Dashboard
      */
     public function overview(array $query)
     {
-        $todos = $this->todos->listActive();
+        $q = $query["q"] ?? "";
+        $status = $query["status"] ?? "";
+        $prio = $query["priority"] ?? "";
+        $due = $query["due"] ?? "";
+
+        if ($q != "") {
+            $todos = $this->todos->search($q);
+        } elseif ($status != "" || $prio != "" || $due != "") {
+            $todos = $this->todos->listFiltered($status, $prio, $due);
+        } else {
+            $todos = $this->todos->listActive();
+        }
         $stats = $this->todos->dashboardStats();
 
         return ["todos" => $todos, "stats" => $stats];
