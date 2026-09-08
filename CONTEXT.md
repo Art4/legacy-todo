@@ -17,8 +17,12 @@ The lifecycle action that flags a Todo as archived instead of deleting it. Archi
 _Avoid_: delete, löschen (as the storage operation)
 
 **Bootstrap**:
-The single module (`Art4\LegacyTodo\Bootstrap`) that owns how a page starts — `Bootstrap::start(array $config = [])` boots the session, timezone, and SQLite DB itself (connect, schema, seed, all idempotent on the default `database.sqlite`), then returns the page's module instances via `auth()`, `todos()`, `users()`, `todoActivity()`, `taxonomy()` and `siteName()`. Pages are thin: they call `Bootstrap::start()`, run their request logic through the modules, and render.
+The single module (`Art4\LegacyTodo\Bootstrap`) that owns how a page starts — `Bootstrap::start(array $config = [])` boots the session, timezone, and SQLite DB itself (connect, schema, seed, all idempotent on the default db_file anchored at the repo root, `dirname(__DIR__) . '/database.sqlite'`, deliberately outside the `public/` webroot), then returns the page's module instances via `auth()`, `todos()`, `users()`, `todoActivity()`, `taxonomy()` and `siteName()`. Pages are thin: they call `Bootstrap::start()`, run their request logic through the modules, and render.
 _Avoid_: per-page `session_start()`, per-page `include_once` of `config.php` / `db.php` / `functions.php`, per-page module construction
+
+**public/ webroot**:
+The only directory Apache serves (`public/`, per ADR-0003). It holds the 8 front controllers (`index.php`, `todo.php`, `admin.php`, `addtodo.php`, `edittodo.php`, `deletetodo.php`, `login.php`, `logout.php`) and `uploads/` (still reachable at `/uploads/...`). Everything internal — `src/`, `config.php`, `db.php`, `functions.php`, `includes/`, `vendor/`, tooling configs, and the SQLite database — stays at the repo root, outside the docroot, so it 404s instead of being downloadable.
+_Avoid_: serving the repo root as DocumentRoot; intra-docroot `.htaccess`-style protection as a substitute for the `public/` boundary
 
 **Dashboard**:
 The single module (`Art4\LegacyTodo\Dashboard`) that owns the index page's overview composition — it picks which list answers the request (search wins over the `status`/`priority`/`due` filters; otherwise filtered; otherwise the active list) via `overview(array $query)`, reads the total/open/done/overdue counts, and produces the CSV export body. Depends only on `Todos`; pages pass the request query and render.
