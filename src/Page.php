@@ -322,4 +322,86 @@ class Page
 
         return $out;
     }
+
+    /**
+     * @param array<string, mixed> $post
+     * @return string
+     */
+    public function admin(array $post)
+    {
+        $auth = $this->app->auth();
+        $auth->requireLogin();
+        $auth->requireRole("admin");
+        $users = $this->app->users();
+        $taxonomy = $this->app->taxonomy();
+        $out = "";
+        if (!empty($post["add_cat"])) {
+            $name = $post["kategorie"] ?? "";
+            if (($post["cat"] ?? "") != "") {
+                $name = $post["cat"];
+            }
+            if (($post["category"] ?? "") != "") {
+                $name = $post["category"];
+            }
+            if ($name == "") {
+                $out .= "Name fehlt";
+            } else {
+                $taxonomy->createCategory($name, $auth->currentUser()["user_id"]);
+            }
+        }
+        if (!empty($post["add_user"])) {
+            $u = $post["username"] ?? "";
+            $p = $post["password"] ?? "";
+            $role = $post["role"] ?? "";
+            $users->create($u, $p, $role);
+        }
+        if (!empty($post["add_tag"])) {
+            $taxonomy->createTag($post["tag"] ?? "");
+        }
+        $userRows = $users->listAll();
+        $cats = $taxonomy->listCategories();
+        $tags = $taxonomy->listTags();
+        $siteName = $this->text($this->app->siteName());
+        $out .= "<html><head><title>Admin - " . $siteName . "</title></head>\n";
+        $out .= "<body>\n";
+        $out .= "<h1>Admin</h1>\n";
+        $out .= "<h2>Benutzer</h2>\n";
+        $out .= "<ul>\n";
+        foreach ($userRows as $u) {
+            $out .= "<li>" . $this->text($u["username"]) . " - " . $this->text($u["role"]) . " - " . $this->text($u["email"]) . "</li>\n";
+        }
+        $out .= "</ul>\n";
+        $out .= "<form method=\"post\">\n";
+        $out .= "<input name=\"username\" placeholder=\"Username\">\n";
+        $out .= "<input name=\"password\" placeholder=\"Password\">\n";
+        $out .= "<select name=\"role\"><option value=\"user\">user</option><option value=\"admin\">admin</option></select>\n";
+        $out .= "<input type=\"submit\" name=\"add_user\" value=\"User anlegen\">\n";
+        $out .= "</form>\n";
+        $out .= "<h2>Kategorien</h2>\n";
+        $out .= "<ul>\n";
+        foreach ($cats as $c) {
+            $out .= "<li>" . $this->text($c["name"]) . "</li>\n";
+        }
+        $out .= "</ul>\n";
+        $out .= "<form method=\"post\">\n";
+        $out .= "<input name=\"kategorie\" placeholder=\"Kategorie (kategorie)\">\n";
+        $out .= "<input name=\"cat\" placeholder=\"cat\">\n";
+        $out .= "<input name=\"category\" placeholder=\"category\">\n";
+        $out .= "<input type=\"submit\" name=\"add_cat\" value=\"Kategorie\">\n";
+        $out .= "</form>\n";
+        $out .= "<h2>Tags</h2>\n";
+        $out .= "<ul>\n";
+        foreach ($tags as $t) {
+            $out .= "<li>" . $this->text($t["name"]) . "</li>\n";
+        }
+        $out .= "</ul>\n";
+        $out .= "<form method=\"post\">\n";
+        $out .= "<input name=\"tag\" placeholder=\"Tag\">\n";
+        $out .= "<input type=\"submit\" name=\"add_tag\" value=\"Tag\">\n";
+        $out .= "</form>\n";
+        $out .= "<a href=\"index.php\">Zurück</a>\n";
+        $out .= "</body></html>\n";
+
+        return $out;
+    }
 }

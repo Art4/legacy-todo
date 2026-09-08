@@ -345,6 +345,45 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->assertSame("Location: todo.php?id=1", $output);
     }
 
+    public function testAdminRendersUsersCategoriesAndTagsEscaped(): void
+    {
+        $this->pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (1,'<b>alice</b>','','admin','a@x.com','2026-01-01')");
+        $this->pdo->exec("INSERT INTO categories (id,name,user_id) VALUES (1,'<i>Allgemein</i>',1)");
+        $this->pdo->exec("INSERT INTO tags (id,name) VALUES (1,'<a>tag</a>')");
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->page->admin([]);
+
+        $this->assertStringContainsString('<h1>Admin</h1>', $output);
+        $this->assertStringContainsString('<li>&lt;b&gt;alice&lt;/b&gt; - admin - a@x.com</li>', $output);
+        $this->assertStringContainsString('<li>&lt;i&gt;Allgemein&lt;/i&gt;</li>', $output);
+        $this->assertStringContainsString('<li>&lt;a&gt;tag&lt;/a&gt;</li>', $output);
+    }
+
+    public function testAdminAddCategoryWithEmptyNameRendersNameFehlt(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->page->admin(["add_cat" => "Kategorie", "kategorie" => "", "cat" => "", "category" => ""]);
+
+        $this->assertStringContainsString('Name fehlt', $output);
+    }
+
+    public function testAdminAddTagCreatesTagAppearingInList(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->page->admin(["add_tag" => "Tag", "tag" => "neu"]);
+
+        $this->assertStringContainsString('<li>neu</li>', $output);
+    }
+
     private function runCli(string $body, array $session, array $get, array $post, string $setup = ''): string
     {
         $hash = md5('secret');
