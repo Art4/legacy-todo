@@ -197,6 +197,64 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->assertSame("Keine Berechtigung", $output);
     }
 
+    public function testTodoRendersDetailAndEscapesFields(): void
+    {
+        $this->pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (2,'carol','','user','c@x.com','2026-01-01')");
+        $tid = $this->seedTodo(["user_id" => 1, "title" => '<b>Titel</b>', "text" => 'Body & "quotes"', "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
+        $this->pdo->exec("INSERT INTO comments (todo_id,user_id,body,created_at) VALUES (" . $tid . ",2,'<script>x</script>','2026-01-12')");
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->page->todo($tid, [], [], []);
+
+        $this->assertStringContainsString('<h1>&lt;b&gt;Titel&lt;/b&gt;</h1>', $output);
+        $this->assertStringContainsString('<p>Body &amp; &quot;quotes&quot;</p>', $output);
+        $this->assertStringContainsString("<p>&lt;script&gt;x&lt;/script&gt; - User 2 <a href='todo.php?id=" . $tid . "&del_comment=", $output);
+        $this->assertStringContainsString('<small>carol</small>', $output);
+        $this->assertStringContainsString("<option value='2'>carol</option>", $output);
+    }
+
+    public function testTodoAddCommentRedirectsToTodo(): void
+    {
+        $output = $this->runCli(
+            'echo $page->todo((int) $get["id"], $get, $_POST, []);',
+            ["user_id" => 1, "username" => "alice", "role" => "admin"],
+            ["id" => 1],
+            ["add_comment" => "Kommentieren", "body" => "Neuer Kommentar"],
+            '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,1,\'Titel\',\'\',\'open\',0,\'2026-01-10\')");',
+        );
+
+        $this->assertSame("Location: todo.php?id=1", $output);
+    }
+
+    public function testTodoRemoveCommentDeletesItFromRender(): void
+    {
+        $this->pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (2,'carol','','user','c@x.com','2026-01-01')");
+        $tid = $this->seedTodo(["user_id" => 1, "title" => "Titel", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
+        $this->pdo->exec("INSERT INTO comments (id,todo_id,user_id,body,created_at) VALUES (77," . $tid . ",2,'weg damit','2026-01-12')");
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->page->todo($tid, ["del_comment" => 77], [], []);
+
+        $this->assertStringNotContainsString('weg damit', $output);
+        $this->assertStringNotContainsString('<h3>Kommentare</h3>', $output);
+    }
+
+    public function testTodoNotFoundPrintsNotFound(): void
+    {
+        $output = $this->runCli(
+            'echo $page->todo(9999, $get, $_POST, []);',
+            ["user_id" => 1, "username" => "alice", "role" => "admin"],
+            ["id" => 9999],
+            [],
+        );
+
+        $this->assertSame("Not found", $output);
+    }
+
     private function runCli(string $body, array $session, array $get, array $post, string $setup = ''): string
     {
         $hash = md5('secret');

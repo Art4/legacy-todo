@@ -134,4 +134,79 @@ class Page
 
         return $out;
     }
+
+    /**
+     * @param array<string, mixed> $get
+     * @param array<string, mixed> $post
+     * @param array<string, mixed> $files
+     * @return string|null
+     */
+    public function todo(int $id, array $get, array $post, array $files)
+    {
+        $auth = $this->app->auth();
+        $todos = $this->app->todos();
+        $users = $this->app->users();
+        $activity = $this->app->todoActivity();
+        $auth->requireLogin();
+        $t = $todos->find($id);
+        if ($t == null) {
+            echo "Not found";
+            exit;
+        }
+        if (!empty($post["add_comment"])) {
+            $body = $post["body"] ?? "";
+            $uid = $auth->currentUser()["user_id"];
+            $activity->addComment($id, $uid, $body);
+            header("Location: todo.php?id=" . $id);
+            exit;
+        }
+        if (!empty($post["assign"])) {
+            $assignee = $post["assignee"] ?? "";
+            $activity->assign($id, $assignee, $auth->currentUser()["user_id"]);
+            if (($get["next"] ?? "") != "") {
+                $auth->redirect("todo.php?id=" . $id);
+            }
+        }
+        if (!empty($get["del_comment"])) {
+            $activity->removeComment($get["del_comment"]);
+        }
+        $comments = $activity->commentsForTodo($id);
+        $assigns = $activity->assignmentsForTodo($id);
+        $out = "<html><head><title>Todo - " . $this->text($t["title"]) . "</title></head>\n";
+        $out .= "<body>\n";
+        $out .= "<h1>" . $this->text($t["title"]) . "</h1>\n";
+        $out .= "<p>" . $this->text($t["text"]) . "</p>\n";
+        $out .= "<p>Status: " . $this->text($t["status"]) . " | Prio: " . $this->text($t["priority"]) . " | Fällig: " . $this->text($t["due_date"]) . "</p>\n";
+        if (count($comments) > 0) {
+            $out .= "<h3>Kommentare</h3>\n";
+            foreach ($comments as $c) {
+                $out .= "<p>" . $this->text($c["body"]) . " - User " . $this->text($c["user_id"]) . " <a href='todo.php?id=" . $this->attr($id) . "&del_comment=" . $this->attr($c["id"]) . "'>löschen</a></p>\n";
+                $out .= "<small>" . $this->text($c["username"]) . "</small>\n";
+            }
+        }
+        if (count($assigns) > 0) {
+            $out .= "<h3>Zuweisungen</h3>\n";
+            foreach ($assigns as $a) {
+                $out .= "<p>" . $this->text($a["username"]) . "</p>\n";
+            }
+        }
+        $out .= "<h3>Kommentar hinzufügen</h3>\n";
+        $out .= "<form method=\"post\">\n";
+        $out .= "<textarea name=\"body\"></textarea>\n";
+        $out .= "<input type=\"submit\" name=\"add_comment\" value=\"Kommentieren\">\n";
+        $out .= "</form>\n";
+        $out .= "<h3>Zuweisen</h3>\n";
+        $out .= "<form method=\"post\">\n";
+        $out .= "<select name=\"assignee\">\n";
+        foreach ($users->listAll() as $u) {
+            $out .= "<option value='" . $this->attr($u["id"]) . "'>" . $this->text($u["username"]) . "</option>\n";
+        }
+        $out .= "</select>\n";
+        $out .= "<input type=\"submit\" name=\"assign\" value=\"Zuweisen\">\n";
+        $out .= "</form>\n";
+        $out .= "<a href=\"edittodo.php?id=" . $this->attr($id) . "\">Bearbeiten</a> | <a href=\"deletetodo.php?id=" . $this->attr($id) . "\">Löschen</a> | <a href=\"index.php\">Zurück</a>\n";
+        $out .= "</body></html>\n";
+
+        return $out;
+    }
 }
