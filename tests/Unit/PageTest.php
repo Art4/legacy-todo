@@ -13,9 +13,6 @@ final class PageTest extends PHPUnit\Framework\TestCase
     /** @var array<string, mixed> */
     private $session;
 
-    /** @var Bootstrap */
-    private $app;
-
     /** @var Page */
     private $page;
 
@@ -31,8 +28,8 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->pdo->exec('CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, body TEXT, created_at TEXT)');
         $this->pdo->exec('CREATE TABLE IF NOT EXISTS assignments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, assigned_by INTEGER)');
         $this->session = [];
-        $this->app = new Bootstrap($this->pdo, $this->session, 'Legacy Todo');
-        $this->page = new Page($this->app);
+        $app = new Bootstrap($this->pdo, $this->session, 'Legacy Todo');
+        $this->page = new Page($app);
     }
 
     public function testTextEscapesHtmlSpecialCharacters(): void
@@ -208,11 +205,11 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
         $output = $this->page->todo($tid, [], [], []);
 
-        $this->assertStringContainsString('<h1>&lt;b&gt;Titel&lt;/b&gt;</h1>', $output);
-        $this->assertStringContainsString('<p>Body &amp; &quot;quotes&quot;</p>', $output);
-        $this->assertStringContainsString("<p>&lt;script&gt;x&lt;/script&gt; - User 2 <a href='todo.php?id=" . $tid . "&del_comment=", $output);
-        $this->assertStringContainsString('<small>carol</small>', $output);
-        $this->assertStringContainsString("<option value='2'>carol</option>", $output);
+        $this->assertStringContainsString('<h1>&lt;b&gt;Titel&lt;/b&gt;</h1>', (string) $output);
+        $this->assertStringContainsString('<p>Body &amp; &quot;quotes&quot;</p>', (string) $output);
+        $this->assertStringContainsString("<p>&lt;script&gt;x&lt;/script&gt; - User 2 <a href='todo.php?id=" . $tid . "&del_comment=", (string) $output);
+        $this->assertStringContainsString('<small>carol</small>', (string) $output);
+        $this->assertStringContainsString("<option value='2'>carol</option>", (string) $output);
     }
 
     public function testTodoAddCommentRedirectsToTodo(): void
@@ -239,8 +236,8 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
         $output = $this->page->todo($tid, ["del_comment" => 77], [], []);
 
-        $this->assertStringNotContainsString('weg damit', $output);
-        $this->assertStringNotContainsString('<h3>Kommentare</h3>', $output);
+        $this->assertStringNotContainsString('weg damit', (string) $output);
+        $this->assertStringNotContainsString('<h3>Kommentare</h3>', (string) $output);
     }
 
     public function testTodoNotFoundPrintsNotFound(): void
@@ -263,10 +260,10 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
         $output = $this->page->addTodo(["title" => '<b>', "text" => 'a"b', "due_date" => '2026-01-01'], []);
 
-        $this->assertStringContainsString('<h1>Todo erstellen</h1>', $output);
-        $this->assertStringContainsString("value='&lt;b&gt;'", $output);
-        $this->assertStringContainsString("<textarea name='text'>a&quot;b</textarea>", $output);
-        $this->assertStringContainsString("value='2026-01-01'", $output);
+        $this->assertStringContainsString('<h1>Todo erstellen</h1>', (string) $output);
+        $this->assertStringContainsString("value='&lt;b&gt;'", (string) $output);
+        $this->assertStringContainsString("<textarea name='text'>a&quot;b</textarea>", (string) $output);
+        $this->assertStringContainsString("value='2026-01-01'", (string) $output);
     }
 
     public function testAddTodoSaveWithEmptyTitleRendersTitelErforderlich(): void
@@ -277,8 +274,8 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
         $output = $this->page->addTodo(["save" => "Speichern", "title" => "", "text" => "", "due_date" => ""], []);
 
-        $this->assertStringContainsString('Titel erforderlich', $output);
-        $this->assertStringContainsString('<p>Titel erforderlich</p>', $output);
+        $this->assertStringContainsString('Titel erforderlich', (string) $output);
+        $this->assertStringContainsString('<p>Titel erforderlich</p>', (string) $output);
     }
 
     public function testAddTodoSaveSuccessRedirectsToIndex(): void

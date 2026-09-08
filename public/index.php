@@ -5,7 +5,8 @@ $auth = $app->auth();
 $auth->requireLogin();
 $userId = $auth->currentUser()["user_id"];
 $dashboard = $app->dashboard();
-if ($_GET["export"] == "csv") {
+$page = new \Art4\LegacyTodo\Page($app);
+if (($_GET["export"] ?? "") == "csv") {
     $csv = $dashboard->exportCsv($userId);
     header("Content-Type: text/csv");
     header("Content-Disposition: attachment; filename=\"todos.csv\"");
@@ -13,14 +14,14 @@ if ($_GET["export"] == "csv") {
     exit;
 }
 $overview = $dashboard->overview($_GET);
-include_once __DIR__ . "/../includes/header.php";
+echo $page->header();
 ?>
 <html><head><title><?php echo $app->siteName(); ?></title></head>
 <body>
 <h1>Dashboard</h1>
 <p>Offene: <?php echo $overview["stats"]["open"]; ?> | Erledigte: <?php echo $overview["stats"]["done"]; ?> | Überfällig: <?php echo $overview["stats"]["overdue"]; ?></p>
 <form method="get">
-<input name="q" placeholder="Suche" value="<?php echo $_GET["q"]; ?>">
+<input name="q" placeholder="Suche" value="<?php echo $page->attr($_GET["q"] ?? ""); ?>">
 <select name="status"><option value="">Status</option><option value="open">offen</option><option value="done">erledigt</option></select>
 <select name="priority"><option value="">Prio</option><option value="1">Hoch</option><option value="2">Normal</option><option value="3">Niedrig</option></select>
 <input name="due" type="date">
@@ -39,5 +40,5 @@ if (count($todos) === 0) {
 }
 ?>
 <a href="addtodo.php">Neues Todo</a> | <a href="admin.php">Admin</a> | <a href="logout.php">Logout</a> | <a href="index.php?export=csv">CSV Export</a>
-<?php include_once __DIR__ . "/../includes/footer.php"; ?>
+<?php echo $page->footer(); ?>
 </body></html>

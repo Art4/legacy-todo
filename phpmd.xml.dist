@@ -15,7 +15,7 @@
         The deliberately opinionated rules (short-variable naming, superglobal
         access, exit expressions) that a legacy PHP 5.6 codebase triggers
         pervasively are excluded. The scan targets the maintained application
-        code — src/, includes/, public/ — where complexity signal is
+        code — src/, public/ — where complexity signal is
         actionable; the dead/archived legacy noise (old/, and the dead-helper
         stubs in db.php / functions.php) is where it is not.
     </description>

@@ -4,6 +4,19 @@ namespace Art4\LegacyTodo;
 
 require_once __DIR__ . "/Bootstrap.php";
 
+/**
+ * Single responsible module: owns the request→response pipeline behind the
+ * page seam (issue #189). Its public interface is deliberately wide — six
+ * endpoint methods plus the header/footer and escaping the front controllers
+ * still compose against — and it orchestrates six complex page handlers, so
+ * the resulting cyclomatic sum and public-method count exceed the PHPMD
+ * threshold by design. PHPMD is a Signal producer here (see phpmd.xml.dist),
+ * so these structural findings are suppressed rather than forcing a
+ * shallower decomposition.
+ *
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ */
 class Page
 {
     /** @var Bootstrap */
@@ -140,12 +153,12 @@ class Page
      * @param array<string, mixed> $post
      * @param array<string, mixed> $files
      * @return string|null
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function todo(int $id, array $get, array $post, array $files)
     {
         $auth = $this->app->auth();
         $todos = $this->app->todos();
-        $users = $this->app->users();
         $activity = $this->app->todoActivity();
         $auth->requireLogin();
         $t = $todos->find($id);
@@ -172,6 +185,19 @@ class Page
         }
         $comments = $activity->commentsForTodo($id);
         $assigns = $activity->assignmentsForTodo($id);
+
+        return $this->renderTodoDetail($t, $comments, $assigns, $id);
+    }
+
+    /**
+     * @param array<string, mixed> $t
+     * @param array<int, array<string, mixed>> $comments
+     * @param array<int, array<string, mixed>> $assigns
+     * @return string
+     */
+    private function renderTodoDetail(array $t, array $comments, array $assigns, int $id)
+    {
+        $users = $this->app->users();
         $out = "<html><head><title>Todo - " . $this->text($t["title"]) . "</title></head>\n";
         $out .= "<body>\n";
         $out .= "<h1>" . $this->text($t["title"]) . "</h1>\n";
@@ -361,8 +387,20 @@ class Page
         $userRows = $users->listAll();
         $cats = $taxonomy->listCategories();
         $tags = $taxonomy->listTags();
+
+        return $out . $this->renderAdmin($userRows, $cats, $tags);
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $userRows
+     * @param array<int, array<string, mixed>> $cats
+     * @param array<int, array<string, mixed>> $tags
+     * @return string
+     */
+    private function renderAdmin(array $userRows, array $cats, array $tags)
+    {
         $siteName = $this->text($this->app->siteName());
-        $out .= "<html><head><title>Admin - " . $siteName . "</title></head>\n";
+        $out = "<html><head><title>Admin - " . $siteName . "</title></head>\n";
         $out .= "<body>\n";
         $out .= "<h1>Admin</h1>\n";
         $out .= "<h2>Benutzer</h2>\n";
