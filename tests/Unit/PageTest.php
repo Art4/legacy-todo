@@ -255,6 +255,45 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->assertSame("Not found", $output);
     }
 
+    public function testAddTodoRendersFormAndEscapesPostValues(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->page->addTodo(["title" => '<b>', "text" => 'a"b', "due_date" => '2026-01-01'], []);
+
+        $this->assertStringContainsString('<h1>Todo erstellen</h1>', $output);
+        $this->assertStringContainsString("value='&lt;b&gt;'", $output);
+        $this->assertStringContainsString("<textarea name='text'>a&quot;b</textarea>", $output);
+        $this->assertStringContainsString("value='2026-01-01'", $output);
+    }
+
+    public function testAddTodoSaveWithEmptyTitleRendersTitelErforderlich(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->page->addTodo(["save" => "Speichern", "title" => "", "text" => "", "due_date" => ""], []);
+
+        $this->assertStringContainsString('Titel erforderlich', $output);
+        $this->assertStringContainsString('<p>Titel erforderlich</p>', $output);
+    }
+
+    public function testAddTodoSaveSuccessRedirectsToIndex(): void
+    {
+        $output = $this->runCli(
+            '$page->addTodo($_POST, []);',
+            ["user_id" => 1, "username" => "alice", "role" => "admin"],
+            [],
+            ["save" => "Speichern", "title" => "Neu", "text" => "Text", "priority" => "1", "due_date" => "2026-02-01"],
+            '$pdo->exec("INSERT INTO categories (name,user_id) VALUES (\'Allgemein\',1)");',
+        );
+
+        $this->assertSame("Location: index.php", $output);
+    }
+
     private function runCli(string $body, array $session, array $get, array $post, string $setup = ''): string
     {
         $hash = md5('secret');
