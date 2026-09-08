@@ -36,4 +36,10 @@ class Dashboard
 
         return ["todos" => $todos, "stats" => $stats];
     }
+
+    /** @return string */
+    public function exportCsv(int $userId)
+    {
+        return $this->todos->exportCsv($userId);
+    }
 }

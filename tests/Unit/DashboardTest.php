@@ -73,4 +73,14 @@ final class DashboardTest extends PHPUnit\Framework\TestCase
 
         $this->assertSame(["Offen"], array_column($overview["todos"], "title"));
     }
+
+    public function testExportCsvDelegatesByteIdenticalToTodos(): void
+    {
+        $this->seedTodo(["user_id" => 1, "title" => "Meins", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->seedTodo(["user_id" => 2, "title" => "Fremdes", "text" => "", "status" => "done", "priority" => 2, "due_date" => "2026-01-02", "archived" => 0]);
+
+        $csv = $this->dashboard()->exportCsv(1);
+
+        $this->assertSame($csv, $this->todos->exportCsv(1));
+    }
 }
