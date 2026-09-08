@@ -5,7 +5,7 @@
 **Focus areas:** none
 
 **Pending candidates:**
-- #189
+- none
 
 **Skip streak:**
 - none
