@@ -8,8 +8,7 @@
 - none
 
 **Skip streak:**
-- secret-detection: 1
-- phpmd: 1
+- phpmd: 2
 
 **Fulfilled nodes:**
 - git
@@ -40,3 +39,4 @@
 - composer-audit (#153)
 - php-structural-scan (#171)
 - structural-scan (#171)
+- secret-detection (#181)
