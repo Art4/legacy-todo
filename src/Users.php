@@ -15,7 +15,9 @@ class Users
     /** @return array<string, mixed>|null */
     public function findById($id)
     {
-        $row = $this->pdo->query("SELECT * FROM users WHERE id=" . $id)->fetch(\PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id=?");
+        $stmt->execute([(int) $id]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($row == false) {
             return null;
         }
@@ -26,7 +28,9 @@ class Users
     /** @return array<string, mixed>|null */
     public function findByUsername($username)
     {
-        $row = $this->pdo->query("SELECT * FROM users WHERE username='" . $username . "'")->fetch(\PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE username=?");
+        $stmt->execute([$username]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($row == false) {
             return null;
         }
@@ -37,7 +41,9 @@ class Users
     /** @return array<string, mixed>|null */
     public function authenticate($username, $password)
     {
-        $row = $this->pdo->query("SELECT * FROM users WHERE username='" . $username . "' AND password='" . md5($password) . "'")->fetch(\PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE username=? AND password=?");
+        $stmt->execute([$username, md5($password)]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($row == false) {
             return null;
         }
@@ -51,14 +57,17 @@ class Users
         if ($u == "" || $p == "") {
             return "Titel fehlt?";
         }
-        $exists = $this->pdo->query("SELECT * FROM users WHERE username='" . $u . "'")->fetch(\PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE username=?");
+        $stmt->execute([$u]);
+        $exists = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($exists != null) {
             return "exists";
         }
         $hash = md5($p);
-        $sql = "INSERT INTO users (username,password,role,email,created_at) VALUES ('" . $u . "','" . $hash . "','user','" . $email . "','" . date("Y-m-d") . "')";
+        $sql = "INSERT INTO users (username,password,role,email,created_at) VALUES (?,?,'user',?,?)";
         try {
-            $this->pdo->exec($sql);
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$u, $hash, $email, date("Y-m-d")]);
         } catch (\Exception $e) {
             return false;
         }
@@ -70,9 +79,10 @@ class Users
     public function create($username, $password, $role)
     {
         $hash = md5($password);
-        $sql = "INSERT INTO users (username,password,role,email,created_at) VALUES ('" . $username . "','" . $hash . "','" . $role . "','" . $username . "@example.com','" . date("Y-m-d") . "')";
+        $sql = "INSERT INTO users (username,password,role,email,created_at) VALUES (?,?,?,?,?)";
         try {
-            $this->pdo->exec($sql);
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$username, $hash, $role, $username . "@example.com", date("Y-m-d")]);
         } catch (\Exception $e) {
             return false;
         }

@@ -76,6 +76,17 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
         $this->assertSame(date("Y-m-d H:i:s"), $row["created_at"]);
     }
 
+    public function testAddCommentRejectsInjectedBody(): void
+    {
+        $authorId = $this->seedUser("helen");
+
+        $result = $this->activity->addComment(6, $authorId, "'); DROP TABLE comments; --");
+
+        $this->assertTrue($result);
+        $row = $this->pdo->query("SELECT * FROM comments WHERE todo_id=6")->fetch(\PDO::FETCH_ASSOC);
+        $this->assertSame("'); DROP TABLE comments; --", $row["body"]);
+    }
+
     public function testAssignmentsForTodoReturnsAssigneesWithUsernamesInInsertionOrder(): void
     {
         $assigneeId = $this->seedUser("dave");
