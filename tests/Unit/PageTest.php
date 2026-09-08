@@ -294,6 +294,57 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->assertSame("Location: index.php", $output);
     }
 
+    public function testEditTodoRendersFormAndEscapesFields(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => '<b>T</b>', "text" => 'x"y', "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->page->editTodo($id, []);
+
+        $this->assertStringContainsString('<h1>Todo bearbeiten</h1>', $output);
+        $this->assertStringContainsString("value='&lt;b&gt;T&lt;/b&gt;'", $output);
+        $this->assertStringContainsString("<textarea name='text'>x&quot;y</textarea>", $output);
+    }
+
+    public function testEditTodoMarksPrioritySelectedWhenOne(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => "T", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->page->editTodo($id, []);
+
+        $this->assertStringContainsString("<option selected value='1'>Hoch</option>", $output);
+    }
+
+    public function testEditTodoSaveWithEmptyTitleRendersTitelErforderlich(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => "Alt", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->page->editTodo($id, ["save" => "Speichern", "title" => "", "text" => "", "priority" => "1", "status" => "open"]);
+
+        $this->assertStringContainsString('Titel erforderlich', $output);
+    }
+
+    public function testEditTodoSaveSuccessRedirectsToTodo(): void
+    {
+        $output = $this->runCli(
+            '$page->editTodo((int) $get["id"], $_POST);',
+            ["user_id" => 1, "username" => "alice", "role" => "admin"],
+            ["id" => 1],
+            ["save" => "Speichern", "title" => "Neu", "text" => "", "priority" => "2", "status" => "open"],
+            '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,1,\'Alt\',\'\',\'open\',0,\'2026-01-10\')");',
+        );
+
+        $this->assertSame("Location: todo.php?id=1", $output);
+    }
+
     private function runCli(string $body, array $session, array $get, array $post, string $setup = ''): string
     {
         $hash = md5('secret');
