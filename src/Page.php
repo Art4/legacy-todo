@@ -309,6 +309,10 @@ class Page
     {
         $auth = $this->app->auth();
         $auth->requireLogin();
+        if (!$auth->canManage($id)) {
+            echo "Keine Berechtigung";
+            exit;
+        }
         $todos = $this->app->todos();
         $out = "";
         if (!empty($post["save"])) {
