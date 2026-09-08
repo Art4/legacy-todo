@@ -8,7 +8,7 @@
 - none
 
 **Skip streak:**
-- phpmd: 2
+- phpmd: 3
 
 **Fulfilled nodes:**
 - git
