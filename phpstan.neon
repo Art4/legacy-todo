@@ -13,7 +13,6 @@ parameters:
         - public/edittodo.php
         - functions.php
         - src
-        - includes
         - public/index.php
         - public/login.php
         - public/logout.php
@@ -21,3 +20,12 @@ parameters:
         - public/todo.php
     excludePaths:
         - vendor
+
+    ignoreErrors:
+        -
+            # PHPMD's @SuppressWarnings(PHPMD.X) annotation is not valid PHPDoc
+            # for PHPStan's parser; we keep it on Page.php so PHPMD's structural
+            # findings (wide seam interface, high composite complexity) are
+            # documented-as-suppressed rather than misread as parse errors.
+            identifier: phpDoc.parseError
+            path: src/Page.php

@@ -67,7 +67,7 @@ jobs:
             apt-get update -qq && apt-get install -y -qq unzip git > /dev/null
             curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
             composer install --no-interaction --no-progress
-            vendor/bin/phpmd src,includes,public text phpmd.xml.dist
+            vendor/bin/phpmd src,public text phpmd.xml.dist
           '
 
   phpunit:
