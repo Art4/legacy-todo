@@ -54,6 +54,22 @@ jobs:
             vendor/bin/psalm --taint-analysis --no-progress
           '
 
+  phpmd:
+    name: PHPMD
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHPMD (php 8.3 via Docker)
+        run: |
+          docker run --rm -v "$PWD":/app -w /app php:8.3-cli bash -c '
+            set -e
+            apt-get update -qq && apt-get install -y -qq unzip git > /dev/null
+            curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+            composer install --no-interaction --no-progress
+            vendor/bin/phpmd src,includes,public text phpmd.xml.dist
+          '
+
   phpunit:
     name: PHPUnit
     runs-on: ubuntu-latest

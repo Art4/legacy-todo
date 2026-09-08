@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<ruleset name="legacy-todo PHPMD ruleset"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+
+    <description>
+        PHPMD ruleset for legacy-todo. This node is a Signal producer for
+        refactor-prioritize's Select mode, measuring cyclomatic complexity and
+        code-quality to enrich candidate selection — not a Safety Net gate
+        (see the phpmd entry in the PHP tooling tree).
+
+        The deliberately opinionated rules (short-variable naming, superglobal
+        access, exit expressions) that a legacy PHP 5.6 codebase triggers
+        pervasively are excluded. The scan targets the maintained application
+        code — src/, includes/, public/ — where complexity signal is
+        actionable; the dead/archived legacy noise (old/, and the dead-helper
+        stubs in db.php / functions.php) is where it is not.
+    </description>
+
+    <!-- Cyclomatic complexity and size — the core measurement signal -->
+    <rule ref="rulesets/codesize.xml" />
+
+    <!-- Dead-code detection — a genuine smell worth surfacing everywhere -->
+    <rule ref="rulesets/unusedcode.xml" />
+</ruleset>
