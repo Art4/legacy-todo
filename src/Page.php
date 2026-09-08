@@ -14,13 +14,13 @@ class Page
         $this->app = $app;
     }
 
-    /** @param string $value */
+    /** @param mixed $value */
     public function text($value): string
     {
         return htmlspecialchars((string) $value, ENT_QUOTES);
     }
 
-    /** @param string $value */
+    /** @param mixed $value */
     public function attr($value): string
     {
         return htmlspecialchars((string) $value, ENT_QUOTES);
@@ -103,6 +103,33 @@ class Page
         $out .= "<input name=\"email\" placeholder=\"Email\" value=\"" . $this->attr($post["email"] ?? "") . "\">\n";
         $out .= "<input type=\"submit\" name=\"register\" value=\"Registrieren\">\n";
         $out .= "</form>\n";
+        $out .= "</body></html>\n";
+
+        return $out;
+    }
+
+    /**
+     * @param array<string, mixed> $get
+     * @return string
+     */
+    public function deleteTodo(int $id, array $get)
+    {
+        $auth = $this->app->auth();
+        $auth->requireLogin();
+        if (!$auth->canManage($id)) {
+            echo "Keine Berechtigung";
+            exit;
+        }
+        if (($get["confirm"] ?? "") == "1") {
+            $this->app->todos()->archive($id);
+            header("Location: index.php");
+            exit;
+        }
+        $t = $this->app->todos()->find($id);
+        $out = "<html><body>\n";
+        $out .= "<h1>Löschen?</h1>\n";
+        $out .= "<p>" . $this->text($t["title"]) . " wirklich archivieren?</p>\n";
+        $out .= "<a href=\"deletetodo.php?id=" . $this->attr($id) . "&confirm=1\">Ja</a> | <a href=\"index.php\">Nein</a>\n";
         $out .= "</body></html>\n";
 
         return $out;

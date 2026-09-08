@@ -137,13 +137,67 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
         $output = $this->runCli(
             'echo $page->login($_POST);',
+            [],
+            [],
             ["login" => "Login", "username" => "alice", "password" => "secret"],
         );
 
         $this->assertSame("Location: index.php", $output);
     }
 
-    private function runCli(string $body, array $post): string
+    private function seedTodo(array $row): int
+    {
+        $this->pdo->exec(
+            "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES ("
+            . $row["user_id"] . ",'" . $row["title"] . "','" . ($row["text"] ?? "") . "','" . $row["status"] . "',"
+            . $row["priority"] . ",'" . $row["due_date"] . "'," . ($row["archived"] ?? 0) . ",'2026-01-10')",
+        );
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    public function testDeleteTodoRendersConfirmPageAndEscapesTitleAndId(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => '<b>Wichtig</b>', "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->page->deleteTodo($id, []);
+
+        $this->assertStringContainsString('<h1>Löschen?</h1>', $output);
+        $this->assertStringContainsString('<p>&lt;b&gt;Wichtig&lt;/b&gt; wirklich archivieren?</p>', $output);
+        $this->assertStringContainsString('href="deletetodo.php?id=' . $id . '&confirm=1"', $output);
+    }
+
+    public function testDeleteTodoConfirmArchivesAndRedirectsToIndex(): void
+    {
+        $output = $this->runCli(
+            '$page->deleteTodo((int) $get["id"], $get);',
+            ["user_id" => 1, "username" => "alice", "role" => "admin"],
+            ["id" => 1, "confirm" => "1"],
+            [],
+            '$pdo->exec("INSERT INTO todos (user_id,title,text,status,archived,created_at) VALUES (1,\'Wichtig\',\'\',\'open\',0,\'2026-01-10\')");',
+        );
+
+        $this->assertSame("Location: index.php", $output);
+    }
+
+    public function testDeleteTodoDeniesWhenCannotManage(): void
+    {
+        $output = $this->runCli(
+            'echo $page->deleteTodo((int) $get["id"], $get);',
+            ["user_id" => 9, "username" => "eve", "role" => "user"],
+            ["id" => 1],
+            [],
+            '$pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (9,\'eve\',\'\',\'user\',\'e@x.com\',\'2026-01-01\')");'
+                . '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,5,\'Fremdes\',\'\',\'open\',0,\'2026-01-10\')");',
+        );
+
+        $this->assertSame("Keine Berechtigung", $output);
+    }
+
+    private function runCli(string $body, array $session, array $get, array $post, string $setup = ''): string
     {
         $hash = md5('secret');
         $script = 'namespace Art4\\LegacyTodo { function header($line) { echo $line; } }'
@@ -158,10 +212,15 @@ final class PageTest extends PHPUnit\Framework\TestCase
             . '$pdo->exec("CREATE TABLE comments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, body TEXT, created_at TEXT)");'
             . '$pdo->exec("CREATE TABLE assignments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, assigned_by INTEGER)");'
             . '$pdo->exec("INSERT INTO users (username,password,role,email,created_at) VALUES (\'alice\',\'' . $hash . '\',\'user\',\'alice@example.com\',\'2026-01-01\')");'
-            . '$_SESSION = [];'
+            . $setup
+            . '$_SESSION = ' . var_export($session, true) . ';'
+            . '$_GET = ' . var_export($get, true) . ';'
             . '$_POST = ' . var_export($post, true) . ';'
             . '$app = new Art4\\LegacyTodo\\Bootstrap($pdo, $_SESSION, "Legacy Todo");'
             . '$page = new Art4\\LegacyTodo\\Page($app);'
+            . '$get = ' . var_export($get, true) . ';'
+            . '$session = ' . var_export($session, true) . ';'
+            . '$post = ' . var_export($post, true) . ';'
             . $body
             . '}';
 
