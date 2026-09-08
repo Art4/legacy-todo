@@ -8,7 +8,7 @@
 - none
 
 **Skip streak:**
-- phpmd: 3
+- none
 
 **Fulfilled nodes:**
 - git
@@ -40,3 +40,4 @@
 - php-structural-scan (#171)
 - structural-scan (#171)
 - secret-detection (#181)
+- phpmd (#187)
