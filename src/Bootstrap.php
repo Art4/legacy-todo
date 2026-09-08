@@ -3,6 +3,7 @@
 namespace Art4\LegacyTodo;
 
 require_once __DIR__ . "/Auth.php";
+require_once __DIR__ . "/Dashboard.php";
 require_once __DIR__ . "/Todos.php";
 require_once __DIR__ . "/Users.php";
 require_once __DIR__ . "/TodoActivity.php";
@@ -21,6 +22,9 @@ class Bootstrap
 
     /** @var Auth|null */
     private $auth;
+
+    /** @var Dashboard|null */
+    private $dashboard;
 
     /** @var Todos|null */
     private $todos;
@@ -123,6 +127,15 @@ class Bootstrap
         }
 
         return $this->todos;
+    }
+
+    public function dashboard(): Dashboard
+    {
+        if ($this->dashboard === null) {
+            $this->dashboard = new Dashboard($this->todos());
+        }
+
+        return $this->dashboard;
     }
 
     public function users(): Users

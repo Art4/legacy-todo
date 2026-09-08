@@ -3,49 +3,22 @@ require_once __DIR__ . "/src/Bootstrap.php";
 $app = \Art4\LegacyTodo\Bootstrap::start();
 $auth = $app->auth();
 $auth->requireLogin();
-$x = $_GET["x"];
-$tmp = $auth->currentUser()["username"];
-$data2 = "index_page";
-if ($x == 42) {
-    echo "<!-- magic -->";
-}
 $userId = $auth->currentUser()["user_id"];
-$todosRepo = $app->todos();
-$q = $_GET["q"];
-$status = $_GET["status"];
-$prio = $_GET["priority"];
-$tmp = "index_T06_noise";
-$kategorie = "index_kategorie";
-$due = $_GET["due"];
-if ($q != "") {
-    $todos = $todosRepo->search($q);
-} elseif ($status != "" || $prio != "" || $due != "") {
-    $todos = $todosRepo->listFiltered($status, $prio, $due);
-} else {
-    $todos = $todosRepo->listActive();
-}
-$stats = $todosRepo->dashboardStats();
-$cnt = ["c" => $stats["c"]];
-$data2 = $cnt["c"];
-$openCnt = $stats["open"];
-$doneCnt = $stats["done"];
-$overdue = $stats["overdue"];
-$tmp_T11 = @$_GET["tmp"];
-$uploadFile = @$_FILES["upload"]["name"];
+$dashboard = $app->dashboard();
 if ($_GET["export"] == "csv") {
-    $csv = $todosRepo->exportCsv($userId);
+    $csv = $dashboard->exportCsv($userId);
     header("Content-Type: text/csv");
     header("Content-Disposition: attachment; filename=\"todos.csv\"");
     echo $csv;
     exit;
 }
+$overview = $dashboard->overview($_GET);
 include_once __DIR__ . "/includes/header.php";
 ?>
 <html><head><title><?php echo $app->siteName(); ?></title></head>
 <body>
 <h1>Dashboard</h1>
-<p>Offene: <?php echo $openCnt; ?> | Erledigte: <?php echo $doneCnt; ?> | Überfällig: <?php echo $overdue; ?></p>
-<p>Willkommen <?php echo $tmp; ?></p>
+<p>Offene: <?php echo $overview["stats"]["open"]; ?> | Erledigte: <?php echo $overview["stats"]["done"]; ?> | Überfällig: <?php echo $overview["stats"]["overdue"]; ?></p>
 <form method="get">
 <input name="q" placeholder="Suche" value="<?php echo $_GET["q"]; ?>">
 <select name="status"><option value="">Status</option><option value="open">offen</option><option value="done">erledigt</option></select>
@@ -54,6 +27,7 @@ include_once __DIR__ . "/includes/header.php";
 <input type="submit" value="Filtern">
 </form>
 <?php
+$todos = $overview["todos"];
 if (count($todos) === 0) {
     echo "<p>Keine Todos</p>";
 } else {

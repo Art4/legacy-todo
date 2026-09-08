@@ -7,6 +7,10 @@
 **Pending candidates:**
 - none
 
+**Skip streak:**
+- secret-detection: 1
+- phpmd: 1
+
 **Fulfilled nodes:**
 - git
 - loop-config (#72)

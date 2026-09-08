@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Art4\LegacyTodo\Auth;
 use Art4\LegacyTodo\Bootstrap;
+use Art4\LegacyTodo\Dashboard;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\TodoActivity;
 use Art4\LegacyTodo\Todos;
@@ -55,6 +56,11 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Taxonomy::class, $this->bootstrap->taxonomy());
     }
 
+    public function testDashboardReturnsDashboardModule(): void
+    {
+        $this->assertInstanceOf(Dashboard::class, $this->bootstrap->dashboard());
+    }
+
     public function testAuthIsSharedSingleton(): void
     {
         $this->assertSame($this->bootstrap->auth(), $this->bootstrap->auth());
@@ -78,6 +84,11 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
     public function testTaxonomyIsSharedSingleton(): void
     {
         $this->assertSame($this->bootstrap->taxonomy(), $this->bootstrap->taxonomy());
+    }
+
+    public function testDashboardIsSharedSingleton(): void
+    {
+        $this->assertSame($this->bootstrap->dashboard(), $this->bootstrap->dashboard());
     }
 
     public function testCurrentUserDelegatesToAuthThroughInjectedSession(): void
