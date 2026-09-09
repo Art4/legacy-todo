@@ -22,6 +22,7 @@
     },
     "autoload-dev": {
         "classmap": [
+            "tests/Functional/",
             "tests/Legacy/",
             "tests/Unit/"
         ]

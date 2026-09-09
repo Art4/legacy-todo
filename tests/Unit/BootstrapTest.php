@@ -185,6 +185,51 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
         $this->assertSame(1, $users);
     }
 
+    public function testStartHonoursLegacyTodoDbFileEnvVar(): void
+    {
+        $dbFile = $this->tempDb();
+        putenv('LEGACY_TODO_DB_FILE=' . $dbFile);
+
+        try {
+            Bootstrap::start();
+        } finally {
+            putenv('LEGACY_TODO_DB_FILE');
+        }
+
+        $pdo = new \PDO('sqlite:' . $dbFile);
+        $users = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
+        @unlink($dbFile);
+
+        $this->assertSame(2, $users);
+    }
+
+    public function testStartConfigDbFileWinsOverEnvVar(): void
+    {
+        $envFile = $this->tempDb();
+        $configFile = $this->tempDb();
+        $seed = new \PDO('sqlite:' . $envFile);
+        $seed->exec('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT)');
+        $seed->exec("INSERT INTO users (username) VALUES ('alice')");
+        unset($seed);
+        putenv('LEGACY_TODO_DB_FILE=' . $envFile);
+
+        try {
+            Bootstrap::start(['db_file' => $configFile]);
+        } finally {
+            putenv('LEGACY_TODO_DB_FILE');
+        }
+
+        $envPdo = new \PDO('sqlite:' . $envFile);
+        $envUsers = (int) $envPdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
+        $configPdo = new \PDO('sqlite:' . $configFile);
+        $configUsers = (int) $configPdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
+        @unlink($envFile);
+        @unlink($configFile);
+
+        $this->assertSame(1, $envUsers);
+        $this->assertSame(2, $configUsers);
+    }
+
     public function testStartDefaultsToLegacyTodoSiteName(): void
     {
         $dbFile = $this->tempDb();
