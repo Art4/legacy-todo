@@ -41,14 +41,35 @@ class Users
     /** @return array<string, mixed>|null */
     public function authenticate($username, $password)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE username=? AND password=?");
-        $stmt->execute([$username, md5($password)]);
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE username=?");
+        $stmt->execute([$username]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($row == false) {
             return null;
         }
 
-        return $row;
+        $hash = $row["password"];
+        if (password_verify($password, $hash)) {
+            if (password_needs_rehash($hash, PASSWORD_BCRYPT)) {
+                $this->updatePassword((int) $row["id"], $password);
+            }
+
+            return $row;
+        }
+
+        if (preg_match('/^[a-f0-9]{32}$/i', (string) $hash) === 1 && hash_equals($hash, md5($password))) {
+            $this->updatePassword((int) $row["id"], $password);
+
+            return $row;
+        }
+
+        return null;
+    }
+
+    private function updatePassword($id, $password): void
+    {
+        $stmt = $this->pdo->prepare("UPDATE users SET password=? WHERE id=?");
+        $stmt->execute([password_hash($password, PASSWORD_BCRYPT), $id]);
     }
 
     /** @return bool|string */
@@ -63,7 +84,7 @@ class Users
         if ($exists != null) {
             return "exists";
         }
-        $hash = md5($p);
+        $hash = password_hash($p, PASSWORD_BCRYPT);
         $sql = "INSERT INTO users (username,password,role,email,created_at) VALUES (?,?,'user',?,?)";
         try {
             $stmt = $this->pdo->prepare($sql);
@@ -78,7 +99,7 @@ class Users
     /** @return bool */
     public function create($username, $password, $role)
     {
-        $hash = md5($password);
+        $hash = password_hash($password, PASSWORD_BCRYPT);
         $sql = "INSERT INTO users (username,password,role,email,created_at) VALUES (?,?,?,?,?)";
         try {
             $stmt = $this->pdo->prepare($sql);

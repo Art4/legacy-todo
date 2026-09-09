@@ -75,7 +75,7 @@ final class AuthTest extends PHPUnit\Framework\TestCase
     {
         $this->pdo->exec(
             "INSERT INTO users (username,password,role,email,created_at) VALUES ("
-            . "'" . $row["username"] . "','" . md5($row["password"]) . "','" . $row["role"] . "','" . $row["email"] . "','2026-01-01')",
+            . "'" . $row["username"] . "','" . password_hash($row["password"], PASSWORD_BCRYPT) . "','" . $row["role"] . "','" . $row["email"] . "','2026-01-01')",
         );
 
         return (int) $this->pdo->lastInsertId();

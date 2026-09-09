@@ -24,7 +24,7 @@ final class UsersTest extends PHPUnit\Framework\TestCase
     {
         $this->pdo->exec(
             "INSERT INTO users (username,password,role,email,created_at) VALUES ("
-            . "'" . $row["username"] . "','" . md5($row["password"]) . "','" . $row["role"] . "','" . $row["email"] . "','2026-01-01')",
+            . "'" . $row["username"] . "','" . password_hash($row["password"], PASSWORD_BCRYPT) . "','" . $row["role"] . "','" . $row["email"] . "','2026-01-01')",
         );
 
         return (int) $this->pdo->lastInsertId();
@@ -82,6 +82,31 @@ final class UsersTest extends PHPUnit\Framework\TestCase
         $this->assertNull($this->users->authenticate("admin' OR '1'='1", "x"));
     }
 
+    public function testAuthenticateUpgradesLegacyMd5HashToBcrypt(): void
+    {
+        $this->pdo->exec(
+            "INSERT INTO users (username,password,role,email,created_at) VALUES ("
+            . "'gina','" . md5("secret") . "','user','gina@example.com','2026-01-01')",
+        );
+
+        $row = $this->users->authenticate("gina", "secret");
+
+        $this->assertSame("gina", $row["username"]);
+        $stored = $this->pdo->query("SELECT password FROM users WHERE username='gina'")->fetchColumn();
+        $this->assertTrue(password_verify("secret", $stored));
+        $this->assertNotSame(md5("secret"), $stored);
+    }
+
+    public function testAuthenticateFailsForWrongPasswordAgainstLegacyMd5Hash(): void
+    {
+        $this->pdo->exec(
+            "INSERT INTO users (username,password,role,email,created_at) VALUES ("
+            . "'hank','" . md5("secret") . "','user','hank@example.com','2026-01-01')",
+        );
+
+        $this->assertNull($this->users->authenticate("hank", "wrong"));
+    }
+
     public function testRegisterRejectsInjectedUsername(): void
     {
         $result = $this->users->register("a'--", "pw", "e@e.com");
@@ -98,7 +123,7 @@ final class UsersTest extends PHPUnit\Framework\TestCase
         $this->assertTrue($result);
         $row = $this->pdo->query("SELECT * FROM users")->fetch(\PDO::FETCH_ASSOC);
         $this->assertSame("dave", $row["username"]);
-        $this->assertSame(md5("pw123"), $row["password"]);
+        $this->assertTrue(password_verify("pw123", $row["password"]));
         $this->assertSame("user", $row["role"]);
         $this->assertSame("dave@example.com", $row["email"]);
         $this->assertSame(date("Y-m-d"), $row["created_at"]);
@@ -119,7 +144,7 @@ final class UsersTest extends PHPUnit\Framework\TestCase
 
         $rows = $this->pdo->query("SELECT * FROM users")->fetchAll(\PDO::FETCH_ASSOC);
         $this->assertCount(1, $rows);
-        $this->assertSame(md5("pw"), $rows[0]["password"]);
+        $this->assertTrue(password_verify("pw", $rows[0]["password"]));
     }
 
     public function testCreateInsertsUserWithGivenRoleAndExampleComEmail(): void
@@ -129,7 +154,7 @@ final class UsersTest extends PHPUnit\Framework\TestCase
         $this->assertTrue($result);
         $row = $this->pdo->query("SELECT * FROM users")->fetch(\PDO::FETCH_ASSOC);
         $this->assertSame("frank", $row["username"]);
-        $this->assertSame(md5("pw456"), $row["password"]);
+        $this->assertTrue(password_verify("pw456", $row["password"]));
         $this->assertSame("admin", $row["role"]);
         $this->assertSame("frank@example.com", $row["email"]);
         $this->assertSame(date("Y-m-d"), $row["created_at"]);

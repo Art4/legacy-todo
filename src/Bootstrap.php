@@ -114,8 +114,8 @@ class Bootstrap
     {
         $cnt = $pdo->query("SELECT COUNT(*) as c FROM users")->fetch(\PDO::FETCH_ASSOC);
         if ($cnt['c'] == 0) {
-            $pdo->exec("INSERT INTO users (username,password,role,email,created_at) VALUES ('admin','" . md5('admin123') . "','admin','admin@example.com','2026-01-01')");
-            $pdo->exec("INSERT INTO users (username,password,role,email,created_at) VALUES ('user','" . md5('user123') . "','user','user@example.com','2026-01-02')");
+            $pdo->exec("INSERT INTO users (username,password,role,email,created_at) VALUES ('admin','" . password_hash('admin123', PASSWORD_BCRYPT) . "','admin','admin@example.com','2026-01-01')");
+            $pdo->exec("INSERT INTO users (username,password,role,email,created_at) VALUES ('user','" . password_hash('user123', PASSWORD_BCRYPT) . "','user','user@example.com','2026-01-02')");
             $pdo->exec("INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (1,'Erstes Todo','Beschreibung 1','open',1,'2026-12-31',0,'2026-01-10')");
             $pdo->exec("INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (2,'Zweites Todo','Noch was','done',2,'2026-11-01',0,'2026-01-11')");
             $pdo->exec("INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (1,'Archiviertes','Altes erledigtes','done',3,'2026-01-01',1,'2026-01-05')");
