@@ -47,47 +47,6 @@ final class PageTest extends PHPUnit\Framework\TestCase
         return (int) $this->pdo->lastInsertId();
     }
 
-    public function testDeleteTodoRendersConfirmPageAndEscapesTitleAndId(): void
-    {
-        $id = $this->seedTodo(["user_id" => 1, "title" => '<b>Wichtig</b>', "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
-        $this->session['user_id'] = 1;
-        $this->session['username'] = 'alice';
-        $this->session['role'] = 'admin';
-
-        $output = $this->page->deleteTodo($id, []);
-
-        $this->assertStringContainsString('<h1>Löschen?</h1>', $output);
-        $this->assertStringContainsString('<p>&lt;b&gt;Wichtig&lt;/b&gt; wirklich archivieren?</p>', $output);
-        $this->assertStringContainsString('href="deletetodo.php?id=' . $id . '&confirm=1"', $output);
-    }
-
-    public function testDeleteTodoConfirmArchivesAndRedirectsToIndex(): void
-    {
-        $output = RunCliHelper::run(
-            '$page->deleteTodo((int) $get["id"], $get);',
-            ["user_id" => 1, "username" => "alice", "role" => "admin"],
-            ["id" => 1, "confirm" => "1"],
-            [],
-            '$pdo->exec("INSERT INTO todos (user_id,title,text,status,archived,created_at) VALUES (1,\'Wichtig\',\'\',\'open\',0,\'2026-01-10\')");',
-        );
-
-        $this->assertSame("Location: index.php", $output);
-    }
-
-    public function testDeleteTodoDeniesWhenCannotManage(): void
-    {
-        $output = RunCliHelper::run(
-            'echo $page->deleteTodo((int) $get["id"], $get);',
-            ["user_id" => 9, "username" => "eve", "role" => "user"],
-            ["id" => 1],
-            [],
-            '$pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (9,\'eve\',\'\',\'user\',\'e@x.com\',\'2026-01-01\')");'
-                . '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,5,\'Fremdes\',\'\',\'open\',0,\'2026-01-10\')");',
-        );
-
-        $this->assertSame("Keine Berechtigung", $output);
-    }
-
     public function testTodoRendersDetailAndEscapesFields(): void
     {
         $this->pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (2,'carol','','user','c@x.com','2026-01-01')");

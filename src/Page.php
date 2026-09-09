@@ -61,33 +61,6 @@ class Page
 
     /**
      * @param array<string, mixed> $get
-     * @return string
-     */
-    public function deleteTodo(int $id, array $get)
-    {
-        $auth = $this->app->auth();
-        $auth->requireLogin();
-        if (!$auth->canManage($id)) {
-            echo "Keine Berechtigung";
-            exit;
-        }
-        if (($get["confirm"] ?? "") == "1") {
-            $this->app->todos()->archive($id);
-            header("Location: index.php");
-            exit;
-        }
-        $t = $this->app->todos()->find($id);
-        $out = "<html><body>\n";
-        $out .= "<h1>Löschen?</h1>\n";
-        $out .= "<p>" . $this->text($t["title"]) . " wirklich archivieren?</p>\n";
-        $out .= "<a href=\"deletetodo.php?id=" . $this->attr($id) . "&confirm=1\">Ja</a> | <a href=\"index.php\">Nein</a>\n";
-        $out .= "</body></html>\n";
-
-        return $out;
-    }
-
-    /**
-     * @param array<string, mixed> $get
      * @param array<string, mixed> $post
      * @param array<string, mixed> $files
      * @return string|null

@@ -2,5 +2,5 @@
 
 require_once __DIR__ . "/../src/Bootstrap.php";
 $app = \Art4\LegacyTodo\Bootstrap::start();
-$page = new \Art4\LegacyTodo\Page($app);
-echo $page->deleteTodo((int) $_GET["id"], $_GET);
+$handler = new \Art4\LegacyTodo\DeleteTodoHandler($app);
+echo $handler->handle((int) $_GET["id"], $_GET);
