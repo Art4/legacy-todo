@@ -29,7 +29,9 @@ final class FrontControllerE2ETest extends E2eTestCase
         $this->assertStringContainsString('Zweites Todo', $dashboard->body());
         $this->assertStringContainsString('Eingeloggt als user', $dashboard->body());
 
+        $createToken = $this->csrfTokenFrom($this->http->request('GET', '/addtodo.php'));
         $create = $this->http->request('POST', '/addtodo.php', [
+            '_csrf_token' => $createToken,
             'save' => 'Speichern',
             'title' => 'E2E Neues Todo',
             'text' => 'E2E Beschreibung',
@@ -43,7 +45,9 @@ final class FrontControllerE2ETest extends E2eTestCase
         $afterCreate = $this->http->request('GET', '/index.php');
         $this->assertStringContainsString('E2E Neues Todo', $afterCreate->body());
 
+        $editToken = $this->csrfTokenFrom($this->http->request('GET', '/edittodo.php?id=' . $id));
         $edit = $this->http->request('POST', '/edittodo.php?id=' . $id, [
+            '_csrf_token' => $editToken,
             'save' => 'Speichern',
             'title' => 'E2E Geändertes Todo',
             'text' => 'E2E Neuer Text',
@@ -57,7 +61,9 @@ final class FrontControllerE2ETest extends E2eTestCase
         $this->assertStringContainsString('E2E Geändertes Todo', $detail->body());
         $this->assertStringContainsString('E2E Neuer Text', $detail->body());
 
+        $commentToken = $this->csrfTokenFrom($detail);
         $comment = $this->http->request('POST', '/todo.php?id=' . $id, [
+            '_csrf_token' => $commentToken,
             'add_comment' => 'Kommentieren',
             'body' => 'E2E Kommentar',
         ]);
@@ -89,7 +95,9 @@ final class FrontControllerE2ETest extends E2eTestCase
 
     public function testBadLoginRejected(): void
     {
+        $token = $this->csrfTokenFromLoginForm();
         $response = $this->http->request('POST', '/login.php', [
+            '_csrf_token' => $token,
             'login' => '1',
             'username' => 'user',
             'password' => 'wrong-password',
@@ -166,7 +174,10 @@ final class FrontControllerE2ETest extends E2eTestCase
         $tmpFile = (string) tempnam(sys_get_temp_dir(), 'e2e-upload-');
         file_put_contents($tmpFile, 'e2e upload content');
 
+        $uploadToken = $this->csrfTokenFrom($this->http->request('GET', '/addtodo.php'));
+
         $response = $this->http->request('POST', '/addtodo.php', [
+            '_csrf_token' => $uploadToken,
             'save' => 'Speichern',
             'title' => 'E2E Upload Todo',
             'text' => 'Mit Upload',
