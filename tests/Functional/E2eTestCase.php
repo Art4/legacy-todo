@@ -89,7 +89,9 @@ abstract class E2eTestCase extends \PHPUnit\Framework\TestCase
 
     protected function login(string $username, string $password): E2eResponse
     {
+        $token = $this->csrfTokenFromLoginForm();
         $response = $this->http->request('POST', '/login.php', [
+            '_csrf_token' => $token,
             'login' => '1',
             'username' => $username,
             'password' => $password,
@@ -97,6 +99,22 @@ abstract class E2eTestCase extends \PHPUnit\Framework\TestCase
         $this->assertRedirect($response, 'index.php');
 
         return $response;
+    }
+
+    protected function csrfTokenFromLoginForm(): string
+    {
+        $form = $this->http->request('GET', '/login.php');
+
+        return $this->csrfTokenFrom($form);
+    }
+
+    protected function csrfTokenFrom(E2eResponse $response): string
+    {
+        if (preg_match('/name="_csrf_token" value="([^"]+)"/', $response->body(), $match) !== 1) {
+            $this->fail('no _csrf_token field found in response body');
+        }
+
+        return $match[1];
     }
 
     protected function assertRedirect(E2eResponse $response, string $target): void

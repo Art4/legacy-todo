@@ -39,6 +39,21 @@ class Page
         return htmlspecialchars((string) $value, ENT_QUOTES);
     }
 
+    private function csrfField(): string
+    {
+        return '<input type="hidden" name="_csrf_token" value="' . $this->attr($this->app->auth()->csrfToken()) . '">';
+    }
+
+    /** @param array<string, mixed> $post */
+    private function requireCsrfToken(array $post): void
+    {
+        if (!empty($post) && !$this->app->auth()->validateCsrfToken($post["_csrf_token"] ?? null)) {
+            http_response_code(403);
+            echo "CSRF token invalid";
+            exit;
+        }
+    }
+
     public function header(): string
     {
         $siteName = $this->app->siteName();
@@ -71,6 +86,7 @@ class Page
      */
     public function login(array $post)
     {
+        $this->requireCsrfToken($post);
         $auth = $this->app->auth();
         $users = $this->app->users();
         $out = "";
@@ -105,12 +121,14 @@ class Page
             $out .= "<p>" . $this->text($msg) . "</p>\n";
         }
         $out .= "<form method='post'>\n";
+        $out .= $this->csrfField() . "\n";
         $out .= "<input name='username' placeholder='Username' value='" . $this->attr($post["username"] ?? "") . "'>\n";
         $out .= "<input name='password' type='password' placeholder='Password'>\n";
         $out .= "<input type='submit' name='login' value='Login'>\n";
         $out .= "</form>\n";
         $out .= "<h2>Registrieren</h2>\n";
         $out .= "<form method=\"post\">\n";
+        $out .= $this->csrfField() . "\n";
         $out .= "<input name=\"username\" placeholder=\"Username\">\n";
         $out .= "<input name=\"password\" type=\"password\" placeholder=\"Password\">\n";
         $out .= "<input name=\"email\" placeholder=\"Email\" value=\"" . $this->attr($post["email"] ?? "") . "\">\n";
@@ -157,6 +175,7 @@ class Page
      */
     public function todo(int $id, array $get, array $post, array $files)
     {
+        $this->requireCsrfToken($post);
         $auth = $this->app->auth();
         $todos = $this->app->todos();
         $activity = $this->app->todoActivity();
@@ -218,11 +237,13 @@ class Page
         }
         $out .= "<h3>Kommentar hinzufügen</h3>\n";
         $out .= "<form method=\"post\">\n";
+        $out .= $this->csrfField() . "\n";
         $out .= "<textarea name=\"body\"></textarea>\n";
         $out .= "<input type=\"submit\" name=\"add_comment\" value=\"Kommentieren\">\n";
         $out .= "</form>\n";
         $out .= "<h3>Zuweisen</h3>\n";
         $out .= "<form method=\"post\">\n";
+        $out .= $this->csrfField() . "\n";
         $out .= "<select name=\"assignee\">\n";
         foreach ($users->listAll() as $u) {
             $out .= "<option value='" . $this->attr($u["id"]) . "'>" . $this->text($u["username"]) . "</option>\n";
@@ -243,6 +264,7 @@ class Page
      */
     public function addTodo(array $post, array $files)
     {
+        $this->requireCsrfToken($post);
         $auth = $this->app->auth();
         $auth->requireLogin("addtodo.php");
         $out = "";
@@ -277,6 +299,7 @@ class Page
             $out .= "<p>" . $this->text($msg) . "</p>\n";
         }
         $out .= "<form method='post' enctype='multipart/form-data'>\n";
+        $out .= $this->csrfField() . "\n";
         $out .= "<input name='title' placeholder='Titel' value='" . $this->attr($post["title"] ?? "") . "'>\n";
         $out .= "<textarea name='text'>" . $this->text($post["text"] ?? "") . "</textarea>\n";
         $out .= "<select name='priority'>\n";
@@ -305,6 +328,7 @@ class Page
      */
     public function editTodo(int $id, array $post)
     {
+        $this->requireCsrfToken($post);
         $auth = $this->app->auth();
         $auth->requireLogin();
         if (!$auth->canManage($id)) {
@@ -329,6 +353,7 @@ class Page
         $out .= "<html><body>\n";
         $out .= "<h1>Todo bearbeiten</h1>\n";
         $out .= "<form method='post'>\n";
+        $out .= $this->csrfField() . "\n";
         $out .= "<input name='title' value='" . $this->attr($t["title"] ?? "") . "'>\n";
         $out .= "<textarea name='text'>" . $this->text($t["text"] ?? "") . "</textarea>\n";
         $out .= "<select name='priority'>\n";
@@ -357,6 +382,7 @@ class Page
      */
     public function admin(array $post)
     {
+        $this->requireCsrfToken($post);
         $auth = $this->app->auth();
         $auth->requireLogin();
         $auth->requireRole("admin");
@@ -412,6 +438,7 @@ class Page
         }
         $out .= "</ul>\n";
         $out .= "<form method=\"post\">\n";
+        $out .= $this->csrfField() . "\n";
         $out .= "<input name=\"username\" placeholder=\"Username\">\n";
         $out .= "<input name=\"password\" placeholder=\"Password\">\n";
         $out .= "<select name=\"role\"><option value=\"user\">user</option><option value=\"admin\">admin</option></select>\n";
@@ -424,6 +451,7 @@ class Page
         }
         $out .= "</ul>\n";
         $out .= "<form method=\"post\">\n";
+        $out .= $this->csrfField() . "\n";
         $out .= "<input name=\"kategorie\" placeholder=\"Kategorie (kategorie)\">\n";
         $out .= "<input name=\"cat\" placeholder=\"cat\">\n";
         $out .= "<input name=\"category\" placeholder=\"category\">\n";
@@ -436,6 +464,7 @@ class Page
         }
         $out .= "</ul>\n";
         $out .= "<form method=\"post\">\n";
+        $out .= $this->csrfField() . "\n";
         $out .= "<input name=\"tag\" placeholder=\"Tag\">\n";
         $out .= "<input type=\"submit\" name=\"add_tag\" value=\"Tag\">\n";
         $out .= "</form>\n";

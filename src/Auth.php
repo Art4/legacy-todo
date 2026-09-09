@@ -5,6 +5,16 @@ namespace Art4\LegacyTodo;
 require_once __DIR__ . "/Users.php";
 require_once __DIR__ . "/Todos.php";
 
+/**
+ * Single responsible module: owns login state, permission decisions, and the
+ * CSRF token contract shared by every state-changing form. The public-method
+ * count exceeds the PHPMD threshold by design (session reads/writes, identity,
+ * roles, redirect, token issue + validation); PHPMD is a Signal producer here
+ * (see phpmd.xml.dist), so it is suppressed rather than forcing a shallower
+ * decomposition.
+ *
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ */
 class Auth
 {
     /** @var \PDO */
@@ -135,5 +145,20 @@ class Auth
         }
         header("Location: " . $url);
         exit;
+    }
+
+    public function csrfToken(): string
+    {
+        if (empty($this->session["csrf_token"])) {
+            $this->session["csrf_token"] = bin2hex(random_bytes(32));
+        }
+
+        return $this->session["csrf_token"];
+    }
+
+    /** @param string|null $token */
+    public function validateCsrfToken($token): bool
+    {
+        return hash_equals($this->csrfToken(), $token ?? "");
     }
 }

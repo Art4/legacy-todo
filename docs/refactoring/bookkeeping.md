@@ -8,13 +8,13 @@
 - none
 
 **Skip streak:**
+- psr-4: 1
 
 **Fulfilled nodes:**
 - git
 - loop-config (#72)
 - is-php-project
 - composer (#75)
-- psr-4 (#116)
 - ci-runner (#78)
 - editorconfig (#83)
 - php-cs-fixer (#88)
@@ -37,7 +37,5 @@
 - rector-phpunit-set (#113)
 - composer-audit (#153)
 - php-minimal-version
-- php-structural-scan (#171)
-- structural-scan (#171)
 - secret-detection (#181)
 - phpmd (#187)
