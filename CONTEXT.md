@@ -55,3 +55,7 @@ _Avoid_: per-page comment/assignment SQL
 **Taxonomy**:
 The single data-access module (`Art4\LegacyTodo\Taxonomy`) that owns every read and mutation of the Todo classification data — the `categories`, `tags`, and `todo_tags` tables: list categories, list tags, create category, create tag, category names for a batch of todos, tags for a batch of todos.
 _Avoid_: per-page category/tag SQL
+
+**End-to-end suite**:
+The automated HTTP-level test suite under `tests/Functional/` that boots the real app and drives it with real HTTP requests — a built-in server serving the real `public/` docroot, a fresh seeded SQLite database selected via the `LEGACY_TODO_DB_FILE` env override, and real session cookies. It replaces the manual per-PR click-through as the guard against request-time regressions (the #194 class: something that loads fine under PSR-4 in unit tests yet is unreachable via Bootstrap's require list at a real request).
+_Avoid_: manual per-PR click-through as the request-time regression guard; unit tests as proof of request-time reachability
