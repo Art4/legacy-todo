@@ -3,6 +3,7 @@
 namespace Art4\LegacyTodo;
 
 require_once __DIR__ . "/../vendor/autoload.php";
+require_once __DIR__ . "/AdminHandler.php";
 require_once __DIR__ . "/AddTodoHandler.php";
 require_once __DIR__ . "/Auth.php";
 require_once __DIR__ . "/Csrf.php";

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
+use Art4\LegacyTodo\AdminHandler;
 use Art4\LegacyTodo\Bootstrap;
-use Art4\LegacyTodo\Page;
 
-final class PageTest extends PHPUnit\Framework\TestCase
+final class AdminHandlerTest extends PHPUnit\Framework\TestCase
 {
     /** @var \PDO */
     private $pdo;
@@ -13,8 +13,8 @@ final class PageTest extends PHPUnit\Framework\TestCase
     /** @var array<string, mixed> */
     private $session;
 
-    /** @var Page */
-    private $page;
+    /** @var AdminHandler */
+    private $handler;
 
     protected function setUp(): void
     {
@@ -29,8 +29,8 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->pdo->exec('CREATE TABLE IF NOT EXISTS assignments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, assigned_by INTEGER)');
         $this->session = [];
         $app = new Bootstrap($this->pdo, $this->session, 'Legacy Todo');
-        $this->page = new Page($app);
         $this->session['csrf_token'] = $app->auth()->csrfToken();
+        $this->handler = new AdminHandler($app);
     }
 
     public function testAdminRendersUsersCategoriesAndTagsEscaped(): void
@@ -42,7 +42,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->page->admin([]);
+        $output = $this->handler->handle([]);
 
         $this->assertStringContainsString('<h1>Admin</h1>', $output);
         $this->assertStringContainsString('<li>&lt;b&gt;alice&lt;/b&gt; - admin - a@x.com</li>', $output);
@@ -56,7 +56,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->page->admin(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "", "cat" => "", "category" => ""]);
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "", "cat" => "", "category" => ""]);
 
         $this->assertStringContainsString('Name fehlt', $output);
     }
@@ -67,7 +67,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->page->admin(["_csrf_token" => $this->session['csrf_token'], "add_tag" => "Tag", "tag" => "neu"]);
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_tag" => "Tag", "tag" => "neu"]);
 
         $this->assertStringContainsString('<li>neu</li>', $output);
     }
