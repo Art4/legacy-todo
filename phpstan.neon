@@ -20,13 +20,9 @@ parameters:
     ignoreErrors:
         -
             # PHPMD's @SuppressWarnings(PHPMD.X) annotation is not valid PHPDoc
-            # for PHPStan's parser; we keep it on Page.php and Bootstrap.php so
-            # PHPMD's structural findings (wide seam interface, module-locator
-            # accessor count) are documented-as-suppressed rather than misread
-            # as parse errors.
-            identifier: phpDoc.parseError
-            path: src/Page.php
-        -
+            # for PHPStan's parser; we keep it on Bootstrap.php so PHPMD's
+            # structural finding (module-locator accessor count) is
+            # documented-as-suppressed rather than misread as a parse error.
             identifier: phpDoc.parseError
             path: src/Bootstrap.php
         -

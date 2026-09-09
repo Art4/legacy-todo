@@ -12,7 +12,6 @@ require_once __DIR__ . "/DeleteTodoHandler.php";
 require_once __DIR__ . "/EditTodoHandler.php";
 require_once __DIR__ . "/Layout.php";
 require_once __DIR__ . "/LoginHandler.php";
-require_once __DIR__ . "/Page.php";
 require_once __DIR__ . "/Todos.php";
 require_once __DIR__ . "/Uploads.php";
 require_once __DIR__ . "/TodoHandler.php";

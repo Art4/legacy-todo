@@ -51,7 +51,6 @@ final class RunCliHelper
             . '$_POST = ' . var_export($post, true) . ';'
             . '$_FILES = ' . var_export($files, true) . ';'
             . '$app = ' . $bootstrapArgs . ';'
-            . '$page = new \Art4\LegacyTodo\Page($app);'
             . '$get = ' . var_export($get, true) . ';'
             . '$session = ' . var_export($session, true) . ';'
             . '$post = ' . var_export($post, true) . ';'
