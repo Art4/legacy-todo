@@ -71,7 +71,7 @@ class Bootstrap
     }
 
     /**
-     * @param array{db_file?: string, siteName?: string, uploads_dir?: string} $config
+     * @param array{db_file?: string, siteName?: string} $config
      * @return self
      */
     public static function start(array $config = [])
@@ -85,7 +85,7 @@ class Bootstrap
         self::createSchema($pdo);
         self::seedIfEmpty($pdo);
 
-        return new self($pdo, $_SESSION, $config['siteName'] ?? 'Legacy Todo', $config['uploads_dir'] ?? null);
+        return new self($pdo, $_SESSION, $config['siteName'] ?? 'Legacy Todo');
     }
 
     /** @param string $dbFile */
