@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Art4\LegacyTodo\E2eTestCase;
+
 /**
  * Boot proof and the full end-to-end journey scenarios against the running
  * app: real HTTP requests to the public/ entry points, a real seeded SQLite

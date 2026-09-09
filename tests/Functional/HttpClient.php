@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Art4\LegacyTodo;
+
 /**
  * curl wrapper around the built-in test server. One cookie jar per instance
  * (per test method), redirects asserted but not traversed unless asked.

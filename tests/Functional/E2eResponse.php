@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Art4\LegacyTodo;
+
 /**
  * Value object over one raw HTTP response from the built-in test server.
  */

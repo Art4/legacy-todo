@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+namespace Art4\LegacyTodo;
+
 /**
  * Boots a fresh isolated app instance per test method: a PHP built-in server
  * against the repo's real docroot (public/), a fresh temp SQLite file wired
  * in through the LEGACY_TODO_DB_FILE env seam, and one cookie jar per test.
  */
-abstract class E2eTestCase extends PHPUnit\Framework\TestCase
+abstract class E2eTestCase extends \PHPUnit\Framework\TestCase
 {
     /** @var string */
     private $dbFile;
@@ -151,7 +153,7 @@ abstract class E2eTestCase extends PHPUnit\Framework\TestCase
     private function throwSetupFailure(string $message): void
     {
         $tail = $this->tailFile($this->serverStderr);
-        throw new RuntimeException($message . ($tail !== '' ? ":\n" . $tail : ''));
+        throw new \RuntimeException($message . ($tail !== '' ? ":\n" . $tail : ''));
     }
 
     /** @return string the last 30 lines of the file, or '' when unreadable */
