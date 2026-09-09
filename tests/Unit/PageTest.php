@@ -30,6 +30,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->session = [];
         $app = new Bootstrap($this->pdo, $this->session, 'Legacy Todo');
         $this->page = new Page($app);
+        $this->session['csrf_token'] = $app->auth()->csrfToken();
     }
 
     public function testTextEscapesHtmlSpecialCharacters(): void
@@ -93,11 +94,12 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->assertStringContainsString("name='username'", $output);
         $this->assertStringContainsString("name='password'", $output);
         $this->assertStringContainsString('name="register"', $output);
+        $this->assertStringContainsString('name="_csrf_token"', $output);
     }
 
     public function testLoginEscapesUsernameAndEmailInFormFields(): void
     {
-        $output = $this->page->login(["username" => '<a href="#">', "email" => 'a"&b']);
+        $output = $this->page->login(["_csrf_token" => $this->session['csrf_token'], "username" => '<a href="#">', "email" => 'a"&b']);
 
         $this->assertStringContainsString("value='&lt;a href=&quot;#&quot;&gt;'", $output);
         $this->assertStringContainsString('value="a&quot;&amp;b"', $output);
@@ -107,7 +109,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
     {
         $this->seedUser(["username" => "alice", "password" => "secret", "role" => "user", "email" => "alice@example.com"]);
 
-        $output = $this->page->login(["login" => "Login", "username" => "alice", "password" => "wrong"]);
+        $output = $this->page->login(["_csrf_token" => $this->session['csrf_token'], "login" => "Login", "username" => "alice", "password" => "wrong"]);
 
         $this->assertStringContainsString('Login failed', $output);
         $this->assertStringContainsString('<p>Login failed</p>', $output);
@@ -115,14 +117,14 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
     public function testRegisterSuccessRendersRegistriertMessage(): void
     {
-        $output = $this->page->login(["register" => "Registrieren", "username" => "bob", "password" => "pw", "email" => "bob@example.com"]);
+        $output = $this->page->login(["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "bob", "password" => "pw", "email" => "bob@example.com"]);
 
         $this->assertStringContainsString('<p>Registriert</p>', $output);
     }
 
     public function testRegisterWithEmptyFieldsReportsRegistriertDueToLooseComparison(): void
     {
-        $output = $this->page->login(["register" => "Registrieren", "username" => "", "password" => "", "email" => "x@example.com"]);
+        $output = $this->page->login(["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "", "password" => "", "email" => "x@example.com"]);
 
         $this->assertStringContainsString('<p>Registriert</p>', $output);
         $this->assertStringNotContainsString('Fehler:', $output);
@@ -134,9 +136,9 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
         $output = $this->runCli(
             'echo $page->login($_POST);',
+            $this->session,
             [],
-            [],
-            ["login" => "Login", "username" => "alice", "password" => "secret"],
+            ["_csrf_token" => $this->session['csrf_token'], "login" => "Login", "username" => "alice", "password" => "secret"],
         );
 
         $this->assertSame("Location: index.php", $output);
@@ -210,15 +212,16 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->assertStringContainsString("<p>&lt;script&gt;x&lt;/script&gt; - User 2 <a href='todo.php?id=" . $tid . "&del_comment=", (string) $output);
         $this->assertStringContainsString('<small>carol</small>', (string) $output);
         $this->assertStringContainsString("<option value='2'>carol</option>", (string) $output);
+        $this->assertStringContainsString('name="_csrf_token"', (string) $output);
     }
 
     public function testTodoAddCommentRedirectsToTodo(): void
     {
         $output = $this->runCli(
             'echo $page->todo((int) $get["id"], $get, $_POST, []);',
-            ["user_id" => 1, "username" => "alice", "role" => "admin"],
+            ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
             ["id" => 1],
-            ["add_comment" => "Kommentieren", "body" => "Neuer Kommentar"],
+            ["_csrf_token" => $this->session['csrf_token'], "add_comment" => "Kommentieren", "body" => "Neuer Kommentar"],
             '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,1,\'Titel\',\'\',\'open\',0,\'2026-01-10\')");',
         );
 
@@ -258,7 +261,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->page->addTodo(["title" => '<b>', "text" => 'a"b', "due_date" => '2026-01-01'], []);
+        $output = $this->page->addTodo(["_csrf_token" => $this->session['csrf_token'], "title" => '<b>', "text" => 'a"b', "due_date" => '2026-01-01'], []);
 
         $this->assertStringContainsString('<h1>Todo erstellen</h1>', (string) $output);
         $this->assertStringContainsString("value='&lt;b&gt;'", (string) $output);
@@ -272,7 +275,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->page->addTodo(["save" => "Speichern", "title" => "", "text" => "", "due_date" => ""], []);
+        $output = $this->page->addTodo(["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "", "text" => "", "due_date" => ""], []);
 
         $this->assertStringContainsString('Titel erforderlich', (string) $output);
         $this->assertStringContainsString('<p>Titel erforderlich</p>', (string) $output);
@@ -282,9 +285,9 @@ final class PageTest extends PHPUnit\Framework\TestCase
     {
         $output = $this->runCli(
             '$page->addTodo($_POST, []);',
-            ["user_id" => 1, "username" => "alice", "role" => "admin"],
+            ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
             [],
-            ["save" => "Speichern", "title" => "Neu", "text" => "Text", "priority" => "1", "due_date" => "2026-02-01"],
+            ["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "Neu", "text" => "Text", "priority" => "1", "due_date" => "2026-02-01"],
             '$pdo->exec("INSERT INTO categories (name,user_id) VALUES (\'Allgemein\',1)");',
         );
 
@@ -301,9 +304,9 @@ final class PageTest extends PHPUnit\Framework\TestCase
         try {
             $output = $this->runCli(
                 '$page->addTodo($_POST, $_FILES);',
-                ["user_id" => 1, "username" => "alice", "role" => "admin"],
+                ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
                 [],
-                ["save" => "Speichern", "title" => "Upload-Todo", "text" => "", "priority" => "1", "due_date" => "2026-02-01"],
+                ["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "Upload-Todo", "text" => "", "priority" => "1", "due_date" => "2026-02-01"],
                 '$pdo->exec("INSERT INTO categories (name,user_id) VALUES (\'Allgemein\',1)");',
                 $uploadsDir,
                 ["upload" => ["name" => "upload.png", "tmp_name" => $tmp, "error" => UPLOAD_ERR_OK, "size" => 9]],
@@ -356,7 +359,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->page->editTodo($id, ["save" => "Speichern", "title" => "", "text" => "", "priority" => "1", "status" => "open"]);
+        $output = $this->page->editTodo($id, ["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "", "text" => "", "priority" => "1", "status" => "open"]);
 
         $this->assertStringContainsString('Titel erforderlich', $output);
     }
@@ -365,9 +368,9 @@ final class PageTest extends PHPUnit\Framework\TestCase
     {
         $output = $this->runCli(
             'echo $page->editTodo((int) $get["id"], $_POST);',
-            ["user_id" => 9, "username" => "eve", "role" => "user"],
+            ["user_id" => 9, "username" => "eve", "role" => "user", "csrf_token" => $this->session['csrf_token']],
             ["id" => 1],
-            ["save" => "Speichern", "title" => "X", "text" => "", "priority" => "2", "status" => "open"],
+            ["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "X", "text" => "", "priority" => "2", "status" => "open"],
             '$pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (9,\'eve\',\'\',\'user\',\'e@x.com\',\'2026-01-01\')");'
                 . '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,5,\'Fremdes\',\'\',\'open\',0,\'2026-01-10\')");',
         );
@@ -378,9 +381,9 @@ final class PageTest extends PHPUnit\Framework\TestCase
     {
         $output = $this->runCli(
             '$page->editTodo((int) $get["id"], $_POST);',
-            ["user_id" => 1, "username" => "alice", "role" => "admin"],
+            ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
             ["id" => 1],
-            ["save" => "Speichern", "title" => "Neu", "text" => "", "priority" => "2", "status" => "open"],
+            ["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "Neu", "text" => "", "priority" => "2", "status" => "open"],
             '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,1,\'Alt\',\'\',\'open\',0,\'2026-01-10\')");',
         );
 
@@ -410,7 +413,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->page->admin(["add_cat" => "Kategorie", "kategorie" => "", "cat" => "", "category" => ""]);
+        $output = $this->page->admin(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "", "cat" => "", "category" => ""]);
 
         $this->assertStringContainsString('Name fehlt', $output);
     }
@@ -421,9 +424,43 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->page->admin(["add_tag" => "Tag", "tag" => "neu"]);
+        $output = $this->page->admin(["_csrf_token" => $this->session['csrf_token'], "add_tag" => "Tag", "tag" => "neu"]);
 
         $this->assertStringContainsString('<li>neu</li>', $output);
+    }
+
+    public function testPostWithoutCsrfTokenReturns403(): void
+    {
+        $output = $this->runCli(
+            'echo $page->login($_POST);',
+            [],
+            [],
+            ["login" => "Login", "username" => "alice", "password" => "secret"],
+        );
+
+        $this->assertSame("CSRF token invalid", $output);
+    }
+
+    public function testPostWithInvalidCsrfTokenReturns403(): void
+    {
+        $output = $this->runCli(
+            'echo $page->login($_POST);',
+            ["csrf_token" => $this->session['csrf_token']],
+            [],
+            ["_csrf_token" => "wrong-token", "login" => "Login", "username" => "alice", "password" => "secret"],
+        );
+
+        $this->assertSame("CSRF token invalid", $output);
+    }
+
+    public function testPostWithValidCsrfTokenProceeds(): void
+    {
+        $this->seedUser(["username" => "alice", "password" => "secret", "role" => "user", "email" => "alice@example.com"]);
+
+        $output = $this->page->login(["_csrf_token" => $this->session['csrf_token'], "login" => "Login", "username" => "alice", "password" => "wrong"]);
+
+        $this->assertStringContainsString('Login failed', $output);
+        $this->assertStringNotContainsString('CSRF token invalid', $output);
     }
 
     private function runCli(string $body, array $session, array $get, array $post, string $setup = '', string $uploadsDir = '', array $files = []): string
