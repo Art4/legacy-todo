@@ -2,5 +2,5 @@
 
 require_once __DIR__ . "/../src/Bootstrap.php";
 $app = \Art4\LegacyTodo\Bootstrap::start();
-$page = new \Art4\LegacyTodo\Page($app);
-echo $page->editTodo((int) $_GET["id"], $_POST);
+$handler = new \Art4\LegacyTodo\EditTodoHandler($app);
+echo $handler->handle((int) $_GET["id"], $_POST);
