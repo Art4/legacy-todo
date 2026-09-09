@@ -24,7 +24,7 @@ token (lazily generated, stored in the session, compared with `hash_equals`) and
 state-changing POST form via `csrfField()` and rejects any non-empty POST without a matching token at
 the top of each handler with an HTTP 403 and `exit`.
 
-The two GET-based state changes are OOT of scope for this MR and stay as-is.
+The two GET-based state changes are out of scope for this MR and stay as-is.
 
 ## Consequences
 
