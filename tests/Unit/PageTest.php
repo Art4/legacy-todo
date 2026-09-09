@@ -291,6 +291,38 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->assertSame("Location: index.php", $output);
     }
 
+    public function testAddTodoWithUploadStoresViaUploadsModuleAndRedirects(): void
+    {
+        $uploadsDir = sys_get_temp_dir() . '/legacy-todo-page-uploads-' . bin2hex(random_bytes(4));
+        mkdir($uploadsDir, 0777, true);
+        $tmp = tempnam(sys_get_temp_dir(), 'legacy-todo-page-up-');
+        file_put_contents($tmp, 'file-body');
+
+        try {
+            $output = $this->runCli(
+                '$page->addTodo($_POST, $_FILES);',
+                ["user_id" => 1, "username" => "alice", "role" => "admin"],
+                [],
+                ["save" => "Speichern", "title" => "Upload-Todo", "text" => "", "priority" => "1", "due_date" => "2026-02-01"],
+                '$pdo->exec("INSERT INTO categories (name,user_id) VALUES (\'Allgemein\',1)");',
+                $uploadsDir,
+                ["upload" => ["name" => "upload.png", "tmp_name" => $tmp, "error" => UPLOAD_ERR_OK, "size" => 9]],
+            );
+
+            $this->assertSame("Location: index.php", $output);
+            $files = glob($uploadsDir . '/*') ?: [];
+            $this->assertCount(1, $files);
+            $this->assertStringNotContainsString('upload.png', basename($files[0]));
+            $this->assertSame('file-body', file_get_contents($files[0]));
+        } finally {
+            @unlink($tmp);
+            foreach (glob($uploadsDir . '/*') ?: [] as $file) {
+                @unlink($file);
+            }
+            @rmdir($uploadsDir);
+        }
+    }
+
     public function testEditTodoRendersFormAndEscapesFields(): void
     {
         $id = $this->seedTodo(["user_id" => 1, "title" => '<b>T</b>', "text" => 'x"y', "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
@@ -394,10 +426,21 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->assertStringContainsString('<li>neu</li>', $output);
     }
 
-    private function runCli(string $body, array $session, array $get, array $post, string $setup = ''): string
+    private function runCli(string $body, array $session, array $get, array $post, string $setup = '', string $uploadsDir = '', array $files = []): string
     {
         $hash = md5('secret');
-        $script = 'namespace Art4\\LegacyTodo { function header($line) { echo $line; } }'
+        $moveOverride = '';
+        if ($uploadsDir !== '') {
+            $moveOverride = ' function move_uploaded_file($source, $dest) { return copy($source, $dest); } ';
+        }
+        $bootstrapArgs = 'new Art4\\LegacyTodo\\Bootstrap($pdo, $_SESSION, "Legacy Todo"';
+        if ($uploadsDir !== '') {
+            $bootstrapArgs .= ', ' . var_export($uploadsDir, true);
+        }
+        $bootstrapArgs .= ')';
+        $script = 'namespace Art4\\LegacyTodo { function header($line) { echo $line; }'
+            . $moveOverride
+            . '}'
             . 'namespace {'
             . 'require ' . var_export(__DIR__ . '/../../vendor/autoload.php', true) . ';'
             . '$pdo = new PDO("sqlite::memory:");'
@@ -413,7 +456,8 @@ final class PageTest extends PHPUnit\Framework\TestCase
             . '$_SESSION = ' . var_export($session, true) . ';'
             . '$_GET = ' . var_export($get, true) . ';'
             . '$_POST = ' . var_export($post, true) . ';'
-            . '$app = new Art4\\LegacyTodo\\Bootstrap($pdo, $_SESSION, "Legacy Todo");'
+            . '$_FILES = ' . var_export($files, true) . ';'
+            . '$app = ' . $bootstrapArgs . ';'
             . '$page = new Art4\\LegacyTodo\\Page($app);'
             . '$get = ' . var_export($get, true) . ';'
             . '$session = ' . var_export($session, true) . ';'
