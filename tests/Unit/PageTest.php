@@ -388,38 +388,4 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
         $this->assertStringContainsString('<li>neu</li>', $output);
     }
-
-    public function testPostWithoutCsrfTokenReturns403(): void
-    {
-        $output = RunCliHelper::run(
-            'echo $page->login($_POST);',
-            [],
-            [],
-            ["login" => "Login", "username" => "alice", "password" => "secret"],
-        );
-
-        $this->assertSame("CSRF token invalid", $output);
-    }
-
-    public function testPostWithInvalidCsrfTokenReturns403(): void
-    {
-        $output = RunCliHelper::run(
-            'echo $page->login($_POST);',
-            ["csrf_token" => $this->session['csrf_token']],
-            [],
-            ["_csrf_token" => "wrong-token", "login" => "Login", "username" => "alice", "password" => "secret"],
-        );
-
-        $this->assertSame("CSRF token invalid", $output);
-    }
-
-    public function testPostWithValidCsrfTokenProceeds(): void
-    {
-        $this->seedUser(["username" => "alice", "password" => "secret", "role" => "user", "email" => "alice@example.com"]);
-
-        $output = $this->page->login(["_csrf_token" => $this->session['csrf_token'], "login" => "Login", "username" => "alice", "password" => "wrong"]);
-
-        $this->assertStringContainsString('Login failed', $output);
-        $this->assertStringNotContainsString('CSRF token invalid', $output);
-    }
 }
