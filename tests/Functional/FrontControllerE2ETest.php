@@ -108,6 +108,89 @@ final class FrontControllerE2ETest extends E2eTestCase
         $this->assertRedirect($addTodo, 'login.php?next=addtodo.php');
     }
 
+    public function testAllEightEntryPointsServeWithoutFatalAsAdmin(): void
+    {
+        $this->login('admin', 'admin123');
+
+        $admin = null;
+        // order matters: logout.php destroys the session, so it comes last
+        $entryPoints = [
+            '/login.php' => 200,
+            '/index.php' => 200,
+            '/addtodo.php' => 200,
+            '/todo.php' => 200,
+            '/edittodo.php' => 200,
+            '/deletetodo.php' => 200,
+            '/admin.php' => 200,
+            '/logout.php' => 302,
+        ];
+        foreach ($entryPoints as $path => $expectedStatus) {
+            $response = $this->http->request('GET', $path);
+            $this->assertSame($expectedStatus, $response->status(), 'unexpected status for ' . $path);
+            $this->assertStringNotContainsString('Fatal error', $response->body(), 'request-time fatal on ' . $path);
+            $this->assertStringNotContainsString('Class "Art4\LegacyTodo\\', $response->body(), 'missing class on ' . $path);
+            if ($path === '/admin.php') {
+                $admin = $response;
+            }
+        }
+        if ($admin === null) {
+            $this->fail('admin.php response was not captured');
+        }
+
+        $this->assertStringContainsString('Admin', $admin->body());
+        $this->assertStringContainsString('Benutzer', $admin->body());
+        $this->assertStringContainsString('Kategorien', $admin->body());
+    }
+
+    public function testTodoNotFoundRendersNotfound(): void
+    {
+        $this->login('user', 'user123');
+
+        $response = $this->http->request('GET', '/todo.php?id=99999');
+
+        $this->assertSame(200, $response->status());
+        $this->assertStringContainsString('Not found', $response->body());
+    }
+
+    public function testUploadViaAddTodoStoresFileInWebroot(): void
+    {
+        $this->login('user', 'user123');
+
+        $uploadsDir = dirname(__DIR__) . '/../public/uploads';
+        $before = glob($uploadsDir . '/*');
+        $before = $before !== false ? $before : [];
+
+        $tmpFile = (string) tempnam(sys_get_temp_dir(), 'e2e-upload-');
+        file_put_contents($tmpFile, 'e2e upload content');
+
+        $response = $this->http->request('POST', '/addtodo.php', [
+            'save' => 'Speichern',
+            'title' => 'E2E Upload Todo',
+            'text' => 'Mit Upload',
+            'priority' => '2',
+            'due_date' => '2026-12-31',
+        ], [
+            'upload' => [
+                'tmp_name' => $tmpFile,
+                'name' => 'notiz.txt',
+                'type' => 'text/plain',
+            ],
+        ]);
+        @unlink($tmpFile);
+
+        $this->assertRedirect($response, 'index.php');
+        $this->assertGreaterThan(0, $this->todoIdByTitle('E2E Upload Todo'));
+
+        $after = glob($uploadsDir . '/*');
+        $after = $after !== false ? $after : [];
+        $newFiles = array_values(array_diff($after, $before));
+        $this->assertCount(1, $newFiles);
+        $stored = $newFiles[0];
+        $this->assertStringEndsWith('.txt', $stored);
+        $this->assertFileExists($stored);
+        $this->trackUploadedFile($stored);
+    }
+
     private function todoIdByTitle(string $title): int
     {
         $stmt = $this->dbPdo()->prepare('SELECT id FROM todos WHERE title = ?');
