@@ -14,6 +14,7 @@ require_once __DIR__ . "/LoginHandler.php";
 require_once __DIR__ . "/Page.php";
 require_once __DIR__ . "/Todos.php";
 require_once __DIR__ . "/Uploads.php";
+require_once __DIR__ . "/TodoHandler.php";
 require_once __DIR__ . "/Users.php";
 require_once __DIR__ . "/TodoActivity.php";
 require_once __DIR__ . "/Taxonomy.php";
