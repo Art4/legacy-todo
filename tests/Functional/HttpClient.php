@@ -100,7 +100,7 @@ final class HttpClient
     {
         $parts = explode("\r\n\r\n", $raw, 2);
         $headerLines = explode("\r\n", $parts[0]);
-        $statusLine = (string) array_shift($headerLines);
+        $statusLine = array_shift($headerLines);
         preg_match('#^HTTP/\S+\s+(\d+)#', $statusLine, $statusMatch);
         $status = isset($statusMatch[1]) ? (int) $statusMatch[1] : 0;
         $headers = [];
