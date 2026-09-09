@@ -81,7 +81,7 @@ class Bootstrap
         }
         date_default_timezone_set('UTC');
 
-        $pdo = self::connect($config['db_file'] ?? dirname(__DIR__) . '/database.sqlite');
+        $pdo = self::connect($config['db_file'] ?? (getenv('LEGACY_TODO_DB_FILE') ?: dirname(__DIR__) . '/database.sqlite'));
         self::createSchema($pdo);
         self::seedIfEmpty($pdo);
 
