@@ -18,7 +18,6 @@ final class PublicWebrootTest extends PHPUnit\Framework\TestCase
     private const INTERNAL_FILES = [
         'composer.json',
         'composer.lock',
-        'config.php',
         'database.sqlite',
         'phpstan-baseline.neon',
         'phpstan.neon',

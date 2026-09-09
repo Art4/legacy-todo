@@ -18,7 +18,6 @@
         </include>
         <exclude>
             <directory>vendor</directory>
-            <directory>old</directory>
         </exclude>
     </source>
 </phpunit>

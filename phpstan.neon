@@ -7,16 +7,12 @@ parameters:
     paths:
         - public/addtodo.php
         - public/admin.php
-        - config.php
-        - db.php
         - public/deletetodo.php
         - public/edittodo.php
-        - functions.php
         - src
         - public/index.php
         - public/login.php
         - public/logout.php
-        - old
         - public/todo.php
     excludePaths:
         - vendor
