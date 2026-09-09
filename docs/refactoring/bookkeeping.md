@@ -5,10 +5,9 @@
 **Focus areas:** none
 
 **Pending candidates:**
-- #200
+- none
 
 **Skip streak:**
-- none
 
 **Fulfilled nodes:**
 - git
