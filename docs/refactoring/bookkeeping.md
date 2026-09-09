@@ -8,7 +8,6 @@
 - none
 
 **Skip streak:**
-- none
 
 **Fulfilled nodes:**
 - git

@@ -9,11 +9,8 @@ return RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/public/addtodo.php',
         __DIR__ . '/public/admin.php',
-        __DIR__ . '/config.php',
-        __DIR__ . '/db.php',
         __DIR__ . '/public/deletetodo.php',
         __DIR__ . '/public/edittodo.php',
-        __DIR__ . '/functions.php',
         __DIR__ . '/public/index.php',
         __DIR__ . '/public/login.php',
         __DIR__ . '/public/logout.php',
