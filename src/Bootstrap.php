@@ -6,10 +6,22 @@ require_once __DIR__ . "/Auth.php";
 require_once __DIR__ . "/Dashboard.php";
 require_once __DIR__ . "/Page.php";
 require_once __DIR__ . "/Todos.php";
+require_once __DIR__ . "/Uploads.php";
 require_once __DIR__ . "/Users.php";
 require_once __DIR__ . "/TodoActivity.php";
 require_once __DIR__ . "/Taxonomy.php";
 
+/**
+ * Single responsible module: owns the application composition root behind the
+ * bootstrap seam. It is a module locator exposing one lazy accessor per owned
+ * module (auth, todos, users, uploads, taxonomy, …), which is its entire
+ * reason to exist, so the resulting public-method count exceeds the PHPMD
+ * threshold by design. PHPMD is a Signal producer here (see phpmd.xml.dist),
+ * so this structural finding is suppressed rather than forcing a shallower
+ * decomposition.
+ *
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ */
 class Bootstrap
 {
     /** @var \PDO */
@@ -33,17 +45,24 @@ class Bootstrap
     /** @var Users|null */
     private $users;
 
+    /** @var Uploads|null */
+    private $uploads;
+
     /** @var TodoActivity|null */
     private $todoActivity;
 
     /** @var Taxonomy|null */
     private $taxonomy;
 
+    /** @var string */
+    private $uploadsDir;
+
     /** @param string|null $siteName */
-    public function __construct(\PDO $pdo, &$session = null, $siteName = "Legacy Todo")
+    public function __construct(\PDO $pdo, &$session = null, $siteName = "Legacy Todo", $uploadsDir = null)
     {
         $this->pdo = $pdo;
         $this->siteName = $siteName;
+        $this->uploadsDir = $uploadsDir ?? dirname(__DIR__) . '/public/uploads';
         if ($session === null) {
             $this->session = &$_SESSION;
         } else {
@@ -146,6 +165,15 @@ class Bootstrap
         }
 
         return $this->users;
+    }
+
+    public function uploads(): Uploads
+    {
+        if ($this->uploads === null) {
+            $this->uploads = new Uploads($this->uploadsDir);
+        }
+
+        return $this->uploads;
     }
 
     public function todoActivity(): TodoActivity

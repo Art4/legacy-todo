@@ -8,6 +8,7 @@ use Art4\LegacyTodo\Dashboard;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\TodoActivity;
 use Art4\LegacyTodo\Todos;
+use Art4\LegacyTodo\Uploads;
 use Art4\LegacyTodo\Users;
 
 final class BootstrapTest extends PHPUnit\Framework\TestCase
@@ -46,6 +47,11 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Users::class, $this->bootstrap->users());
     }
 
+    public function testUploadsReturnsUploadsModule(): void
+    {
+        $this->assertInstanceOf(Uploads::class, $this->bootstrap->uploads());
+    }
+
     public function testTodoActivityReturnsTodoActivityModule(): void
     {
         $this->assertInstanceOf(TodoActivity::class, $this->bootstrap->todoActivity());
@@ -74,6 +80,11 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
     public function testUsersIsSharedSingleton(): void
     {
         $this->assertSame($this->bootstrap->users(), $this->bootstrap->users());
+    }
+
+    public function testUploadsIsSharedSingleton(): void
+    {
+        $this->assertSame($this->bootstrap->uploads(), $this->bootstrap->uploads());
     }
 
     public function testTodoActivityIsSharedSingleton(): void

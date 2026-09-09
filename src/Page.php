@@ -253,11 +253,9 @@ class Page
             $priority = $post["priority"] ?? "";
             $due = $post["due_date"] ?? "";
             $userId = $auth->currentUser()["user_id"];
-            $file = $files["upload"]["name"] ?? "";
-            if ($file != "") {
-                $dest = dirname(__DIR__) . "/public/uploads/" . $file;
-                @move_uploaded_file($files["upload"]["tmp_name"] ?? "", $dest);
-                $out .= "Upload: " . $file;
+            $uploaded = $this->app->uploads()->store($files["upload"] ?? []);
+            if ($uploaded !== null) {
+                $out .= "Upload: " . $uploaded;
             }
             if ($title == "") {
                 $msg = "Titel erforderlich";
