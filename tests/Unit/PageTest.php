@@ -329,6 +329,19 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->assertStringContainsString('Titel erforderlich', $output);
     }
 
+    public function testEditTodoDeniesWhenCannotManage(): void
+    {
+        $output = $this->runCli(
+            'echo $page->editTodo((int) $get["id"], $_POST);',
+            ["user_id" => 9, "username" => "eve", "role" => "user"],
+            ["id" => 1],
+            ["save" => "Speichern", "title" => "X", "text" => "", "priority" => "2", "status" => "open"],
+            '$pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (9,\'eve\',\'\',\'user\',\'e@x.com\',\'2026-01-01\')");'
+                . '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,5,\'Fremdes\',\'\',\'open\',0,\'2026-01-10\')");',
+        );
+        $this->assertSame("Keine Berechtigung", $output);
+    }
+
     public function testEditTodoSaveSuccessRedirectsToTodo(): void
     {
         $output = $this->runCli(

@@ -38,3 +38,8 @@ for composition but routes its unescaped `$_GET["q"]` render through Page's esca
   normal bug path, not a structural refactor).
 - `Page` stays the single surfaced seam for request-deciding, validation, escaping, and
   header/footer rendering; no page owns those concerns directly.
+- The `canManage` permission seam (via `Auth`) is uniformly wired through every Todo-mutation
+  page that acts on an existing, possibly someone else's todo — `editTodo` and `deleteTodo`
+  both guard on it, each with a "Keine Berechtigung" refusal; `addTodo` needs no guard because
+  the current user always becomes the Owner of what they create. Closing the `editTodo` gap
+  (issue #192) completed this seam; a future scan must not re-propose guarding it.
