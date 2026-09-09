@@ -53,7 +53,7 @@ abstract class E2eTestCase extends PHPUnit\Framework\TestCase
             ],
             $pipes,
             $docroot,
-            array_merge($env === false ? [] : $env, ['LEGACY_TODO_DB_FILE' => $this->dbFile])
+            array_merge($env === false ? [] : $env, ['LEGACY_TODO_DB_FILE' => $this->dbFile]),
         );
         if ($this->serverProcess === false) {
             $this->throwSetupFailure('could not start the PHP built-in server process');

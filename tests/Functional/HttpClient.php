@@ -89,7 +89,7 @@ final class HttpClient
             $fields[$name] = new \CURLFile(
                 (string) $file['tmp_name'],
                 (string) ($file['type'] ?? ''),
-                (string) ($file['name'] ?? basename((string) $file['tmp_name']))
+                (string) ($file['name'] ?? basename((string) $file['tmp_name'])),
             );
         }
 

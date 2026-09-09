@@ -36,6 +36,7 @@ final class FrontControllerE2ETest extends E2eTestCase
         ]);
         $this->assertRedirect($create, 'index.php');
         $id = $this->todoIdByTitle('E2E Neues Todo');
+        $this->assertGreaterThan(0, $id);
 
         $afterCreate = $this->http->request('GET', '/index.php');
         $this->assertStringContainsString('E2E Neues Todo', $afterCreate->body());
