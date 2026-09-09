@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../Fakes/RunCliHelper.php';
+
 use Art4\LegacyTodo\Bootstrap;
+use Art4\LegacyTodo\Fakes\RunCliHelper;
 use Art4\LegacyTodo\Page;
 
 final class PageTest extends PHPUnit\Framework\TestCase
@@ -134,7 +137,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
     {
         $this->seedUser(["username" => "alice", "password" => "secret", "role" => "user", "email" => "alice@example.com"]);
 
-        $output = $this->runCli(
+        $output = RunCliHelper::run(
             'echo $page->login($_POST);',
             $this->session,
             [],
@@ -171,7 +174,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
     public function testDeleteTodoConfirmArchivesAndRedirectsToIndex(): void
     {
-        $output = $this->runCli(
+        $output = RunCliHelper::run(
             '$page->deleteTodo((int) $get["id"], $get);',
             ["user_id" => 1, "username" => "alice", "role" => "admin"],
             ["id" => 1, "confirm" => "1"],
@@ -184,7 +187,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
     public function testDeleteTodoDeniesWhenCannotManage(): void
     {
-        $output = $this->runCli(
+        $output = RunCliHelper::run(
             'echo $page->deleteTodo((int) $get["id"], $get);',
             ["user_id" => 9, "username" => "eve", "role" => "user"],
             ["id" => 1],
@@ -217,7 +220,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
     public function testTodoAddCommentRedirectsToTodo(): void
     {
-        $output = $this->runCli(
+        $output = RunCliHelper::run(
             'echo $page->todo((int) $get["id"], $get, $_POST, []);',
             ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
             ["id" => 1],
@@ -245,7 +248,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
     public function testTodoNotFoundPrintsNotFound(): void
     {
-        $output = $this->runCli(
+        $output = RunCliHelper::run(
             'echo $page->todo(9999, $get, $_POST, []);',
             ["user_id" => 1, "username" => "alice", "role" => "admin"],
             ["id" => 9999],
@@ -283,7 +286,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
     public function testAddTodoSaveSuccessRedirectsToIndex(): void
     {
-        $output = $this->runCli(
+        $output = RunCliHelper::run(
             '$page->addTodo($_POST, []);',
             ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
             [],
@@ -302,7 +305,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
         file_put_contents($tmp, 'file-body');
 
         try {
-            $output = $this->runCli(
+            $output = RunCliHelper::run(
                 '$page->addTodo($_POST, $_FILES);',
                 ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
                 [],
@@ -366,7 +369,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
     public function testEditTodoDeniesWhenCannotManage(): void
     {
-        $output = $this->runCli(
+        $output = RunCliHelper::run(
             'echo $page->editTodo((int) $get["id"], $_POST);',
             ["user_id" => 9, "username" => "eve", "role" => "user", "csrf_token" => $this->session['csrf_token']],
             ["id" => 1],
@@ -379,7 +382,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
     public function testEditTodoSaveSuccessRedirectsToTodo(): void
     {
-        $output = $this->runCli(
+        $output = RunCliHelper::run(
             '$page->editTodo((int) $get["id"], $_POST);',
             ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
             ["id" => 1],
@@ -431,7 +434,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
     public function testPostWithoutCsrfTokenReturns403(): void
     {
-        $output = $this->runCli(
+        $output = RunCliHelper::run(
             'echo $page->login($_POST);',
             [],
             [],
@@ -443,7 +446,7 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
     public function testPostWithInvalidCsrfTokenReturns403(): void
     {
-        $output = $this->runCli(
+        $output = RunCliHelper::run(
             'echo $page->login($_POST);',
             ["csrf_token" => $this->session['csrf_token']],
             [],
@@ -461,51 +464,5 @@ final class PageTest extends PHPUnit\Framework\TestCase
 
         $this->assertStringContainsString('Login failed', $output);
         $this->assertStringNotContainsString('CSRF token invalid', $output);
-    }
-
-    private function runCli(string $body, array $session, array $get, array $post, string $setup = '', string $uploadsDir = '', array $files = []): string
-    {
-        $hash = md5('secret');
-        $moveOverride = '';
-        if ($uploadsDir !== '') {
-            $moveOverride = ' function move_uploaded_file($source, $dest) { return copy($source, $dest); } ';
-        }
-        $bootstrapArgs = 'new Art4\\LegacyTodo\\Bootstrap($pdo, $_SESSION, "Legacy Todo"';
-        if ($uploadsDir !== '') {
-            $bootstrapArgs .= ', ' . var_export($uploadsDir, true);
-        }
-        $bootstrapArgs .= ')';
-        $script = 'namespace Art4\\LegacyTodo { function header($line) { echo $line; }'
-            . $moveOverride
-            . '}'
-            . 'namespace {'
-            . 'require ' . var_export(__DIR__ . '/../../vendor/autoload.php', true) . ';'
-            . '$pdo = new PDO("sqlite::memory:");'
-            . '$pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, role TEXT, email TEXT, created_at TEXT, data2 TEXT, x_status INTEGER)");'
-            . '$pdo->exec("CREATE TABLE todos (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, title TEXT, text TEXT, status TEXT, priority INTEGER, due_date TEXT, category_id INTEGER, archived INTEGER DEFAULT 0, created_at TEXT, data2 TEXT, x_status INTEGER)");'
-            . '$pdo->exec("CREATE TABLE categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, user_id INTEGER)");'
-            . '$pdo->exec("CREATE TABLE tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)");'
-            . '$pdo->exec("CREATE TABLE todo_tags (todo_id INTEGER, tag_id INTEGER)");'
-            . '$pdo->exec("CREATE TABLE comments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, body TEXT, created_at TEXT)");'
-            . '$pdo->exec("CREATE TABLE assignments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, assigned_by INTEGER)");'
-            . '$pdo->exec("INSERT INTO users (username,password,role,email,created_at) VALUES (\'alice\',\'' . $hash . '\',\'user\',\'alice@example.com\',\'2026-01-01\')");'
-            . $setup
-            . '$_SESSION = ' . var_export($session, true) . ';'
-            . '$_GET = ' . var_export($get, true) . ';'
-            . '$_POST = ' . var_export($post, true) . ';'
-            . '$_FILES = ' . var_export($files, true) . ';'
-            . '$app = ' . $bootstrapArgs . ';'
-            . '$page = new Art4\\LegacyTodo\\Page($app);'
-            . '$get = ' . var_export($get, true) . ';'
-            . '$session = ' . var_export($session, true) . ';'
-            . '$post = ' . var_export($post, true) . ';'
-            . $body
-            . '}';
-
-        exec(PHP_BINARY . ' -r ' . escapeshellarg($script), $lines, $code);
-
-        $this->assertSame(0, $code, implode("\n", $lines));
-
-        return trim(implode("", $lines));
     }
 }
