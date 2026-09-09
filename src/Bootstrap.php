@@ -5,6 +5,7 @@ namespace Art4\LegacyTodo;
 require_once __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . "/Auth.php";
 require_once __DIR__ . "/Dashboard.php";
+require_once __DIR__ . "/Layout.php";
 require_once __DIR__ . "/Page.php";
 require_once __DIR__ . "/Todos.php";
 require_once __DIR__ . "/Uploads.php";

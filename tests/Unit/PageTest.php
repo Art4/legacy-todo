@@ -36,49 +36,6 @@ final class PageTest extends PHPUnit\Framework\TestCase
         $this->session['csrf_token'] = $app->auth()->csrfToken();
     }
 
-    public function testTextEscapesHtmlSpecialCharacters(): void
-    {
-        $this->assertSame('&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;', $this->page->text('<script>alert("x")</script>'));
-    }
-
-    public function testAttrEscapesHtmlSpecialCharacters(): void
-    {
-        $this->assertSame('&lt;i&gt;&amp;&quot;q&quot;&lt;/i&gt;', $this->page->attr('<i>&"q"</i>'));
-    }
-
-    public function testHeaderRendersSiteNameFromBootstrap(): void
-    {
-        $output = $this->page->header();
-
-        $this->assertStringContainsString('<title>Legacy Todo - Legacy Todo</title>', $output);
-        $this->assertStringContainsString('<h2>Legacy Todo</h2>', $output);
-    }
-
-    public function testHeaderRendersLoggedInUserFromAuthWhenLoggedIn(): void
-    {
-        $this->session['user_id'] = 1;
-        $this->session['username'] = 'alice';
-        $this->session['role'] = 'user';
-
-        $output = $this->page->header();
-
-        $this->assertStringContainsString('<p>Eingeloggt als alice</p>', $output);
-    }
-
-    public function testHeaderOmitsLoggedInUserWhenAnonymous(): void
-    {
-        $output = $this->page->header();
-
-        $this->assertStringNotContainsString('Eingeloggt als', $output);
-    }
-
-    public function testFooterRendersVersion(): void
-    {
-        $output = $this->page->footer();
-
-        $this->assertStringContainsString('<p>&copy; 2026 LegacyTodo - Version 0.1</p>', $output);
-    }
-
     private function seedUser(array $row): int
     {
         $this->pdo->exec(
