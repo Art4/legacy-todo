@@ -32,6 +32,10 @@ _Avoid_: page-local filter precedence, per-page stats/list reads
 The single module (`Art4\LegacyTodo\Page`) that owns how a page turns a request into an escaped HTML response or redirect; delegates page-start to Bootstrap, permissions to Auth, and data to the data modules; never touches SQL or session keys.
 _Avoid_: per-page request/escape logic, page-scattered `htmlspecialchars`
 
+**Uploads**:
+The single module (`Art4\LegacyTodo\Uploads`) that owns every write to the `public/uploads/` directory beneath the webroot. `store(array $file)` writes a single uploaded file under a server-generated random name (`bin2hex(random_bytes(16))`, preserving the checked extension) and returns the stored path; it rejects anything not in the whitelisted extensions (gif, jpeg, jpg, pdf, png, txt, webp) or without a usable tmp file. Never writes a client-supplied filename.
+_Avoid_: page-local `move_uploaded_file`, client-chosen paths
+
 **Owner**:
 The User a Todo belongs to. The Owner or an Administrator may edit or archive a Todo; anyone else is refused permission.
 _Avoid_: creator, assignee

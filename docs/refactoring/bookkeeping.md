@@ -37,6 +37,7 @@
 - rector-code-quality
 - rector-phpunit-set (#113)
 - composer-audit (#153)
+- php-minimal-version
 - php-structural-scan (#171)
 - structural-scan (#171)
 - secret-detection (#181)
