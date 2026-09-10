@@ -222,17 +222,18 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         );
     }
 
-    public function testDashboardStatsCountsActiveOpenDoneAndOverdue(): void
+    public function testDashboardStatsCountsActiveOpenDoneAndOverdueAsOfDate(): void
     {
-        $this->seedTodo(["user_id" => 1, "title" => "Offen früh", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2025-12-31", "archived" => 0]);
-        $this->seedTodo(["user_id" => 1, "title" => "Offen spät", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-06-01", "archived" => 0]);
-        $this->seedTodo(["user_id" => 1, "title" => "Erledigt", "text" => "", "status" => "done", "priority" => 1, "due_date" => "2026-01-02", "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Offen vorher", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-06-14", "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Offen heute", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-06-15", "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Offen spät", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-06-16", "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Erledigt", "text" => "", "status" => "done", "priority" => 1, "due_date" => "2026-06-15", "archived" => 0]);
         $this->seedTodo(["user_id" => 1, "title" => "Archiviert alt", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2025-01-01", "archived" => 1]);
 
-        $stats = $this->todos->dashboardStats();
+        $stats = $this->todos->dashboardStats("2026-06-15");
 
-        $this->assertSame(3, $stats["c"]);
-        $this->assertSame(2, $stats["open"]);
+        $this->assertSame(4, $stats["c"]);
+        $this->assertSame(3, $stats["open"]);
         $this->assertSame(1, $stats["done"]);
         $this->assertSame(1, $stats["overdue"]);
     }

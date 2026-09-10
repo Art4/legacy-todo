@@ -42,9 +42,9 @@ final class DashboardTest extends PHPUnit\Framework\TestCase
 
     public function testOverviewWithoutFiltersReturnsActiveTodosAndStats(): void
     {
-        $this->seedTodo(["user_id" => 1, "title" => "Offen früh", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2025-12-31", "archived" => 0]);
-        $this->seedTodo(["user_id" => 1, "title" => "Offen spät", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-06-01", "archived" => 0]);
-        $this->seedTodo(["user_id" => 1, "title" => "Erledigt", "text" => "", "status" => "done", "priority" => 1, "due_date" => "2026-01-02", "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Offen früh", "text" => "", "status" => "open", "priority" => 1, "due_date" => date("Y-m-d", strtotime("-1 day")), "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Offen spät", "text" => "", "status" => "open", "priority" => 1, "due_date" => date("Y-m-d", strtotime("+1 day")), "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Erledigt", "text" => "", "status" => "done", "priority" => 1, "due_date" => date("Y-m-d", strtotime("+2 days")), "archived" => 0]);
         $this->seedTodo(["user_id" => 1, "title" => "Archiviert", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2025-01-01", "archived" => 1]);
 
         $overview = $this->dashboard()->overview([]);
@@ -56,8 +56,8 @@ final class DashboardTest extends PHPUnit\Framework\TestCase
 
     public function testOverviewSearchWinsOverFiltersWhenQueryNonEmpty(): void
     {
-        $this->seedTodo(["user_id" => 1, "title" => "Diskussion", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
-        $this->seedTodo(["user_id" => 1, "title" => "Meeting fertig", "text" => "", "status" => "done", "priority" => 2, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Diskussion", "text" => "", "status" => "open", "priority" => 1, "due_date" => date("Y-m-d", strtotime("+1 day")), "archived" => 0]);
+        $this->seedTodo(["user_id" => 1, "title" => "Meeting fertig", "text" => "", "status" => "done", "priority" => 2, "due_date" => date("Y-m-d", strtotime("+2 days")), "archived" => 0]);
 
         $overview = $this->dashboard()->overview(["q" => "meeting", "status" => "open", "priority" => "1", "due" => "2026-01-01"]);
 
