@@ -2,7 +2,7 @@
 
 namespace Art4\LegacyTodo;
 
-require_once __DIR__ . "/Bootstrap.php";
+require_once __DIR__ . "/Auth.php";
 
 /**
  * Single responsible module: owns the page chrome and the escaping surface
@@ -11,12 +11,16 @@ require_once __DIR__ . "/Bootstrap.php";
  */
 class Layout
 {
-    /** @var Bootstrap */
-    private $app;
+    /** @var string */
+    private $siteName;
 
-    public function __construct(Bootstrap $app)
+    /** @var Auth */
+    private $auth;
+
+    public function __construct(string $siteName, Auth $auth)
     {
-        $this->app = $app;
+        $this->siteName = $siteName;
+        $this->auth = $auth;
     }
 
     /** @param mixed $value */
@@ -33,14 +37,14 @@ class Layout
 
     public function header(): string
     {
-        $siteName = $this->app->siteName();
+        $siteName = $this->siteName;
         $out = "<html><head><title>" . $siteName . " - " . $siteName . "</title>\n";
         $out .= "<style>body{font-family:Arial}</style>\n";
         $out .= "</head>\n";
         $out .= "<body>\n";
         $out .= "<div class=\"header\">\n";
         $out .= "<h2>" . $siteName . "</h2>\n";
-        $user = $this->app->auth()->currentUser();
+        $user = $this->auth->currentUser();
         if ($user != null && $user["username"] != "") {
             $out .= "<p>Eingeloggt als " . $this->text($user["username"]) . "</p>\n";
         }

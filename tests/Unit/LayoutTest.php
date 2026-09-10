@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-use Art4\LegacyTodo\Bootstrap;
+use Art4\LegacyTodo\Auth;
 use Art4\LegacyTodo\Layout;
+use Art4\LegacyTodo\Taxonomy;
+use Art4\LegacyTodo\Todos;
+use Art4\LegacyTodo\Users;
 
 final class LayoutTest extends PHPUnit\Framework\TestCase
 {
@@ -25,8 +28,8 @@ final class LayoutTest extends PHPUnit\Framework\TestCase
         $pdo->exec('CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, body TEXT, created_at TEXT)');
         $pdo->exec('CREATE TABLE IF NOT EXISTS assignments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, assigned_by INTEGER)');
         $this->session = [];
-        $app = new Bootstrap($pdo, $this->session, 'Legacy Todo');
-        $this->layout = new Layout($app);
+        $auth = new Auth(new Users($pdo), new Todos($pdo, new Taxonomy($pdo)), $this->session);
+        $this->layout = new Layout('Legacy Todo', $auth);
     }
 
     public function testTextEscapesHtmlSpecialCharacters(): void
@@ -39,7 +42,7 @@ final class LayoutTest extends PHPUnit\Framework\TestCase
         $this->assertSame('&lt;i&gt;&amp;&quot;q&quot;&lt;/i&gt;', $this->layout->attr('<i>&"q"</i>'));
     }
 
-    public function testHeaderRendersSiteNameFromBootstrap(): void
+    public function testHeaderRendersSiteNameFromConstructor(): void
     {
         $output = $this->layout->header();
 

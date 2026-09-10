@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use Art4\LegacyTodo\Auth;
 use Art4\LegacyTodo\Bootstrap;
+use Art4\LegacyTodo\Csrf;
 use Art4\LegacyTodo\Dashboard;
+use Art4\LegacyTodo\Layout;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\TodoActivity;
 use Art4\LegacyTodo\Todos;
@@ -67,6 +69,16 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Dashboard::class, $this->bootstrap->dashboard());
     }
 
+    public function testLayoutReturnsLayoutModule(): void
+    {
+        $this->assertInstanceOf(Layout::class, $this->bootstrap->layout());
+    }
+
+    public function testCsrfReturnsCsrfModule(): void
+    {
+        $this->assertInstanceOf(Csrf::class, $this->bootstrap->csrf());
+    }
+
     public function testAuthIsSharedSingleton(): void
     {
         $this->assertSame($this->bootstrap->auth(), $this->bootstrap->auth());
@@ -100,6 +112,16 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
     public function testDashboardIsSharedSingleton(): void
     {
         $this->assertSame($this->bootstrap->dashboard(), $this->bootstrap->dashboard());
+    }
+
+    public function testLayoutIsSharedSingleton(): void
+    {
+        $this->assertSame($this->bootstrap->layout(), $this->bootstrap->layout());
+    }
+
+    public function testCsrfIsSharedSingleton(): void
+    {
+        $this->assertSame($this->bootstrap->csrf(), $this->bootstrap->csrf());
     }
 
     public function testCurrentUserDelegatesToAuthThroughInjectedSession(): void

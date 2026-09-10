@@ -9,7 +9,7 @@ The core entity — a unit of work tracked by the app. A Todo has exactly one Ow
 _Avoid_: task, item, note
 
 **Todos**:
-The single data-access module (`Art4\LegacyTodo\Todos`) that owns every read and mutation of a Todo's state and lifecycle — list, filter, search, find, create, update, archive, CSV export and dashboard counts.
+The single data-access module (`Art4\LegacyTodo\Todos`) that owns every read and mutation of a Todo's state and lifecycle — list, filter, search, find, create, update, archive, CSV export and dashboard counts. Receives the shared `\PDO` and `Taxonomy` as constructor collaborators (injected by Bootstrap, ADR-0009).
 _Avoid_: TodoManager, per-page SQL
 
 **archivieren**:
@@ -17,8 +17,8 @@ The lifecycle action that flags a Todo as archived instead of deleting it. Archi
 _Avoid_: delete, löschen (as the storage operation)
 
 **Bootstrap**:
-The single module (`Art4\LegacyTodo\Bootstrap`) that owns how a page starts — `Bootstrap::start(array $config = [])` boots the session, timezone, and SQLite DB itself (connect, schema, seed, all idempotent on the default db_file anchored at the repo root, `dirname(__DIR__) . '/database.sqlite'`, deliberately outside the `public/` webroot), then returns the page's module instances via `auth()`, `todos()`, `users()`, `todoActivity()`, `taxonomy()` and `siteName()`. Pages are thin: they call `Bootstrap::start()`, run their request logic through the modules, and render.
-_Avoid_: per-page `session_start()`, per-page `include_once`, per-page module construction — the legacy root bootstrap files (`config.php` / `db.php` / `functions.php`) are retired (ADR-0006), there is nothing left to include
+The single module (`Art4\LegacyTodo\Bootstrap`) that owns how a page starts and assembles the entire module graph — `Bootstrap::start(array $config = [])` boots the session, timezone, and SQLite DB itself (connect, schema, seed, all idempotent on the default db_file anchored at the repo root, `dirname(__DIR__) . '/database.sqlite'`, deliberately outside the `public/` webroot), then hands out every other module as a lazy shared instance via `auth()`, `todos()`, `users()`, `dashboard()`, `todoActivity()`, `taxonomy()`, `layout()`, `csrf()` and `siteName()`. It is the single construction site (composition root) — no module constructs another outside it: `Auth` receives `Users` + `Todos`, `Todos` receives `Taxonomy`, `Layout` receives the site name + `Auth`, `Csrf` receives `Auth` + `Layout` (ADR-0009). Pages are thin: they call `Bootstrap::start()`, run their request logic through the modules, and render.
+_Avoid_: per-page `session_start()`, per-page `include_once`, module construction anywhere but Bootstrap — the legacy root bootstrap files (`config.php` / `db.php` / `functions.php`) are retired (ADR-0006), there is nothing left to include
 
 **public/ webroot**:
 The only directory Apache serves (`public/`, per ADR-0003). It holds the 8 front controllers (`index.php`, `todo.php`, `admin.php`, `addtodo.php`, `edittodo.php`, `deletetodo.php`, `login.php`, `logout.php`) and `uploads/` (still reachable at `/uploads/...`). Everything internal — `src/`, `vendor/`, tooling configs, and the SQLite database — stays at the repo root, outside the docroot, so it 404s instead of being downloadable.
@@ -33,7 +33,7 @@ The class that owns one stateful front controller's request flow — one per pag
 _Avoid_: a page-wide god-class, per-page request logic scattered outside the handler
 
 **Layout**:
-The single module (`Art4\LegacyTodo\Layout`) that owns the shared page chrome and the output-escaping surface — `header()`/`footer()` composition and `text()`/`attr()` escaping used by every page that renders markup.
+The single module (`Art4\LegacyTodo\Layout`) that owns the shared page chrome and the output-escaping surface — `header()`/`footer()` composition and `text()`/`attr()` escaping used by every page that renders markup. Constructed by Bootstrap with the site name and `Auth` (ADR-0009).
 _Avoid_: page-scattered `htmlspecialchars`, inline `<html>` scaffolding duplicated per page
 
 **Uploads**:
@@ -49,7 +49,7 @@ The single data-access module (`Art4\LegacyTodo\Users`) that owns every read and
 _Avoid_: UserManager, per-page user SQL
 
 **Auth**:
-The single data-access module (`Art4\LegacyTodo\Auth`) that owns login state and permission decisions — session reads/writes, identity lookup, role checks, and redirect-on-denial. Delegates data lookups to `Users` / `Todos`; never touches SQL. Complements `Users` (which stays session-free per above).
+The single data-access module (`Art4\LegacyTodo\Auth`) that owns login state and permission decisions — session reads/writes, identity lookup, role checks, and redirect-on-denial. Delegates data lookups to the `Users` / `Todos` it receives as constructor collaborators (injected by Bootstrap, ADR-0009); never touches SQL and never holds the connection. Complements `Users` (which stays session-free per above).
 _Avoid_: AuthManager, session keys written outside Auth
 
 **TodoActivity**:
