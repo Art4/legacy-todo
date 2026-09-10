@@ -10,7 +10,7 @@
 - none
 
 **Skip streak:**
-- semgrep: 3
+- semgrep: 4
 
 **Fulfilled nodes:**
 - git
