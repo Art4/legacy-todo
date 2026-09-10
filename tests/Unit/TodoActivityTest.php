@@ -128,6 +128,26 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
         $this->assertSame(5, $row["assigned_by"]);
     }
 
+    public function testFindCommentReturnsRowForExistingComment(): void
+    {
+        $authorId = $this->seedUser("alice");
+        $this->pdo->exec("INSERT INTO comments (todo_id,user_id,body,created_at) VALUES (1," . $authorId . ",'Find me','2026-03-01 10:00:00')");
+        $commentId = (int) $this->pdo->lastInsertId();
+
+        $result = $this->activity->findComment($commentId);
+
+        $this->assertNotNull($result);
+        $this->assertSame($commentId, $result["id"]);
+        $this->assertSame(1, $result["todo_id"]);
+        $this->assertSame($authorId, $result["user_id"]);
+        $this->assertSame("Find me", $result["body"]);
+    }
+
+    public function testFindCommentReturnsNullForMissingId(): void
+    {
+        $this->assertNull($this->activity->findComment(999));
+    }
+
     public function testRemoveCommentDeletesByIdAndIsIdempotent(): void
     {
         $authorId = $this->seedUser("gina");

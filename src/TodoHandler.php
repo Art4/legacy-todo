@@ -56,7 +56,12 @@ class TodoHandler
             }
         }
         if (!empty($get["del_comment"])) {
-            $activity->removeComment($get["del_comment"]);
+            $comment = $activity->findComment($get["del_comment"]);
+            $uid = $auth->currentUser()["user_id"];
+            $role = $auth->currentUser()["role"];
+            if ($comment !== null && ($comment["user_id"] == $uid || $role === "admin")) {
+                $activity->removeComment($get["del_comment"]);
+            }
         }
         $comments = $activity->commentsForTodo($id);
         $assigns = $activity->assignmentsForTodo($id);
@@ -108,8 +113,7 @@ class TodoHandler
         $out .= "<input type=\"submit\" name=\"assign\" value=\"Zuweisen\">\n";
         $out .= "</form>\n";
         $out .= "<a href=\"edittodo.php?id=" . $this->layout->attr($id) . "\">Bearbeiten</a> | <a href=\"deletetodo.php?id=" . $this->layout->attr($id) . "\">Löschen</a> | <a href=\"index.php\">Zurück</a>\n";
-        $out .= "</body></html>\n";
 
-        return $out;
+        return $out . "</body></html>\n";
     }
 }
