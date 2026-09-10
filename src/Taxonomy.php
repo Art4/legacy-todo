@@ -55,8 +55,10 @@ class Taxonomy
         if ($todoIds === []) {
             return $names;
         }
-        $in = implode(",", array_map('intval', $todoIds));
-        $rows = $this->pdo->query("SELECT t.id AS todo_id, c.name FROM todos t JOIN categories c ON c.id=t.category_id WHERE t.id IN (" . $in . ")")->fetchAll(\PDO::FETCH_ASSOC);
+        $placeholders = implode(",", array_fill(0, count($todoIds), "?"));
+        $stmt = $this->pdo->prepare("SELECT t.id AS todo_id, c.name FROM todos t JOIN categories c ON c.id=t.category_id WHERE t.id IN ($placeholders)");
+        $stmt->execute($todoIds);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($rows as $row) {
             $names[(int) $row["todo_id"]] = $row["name"];
         }
@@ -76,8 +78,10 @@ class Taxonomy
         if ($todoIds === []) {
             return $tags;
         }
-        $in = implode(",", array_map('intval', $todoIds));
-        $rows = $this->pdo->query("SELECT * FROM todo_tags WHERE todo_id IN (" . $in . ")")->fetchAll(\PDO::FETCH_ASSOC);
+        $placeholders = implode(",", array_fill(0, count($todoIds), "?"));
+        $stmt = $this->pdo->prepare("SELECT * FROM todo_tags WHERE todo_id IN ($placeholders)");
+        $stmt->execute($todoIds);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($rows as $row) {
             $tags[(int) $row["todo_id"]][] = ["todo_id" => (int) $row["todo_id"], "tag_id" => (int) $row["tag_id"]];
         }
