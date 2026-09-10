@@ -28,9 +28,13 @@ _Avoid_: serving the repo root as DocumentRoot; intra-docroot `.htaccess`-style 
 The single module (`Art4\LegacyTodo\Dashboard`) that owns the index page's overview composition — it picks which list answers the request (search wins over the `status`/`priority`/`due` filters; otherwise filtered; otherwise the active list) via `overview(array $query)`, reads the total/open/done/overdue counts, and produces the CSV export body. Depends only on `Todos`; pages pass the request query and render.
 _Avoid_: page-local filter precedence, per-page stats/list reads
 
-**Page**:
-The single module (`Art4\LegacyTodo\Page`) that owns how a page turns a request into an escaped HTML response or redirect; delegates page-start to Bootstrap, permissions to Auth, and data to the data modules; never touches SQL or session keys.
-_Avoid_: per-page request/escape logic, page-scattered `htmlspecialchars`
+**page handler**:
+The class that owns one stateful front controller's request flow — one per page (`AddTodoHandler`, `AdminHandler`, `DeleteTodoHandler`, `EditTodoHandler`, `LoginHandler`, `TodoHandler`). It runs the page's auth checks, data mutations, redirects, and page-specific markup; the front controller is a thin `Bootstrap::start()` + `handle()` dispatch. `index.php` stays a Dashboard composition and `logout.php` a one-liner on Auth, so neither gets a handler (ADR-0008).
+_Avoid_: a page-wide god-class, per-page request logic scattered outside the handler
+
+**Layout**:
+The single module (`Art4\LegacyTodo\Layout`) that owns the shared page chrome and the output-escaping surface — `header()`/`footer()` composition and `text()`/`attr()` escaping used by every page that renders markup.
+_Avoid_: page-scattered `htmlspecialchars`, inline `<html>` scaffolding duplicated per page
 
 **Uploads**:
 The single module (`Art4\LegacyTodo\Uploads`) that owns every write to the `public/uploads/` directory beneath the webroot. `store(array $file)` writes a single uploaded file under a server-generated random name (`bin2hex(random_bytes(16))`, preserving the checked extension) and returns the stored path; it rejects anything not in the whitelisted extensions (gif, jpeg, jpg, pdf, png, txt, webp) or without a usable tmp file. Never writes a client-supplied filename.
@@ -57,7 +61,7 @@ The single data-access module (`Art4\LegacyTodo\Taxonomy`) that owns every read 
 _Avoid_: per-page category/tag SQL
 
 **CSRF token**:
-The session-bound token that protects every state-changing POST form. `Auth` owns it (lazily generated with `bin2hex(random_bytes(32))`, stored in the session, verified with `hash_equals`) and exposes `csrfToken()`/`validateCsrfToken()`; `Page` renders it into every POST form as a `_csrf_token` hidden field (`csrfField()`) and rejects any non-empty POST without a matching token (`requireCsrfToken()`) with HTTP 403 + `exit`. GET-based state changes (`deletetodo.php?confirm=1`, `del_comment`) stay outside this protection (ADR-0007).
+The session-bound token that protects every state-changing POST form. `Auth` owns it (lazily generated with `bin2hex(random_bytes(32))`, stored in the session, verified with `hash_equals`) and exposes `csrfToken()`/`validateCsrfToken()`; `Csrf` turns it into the `_csrf_token` hidden form field (`field()`) and rejects any non-empty POST without a matching token (`guard()`) with HTTP 403 + `exit` (ADR-0007, ADR-0008). GET-based state changes (`deletetodo.php?confirm=1`, `del_comment`) stay outside this protection.
 _Avoid_: per-handler token generation, client-side token storage
 
 **End-to-end suite**:
