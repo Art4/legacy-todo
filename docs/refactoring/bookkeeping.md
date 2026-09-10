@@ -7,7 +7,7 @@
 **Secret history scan:** done
 
 **Pending candidates:**
-- none
+- #222
 
 **Skip streak:**
 - coverage-floor: 1
