@@ -83,7 +83,7 @@ jobs:
             apt-get update -qq && apt-get install -y -qq unzip git > /dev/null
             curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
             composer install --no-interaction --no-progress
-            vendor/bin/phpunit --testsuite Unit,Legacy
+            vendor/bin/phpunit --testsuite Unit,Legacy --no-coverage
           '
 
   e2e:
@@ -99,7 +99,7 @@ jobs:
             apt-get update -qq && apt-get install -y -qq unzip git > /dev/null
             curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
             composer install --no-interaction --no-progress
-            vendor/bin/phpunit --testsuite Functional
+            vendor/bin/phpunit --testsuite Functional --no-coverage
           '
 
   composer-audit:
@@ -116,6 +116,26 @@ jobs:
             curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
             composer install --no-interaction --no-progress
             composer audit --no-interaction
+          '
+
+  coverage:
+    name: Test coverage floor
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHPUnit with coverage and floor check (php 8.3 via Docker)
+        run: |
+          docker run --rm -v "$PWD":/app -w /app php:8.3-cli bash -c '
+            set -e
+            apt-get update -qq && apt-get install -y -qq unzip git g++ autoconf make > /dev/null
+            pecl install pcov > /dev/null 2>&1
+            echo "extension=pcov.so" > /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini
+            curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+            composer install --no-interaction --no-progress
+            mkdir -p build/logs
+            vendor/bin/phpunit --testsuite Unit,Legacy --coverage-clover build/logs/clover.xml
+            php scripts/check-coverage-floor.php build/logs/clover.xml .coverage-floor
           '
 
   secret-detection:
