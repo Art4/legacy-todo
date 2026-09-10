@@ -42,7 +42,7 @@ final class LayoutTest extends PHPUnit\Framework\TestCase
         $this->assertSame('&lt;i&gt;&amp;&quot;q&quot;&lt;/i&gt;', $this->layout->attr('<i>&"q"</i>'));
     }
 
-    public function testHeaderRendersSiteNameFromBootstrap(): void
+    public function testHeaderRendersSiteNameFromConstructor(): void
     {
         $output = $this->layout->header();
 
