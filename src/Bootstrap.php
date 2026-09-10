@@ -209,7 +209,7 @@ class Bootstrap
     public function layout(): Layout
     {
         if ($this->layout === null) {
-            $this->layout = new Layout($this);
+            $this->layout = new Layout($this->siteName, $this->auth());
         }
 
         return $this->layout;

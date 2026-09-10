@@ -7,7 +7,6 @@ require_once __DIR__ . '/../Fakes/RunCliHelper.php';
 use Art4\LegacyTodo\Bootstrap;
 use Art4\LegacyTodo\Csrf;
 use Art4\LegacyTodo\Fakes\RunCliHelper;
-use Art4\LegacyTodo\Layout;
 
 final class CsrfTest extends PHPUnit\Framework\TestCase
 {
@@ -31,7 +30,7 @@ final class CsrfTest extends PHPUnit\Framework\TestCase
         $this->session = [];
         $app = new Bootstrap($pdo, $this->session, 'Legacy Todo');
         $this->session['csrf_token'] = $app->auth()->csrfToken();
-        $this->csrf = new Csrf($app->auth(), new Layout($app));
+        $this->csrf = new Csrf($app->auth(), $app->layout());
     }
 
     public function testFieldRendersCsrfHiddenInputWithEscapedToken(): void
@@ -44,7 +43,7 @@ final class CsrfTest extends PHPUnit\Framework\TestCase
     public function testEmptyPostPassesGuard(): void
     {
         $output = RunCliHelper::run(
-            '$csrf = new \Art4\LegacyTodo\Csrf($app->auth(), new \Art4\LegacyTodo\Layout($app)); $csrf->guard($_POST); echo "ok";',
+            '$csrf = $app->csrf(); $csrf->guard($_POST); echo "ok";',
             [],
             [],
             [],
@@ -56,7 +55,7 @@ final class CsrfTest extends PHPUnit\Framework\TestCase
     public function testPostWithoutCsrfTokenReturns403(): void
     {
         $output = RunCliHelper::run(
-            '$csrf = new \Art4\LegacyTodo\Csrf($app->auth(), new \Art4\LegacyTodo\Layout($app)); $csrf->guard($_POST); echo "unreachable";',
+            '$csrf = $app->csrf(); $csrf->guard($_POST); echo "unreachable";',
             [],
             [],
             ["login" => "Login", "username" => "alice", "password" => "secret"],
@@ -68,7 +67,7 @@ final class CsrfTest extends PHPUnit\Framework\TestCase
     public function testPostWithInvalidCsrfTokenReturns403(): void
     {
         $output = RunCliHelper::run(
-            '$csrf = new \Art4\LegacyTodo\Csrf($app->auth(), new \Art4\LegacyTodo\Layout($app)); $csrf->guard($_POST); echo "unreachable";',
+            '$csrf = $app->csrf(); $csrf->guard($_POST); echo "unreachable";',
             ["csrf_token" => $this->session['csrf_token']],
             [],
             ["_csrf_token" => "wrong-token", "login" => "Login", "username" => "alice", "password" => "secret"],
@@ -80,7 +79,7 @@ final class CsrfTest extends PHPUnit\Framework\TestCase
     public function testPostWithValidCsrfTokenPassesGuard(): void
     {
         $output = RunCliHelper::run(
-            '$csrf = new \Art4\LegacyTodo\Csrf($app->auth(), new \Art4\LegacyTodo\Layout($app)); $csrf->guard($_POST); echo "ok";',
+            '$csrf = $app->csrf(); $csrf->guard($_POST); echo "ok";',
             ["csrf_token" => $this->session['csrf_token']],
             [],
             ["_csrf_token" => $this->session['csrf_token'], "login" => "Login"],
