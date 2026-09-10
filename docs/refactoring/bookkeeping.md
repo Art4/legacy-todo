@@ -11,7 +11,6 @@
 
 **Skip streak:**
 - semgrep: 3
-- psr-4: 1
 
 **Fulfilled nodes:**
 - git
@@ -42,3 +41,4 @@
 - secret-detection (#181)
 - phpmd (#187)
 - coverage-floor (#228)
+- psr-4 (done via #207/#221; tooling_tree.py false positive on scripts/check-coverage-floor.php)
