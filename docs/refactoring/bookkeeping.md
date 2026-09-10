@@ -4,8 +4,14 @@
 
 **Focus areas:** none
 
+**Secret history scan:** done
+
 **Pending candidates:**
 - none
+
+**Skip streak:**
+- coverage-floor: 1
+- semgrep: 1
 
 **Fulfilled nodes:**
 - git
