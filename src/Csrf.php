@@ -2,9 +2,6 @@
 
 namespace Art4\LegacyTodo;
 
-require_once __DIR__ . "/Auth.php";
-require_once __DIR__ . "/Layout.php";
-
 /**
  * Single responsible module: owns the CSRF POST-protection contract behind
  * the page seam (issue #209, ADR-0007) — wraps Auth's session-bound token

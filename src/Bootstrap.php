@@ -3,21 +3,6 @@
 namespace Art4\LegacyTodo;
 
 require_once __DIR__ . "/../vendor/autoload.php";
-require_once __DIR__ . "/AdminHandler.php";
-require_once __DIR__ . "/AddTodoHandler.php";
-require_once __DIR__ . "/Auth.php";
-require_once __DIR__ . "/Csrf.php";
-require_once __DIR__ . "/Dashboard.php";
-require_once __DIR__ . "/DeleteTodoHandler.php";
-require_once __DIR__ . "/EditTodoHandler.php";
-require_once __DIR__ . "/Layout.php";
-require_once __DIR__ . "/LoginHandler.php";
-require_once __DIR__ . "/Todos.php";
-require_once __DIR__ . "/Uploads.php";
-require_once __DIR__ . "/TodoHandler.php";
-require_once __DIR__ . "/Users.php";
-require_once __DIR__ . "/TodoActivity.php";
-require_once __DIR__ . "/Taxonomy.php";
 
 /**
  * Single responsible module: owns the application composition root behind the
