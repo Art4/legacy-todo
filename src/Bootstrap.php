@@ -101,8 +101,6 @@ class Bootstrap
     {
         $pdo = new \PDO('sqlite:' . $dbFile);
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        @chmod($dbFile, 0666);
-        @chmod(dirname($dbFile), 0777);
 
         return $pdo;
     }
