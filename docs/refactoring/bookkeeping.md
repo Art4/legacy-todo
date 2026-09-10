@@ -10,8 +10,8 @@
 - none
 
 **Skip streak:**
-- coverage-floor: 2
-- semgrep: 1
+- coverage-floor: 3
+- semgrep: 2
 
 **Fulfilled nodes:**
 - git
