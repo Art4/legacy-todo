@@ -7,10 +7,10 @@
 **Secret history scan:** done
 
 **Pending candidates:**
-- #222
+- none
 
 **Skip streak:**
-- coverage-floor: 1
+- coverage-floor: 2
 - semgrep: 1
 
 **Fulfilled nodes:**
