@@ -2,8 +2,6 @@
 
 namespace Art4\LegacyTodo;
 
-require_once __DIR__ . "/Bootstrap.php";
-
 /**
  * Single responsible module: owns the detail, comment and assignment request
  * flow and markup behind the page seam (issue #209).

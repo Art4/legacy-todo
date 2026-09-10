@@ -2,8 +2,6 @@
 
 namespace Art4\LegacyTodo;
 
-require_once __DIR__ . "/Todos.php";
-
 class Dashboard
 {
     /** @var Todos */

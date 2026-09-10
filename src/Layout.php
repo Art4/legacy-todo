@@ -2,8 +2,6 @@
 
 namespace Art4\LegacyTodo;
 
-require_once __DIR__ . "/Auth.php";
-
 /**
  * Single responsible module: owns the page chrome and the escaping surface
  * behind the page seam (issue #209) — text/attr escaping plus the header

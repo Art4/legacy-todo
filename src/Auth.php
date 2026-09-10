@@ -2,9 +2,6 @@
 
 namespace Art4\LegacyTodo;
 
-require_once __DIR__ . "/Users.php";
-require_once __DIR__ . "/Todos.php";
-
 /**
  * Single responsible module: owns login state, permission decisions, and the
  * CSRF token contract shared by every state-changing form. The public-method
