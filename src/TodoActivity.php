@@ -48,6 +48,15 @@ class TodoActivity
         return true;
     }
 
+    /** @return array<string, mixed>|null */
+    public function findComment($commentId)
+    {
+        $stmt = $this->pdo->prepare("SELECT id, todo_id, user_id, body FROM comments WHERE id=?");
+        $stmt->execute([(int) $commentId]);
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+
     /** @return bool */
     public function removeComment($commentId)
     {
