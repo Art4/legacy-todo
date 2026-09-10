@@ -93,6 +93,27 @@ final class FrontControllerE2ETest extends E2eTestCase
         $this->assertRedirect($afterLogout, 'login.php');
     }
 
+    public function testDashboardListEscapesTodoFields(): void
+    {
+        $this->login('user', 'user123');
+
+        $createToken = $this->csrfTokenFrom($this->http->request('GET', '/addtodo.php'));
+        $create = $this->http->request('POST', '/addtodo.php', [
+            '_csrf_token' => $createToken,
+            'save' => 'Speichern',
+            'title' => '<script>alert(1)</script>',
+            'text' => 'beschreibung',
+            'priority' => '2',
+            'due_date' => '2026-12-31',
+        ]);
+        $this->assertRedirect($create, 'index.php');
+
+        $dashboard = $this->http->request('GET', '/index.php');
+        $this->assertSame(200, $dashboard->status());
+        $this->assertStringNotContainsString('<script>', $dashboard->body());
+        $this->assertStringContainsString('&lt;script&gt;alert(1)&lt;/script&gt;', $dashboard->body());
+    }
+
     public function testBadLoginRejected(): void
     {
         $token = $this->csrfTokenFromLoginForm();
