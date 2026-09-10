@@ -5,7 +5,7 @@
 **Focus areas:** none
 
 **Pending candidates:**
-- #217 Module construction is scattered across the page handlers and data modules instead of owned by the Bootstrap seam
+- none
 
 **Fulfilled nodes:**
 - git
