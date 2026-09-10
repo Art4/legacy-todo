@@ -140,7 +140,7 @@ class Bootstrap
     public function auth(): Auth
     {
         if ($this->auth === null) {
-            $this->auth = new Auth($this->pdo, $this->session);
+            $this->auth = new Auth($this->users(), $this->todos(), $this->session);
         }
 
         return $this->auth;
@@ -149,7 +149,7 @@ class Bootstrap
     public function todos(): Todos
     {
         if ($this->todos === null) {
-            $this->todos = new Todos($this->pdo);
+            $this->todos = new Todos($this->pdo, $this->taxonomy());
         }
 
         return $this->todos;

@@ -17,44 +17,24 @@ require_once __DIR__ . "/Todos.php";
  */
 class Auth
 {
-    /** @var \PDO */
-    private $pdo;
-
     /** @var array<string, mixed> */
     private $session;
 
-    /** @var Users|null */
+    /** @var Users */
     private $users;
 
-    /** @var Todos|null */
+    /** @var Todos */
     private $todos;
 
-    public function __construct(\PDO $pdo, &$session = null)
+    public function __construct(Users $users, Todos $todos, &$session = null)
     {
-        $this->pdo = $pdo;
+        $this->users = $users;
+        $this->todos = $todos;
         if ($session === null) {
             $this->session = &$_SESSION;
         } else {
             $this->session = &$session;
         }
-    }
-
-    private function users(): Users
-    {
-        if ($this->users === null) {
-            $this->users = new Users($this->pdo);
-        }
-
-        return $this->users;
-    }
-
-    private function todos(): Todos
-    {
-        if ($this->todos === null) {
-            $this->todos = new Todos($this->pdo);
-        }
-
-        return $this->todos;
     }
 
     /** @return array<string, mixed>|null */
@@ -82,7 +62,7 @@ class Auth
     /** @return bool */
     public function login($username, $password)
     {
-        $user = $this->users()->authenticate($username, $password);
+        $user = $this->users->authenticate($username, $password);
         if ($user === null) {
             return false;
         }
@@ -132,7 +112,7 @@ class Auth
         if ($userId == null || $userId == "") {
             return false;
         }
-        $found = $this->todos()->find($todoId);
+        $found = $this->todos->find($todoId);
 
         return $found != null && $found["user_id"] == $userId;
     }

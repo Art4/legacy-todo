@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 use Art4\LegacyTodo\Auth;
+use Art4\LegacyTodo\Taxonomy;
+use Art4\LegacyTodo\Todos;
+use Art4\LegacyTodo\Users;
 
 final class AuthTest extends PHPUnit\Framework\TestCase
 {
@@ -22,7 +25,7 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->pdo->exec('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, role TEXT, email TEXT, created_at TEXT, data2 TEXT, x_status INTEGER)');
         $this->pdo->exec('CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, title TEXT, text TEXT, status TEXT, priority INTEGER, due_date TEXT, category_id INTEGER, archived INTEGER DEFAULT 0, created_at TEXT, data2 TEXT, x_status INTEGER)');
         $this->session = [];
-        $this->auth = new Auth($this->pdo, $this->session);
+        $this->auth = new Auth(new Users($this->pdo), new Todos($this->pdo, new Taxonomy($this->pdo)), $this->session);
     }
 
     public function testCurrentUserIsNullWithoutLogin(): void
@@ -232,7 +235,8 @@ final class AuthTest extends PHPUnit\Framework\TestCase
             . 'require ' . var_export(__DIR__ . '/../../vendor/autoload.php', true) . ';'
             . '$_SESSION = ' . var_export($session, true) . ';'
             . '$_GET = ' . var_export($get, true) . ';'
-            . '$auth = new Art4\\LegacyTodo\\Auth(new PDO("sqlite::memory:"), $_SESSION);'
+            . '$pdo = new PDO("sqlite::memory:");'
+            . '$auth = new Art4\\LegacyTodo\\Auth(new Art4\\LegacyTodo\\Users($pdo), new Art4\\LegacyTodo\\Todos($pdo, new Art4\\LegacyTodo\\Taxonomy($pdo)), $_SESSION);'
             . $body
             . '}';
 

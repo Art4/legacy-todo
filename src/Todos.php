@@ -7,21 +7,13 @@ class Todos
     /** @var \PDO */
     private $pdo;
 
-    /** @var Taxonomy|null */
+    /** @var Taxonomy */
     private $taxonomy;
 
-    public function __construct(\PDO $pdo)
+    public function __construct(\PDO $pdo, Taxonomy $taxonomy)
     {
         $this->pdo = $pdo;
-    }
-
-    private function taxonomy(): Taxonomy
-    {
-        if ($this->taxonomy === null) {
-            $this->taxonomy = new Taxonomy($this->pdo);
-        }
-
-        return $this->taxonomy;
+        $this->taxonomy = $taxonomy;
     }
 
     /** @return array<int, array<string, mixed>> */
@@ -69,8 +61,8 @@ class Todos
         if ($ids === []) {
             return $rows;
         }
-        $catNames = $this->taxonomy()->categoryNamesForTodos($ids);
-        $tagsMap = $this->taxonomy()->tagsForTodos($ids);
+        $catNames = $this->taxonomy->categoryNamesForTodos($ids);
+        $tagsMap = $this->taxonomy->tagsForTodos($ids);
         foreach ($rows as &$row) {
             $row["cat"] = $catNames[(int) $row["id"]] ?? "";
             $row["tags"] = $tagsMap[(int) $row["id"]] ?? [];
