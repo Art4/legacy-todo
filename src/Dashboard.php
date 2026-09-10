@@ -30,7 +30,7 @@ class Dashboard
         } else {
             $todos = $this->todos->listActive();
         }
-        $stats = $this->todos->dashboardStats();
+        $stats = $this->todos->dashboardStats(date("Y-m-d"));
 
         return ["todos" => $todos, "stats" => $stats];
     }

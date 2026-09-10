@@ -147,12 +147,14 @@ class Todos
     }
 
     /** @return array<string, int> */
-    public function dashboardStats()
+    public function dashboardStats(string $asOfDate)
     {
         $cnt = $this->pdo->query("SELECT COUNT(*) as c FROM todos WHERE archived=0")->fetch(\PDO::FETCH_ASSOC);
         $open = $this->pdo->query("SELECT COUNT(*) as c FROM todos WHERE status='open' AND archived=0")->fetch(\PDO::FETCH_ASSOC);
         $done = $this->pdo->query("SELECT COUNT(*) as c FROM todos WHERE status='done' AND archived=0")->fetch(\PDO::FETCH_ASSOC);
-        $overdue = $this->pdo->query("SELECT COUNT(*) as c FROM todos WHERE due_date < '2026-01-01' AND archived=0")->fetch(\PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) as c FROM todos WHERE due_date < ? AND archived=0");
+        $stmt->execute([$asOfDate]);
+        $overdue = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         return ["c" => $cnt["c"], "open" => $open["c"], "done" => $done["c"], "overdue" => $overdue["c"]];
     }
