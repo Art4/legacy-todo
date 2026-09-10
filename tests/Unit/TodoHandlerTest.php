@@ -83,15 +83,29 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
     {
         $this->pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (2,'carol','','user','c@x.com','2026-01-01')");
         $tid = $this->seedTodo(["user_id" => 1, "title" => "Titel", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
-        $this->pdo->exec("INSERT INTO comments (id,todo_id,user_id,body,created_at) VALUES (77," . $tid . ",2,'weg damit','2026-01-12')");
+        $this->pdo->exec("INSERT INTO comments (id,todo_id,user_id,body,created_at) VALUES (77," . $tid . ",1,'weg damit','2026-01-12')");
         $this->session['user_id'] = 1;
         $this->session['username'] = 'alice';
-        $this->session['role'] = 'admin';
+        $this->session['role'] = 'user';
 
         $output = $this->handler->handle($tid, ["del_comment" => 77], []);
 
         $this->assertStringNotContainsString('weg damit', (string) $output);
         $this->assertStringNotContainsString('<h3>Kommentare</h3>', (string) $output);
+    }
+
+    public function testTodoRemoveCommentRefusedForNonOwner(): void
+    {
+        $this->pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (2,'carol','','user','c@x.com','2026-01-01')");
+        $tid = $this->seedTodo(["user_id" => 1, "title" => "Titel", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
+        $this->pdo->exec("INSERT INTO comments (id,todo_id,user_id,body,created_at) VALUES (88," . $tid . ",2,'fremder kommentar','2026-01-12')");
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'user';
+
+        $output = $this->handler->handle($tid, ["del_comment" => 88], []);
+
+        $this->assertStringContainsString('fremder kommentar', (string) $output);
     }
 
     public function testTodoNotFoundPrintsNotFound(): void
