@@ -3,7 +3,6 @@
 namespace Art4\LegacyTodo;
 
 require_once __DIR__ . "/Bootstrap.php";
-require_once __DIR__ . "/Layout.php";
 
 /**
  * Single responsible module: owns the delete/archive request flow and markup
@@ -20,7 +19,7 @@ class DeleteTodoHandler
     public function __construct(Bootstrap $app)
     {
         $this->app = $app;
-        $this->layout = new Layout($app);
+        $this->layout = $app->layout();
     }
 
     /**

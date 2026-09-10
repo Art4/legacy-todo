@@ -5,7 +5,7 @@ $auth = $app->auth();
 $auth->requireLogin();
 $userId = $auth->currentUser()["user_id"];
 $dashboard = $app->dashboard();
-$layout = new \Art4\LegacyTodo\Layout($app);
+$layout = $app->layout();
 if (($_GET["export"] ?? "") == "csv") {
     $csv = $dashboard->exportCsv($userId);
     header("Content-Type: text/csv");

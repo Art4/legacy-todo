@@ -62,6 +62,12 @@ class Bootstrap
     /** @var Taxonomy|null */
     private $taxonomy;
 
+    /** @var Layout|null */
+    private $layout;
+
+    /** @var Csrf|null */
+    private $csrf;
+
     /** @var string */
     private $uploadsDir;
 
@@ -198,6 +204,24 @@ class Bootstrap
         }
 
         return $this->taxonomy;
+    }
+
+    public function layout(): Layout
+    {
+        if ($this->layout === null) {
+            $this->layout = new Layout($this);
+        }
+
+        return $this->layout;
+    }
+
+    public function csrf(): Csrf
+    {
+        if ($this->csrf === null) {
+            $this->csrf = new Csrf($this->auth(), $this->layout());
+        }
+
+        return $this->csrf;
     }
 
     /**
