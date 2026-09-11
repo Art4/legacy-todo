@@ -203,7 +203,7 @@ class Bootstrap
 
     public function loginHandler(): LoginHandler
     {
-        return new LoginHandler($this);
+        return new LoginHandler($this->auth(), $this->users(), $this->csrf(), $this->layout(), $this->siteName);
     }
 
     public function adminHandler(): AdminHandler
