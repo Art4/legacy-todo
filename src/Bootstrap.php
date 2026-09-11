@@ -218,7 +218,7 @@ class Bootstrap
 
     public function editTodoHandler(): EditTodoHandler
     {
-        return new EditTodoHandler($this);
+        return new EditTodoHandler($this->auth(), $this->todos(), $this->csrf(), $this->layout());
     }
 
     /**
