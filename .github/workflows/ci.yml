@@ -138,6 +138,22 @@ jobs:
             php scripts/check-coverage-floor.php build/logs/clover.xml .coverage-floor
           '
 
+  semgrep:
+    name: Semgrep OWASP Top 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Semgrep OWASP Top 10 scan (via Docker)
+        run: |
+          docker run --rm -v "$PWD":/src -w /src semgrep/semgrep:1.175.1 bash -c '
+            set -e
+            MB=$(git merge-base HEAD origin/main)
+            semgrep --config p/owasp-top-ten --baseline-commit "$MB" --error src/ public/
+          '
+
   secret-detection:
     name: Secret detection
     runs-on: ubuntu-latest

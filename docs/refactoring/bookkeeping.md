@@ -9,9 +9,6 @@
 **Pending candidates:**
 - none
 
-**Skip streak:**
-- semgrep: 4
-
 **Fulfilled nodes:**
 - git
 - loop-config (#72)
@@ -41,4 +38,5 @@
 - secret-detection (#181)
 - phpmd (#187)
 - coverage-floor (#228)
+- semgrep (#234)
 - psr-4 (done via #207/#221; tooling_tree.py false positive on scripts/check-coverage-floor.php)
