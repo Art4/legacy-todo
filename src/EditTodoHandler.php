@@ -8,8 +8,11 @@ namespace Art4\LegacyTodo;
  */
 class EditTodoHandler
 {
-    /** @var Bootstrap */
-    private $app;
+    /** @var Auth */
+    private $auth;
+
+    /** @var Todos */
+    private $todos;
 
     /** @var Csrf */
     private $csrf;
@@ -17,11 +20,12 @@ class EditTodoHandler
     /** @var Layout */
     private $layout;
 
-    public function __construct(Bootstrap $app)
+    public function __construct(Auth $auth, Todos $todos, Csrf $csrf, Layout $layout)
     {
-        $this->app = $app;
-        $this->layout = $app->layout();
-        $this->csrf = $app->csrf();
+        $this->auth = $auth;
+        $this->todos = $todos;
+        $this->csrf = $csrf;
+        $this->layout = $layout;
     }
 
     /**
@@ -31,13 +35,11 @@ class EditTodoHandler
     public function handle(int $id, array $post)
     {
         $this->csrf->guard($post);
-        $auth = $this->app->auth();
-        $auth->requireLogin();
-        if (!$auth->canManage($id)) {
+        $this->auth->requireLogin();
+        if (!$this->auth->canManage($id)) {
             echo "Keine Berechtigung";
             exit;
         }
-        $todos = $this->app->todos();
         $out = "";
         if (!empty($post["save"])) {
             $title = $post["title"] ?? "";
@@ -47,11 +49,11 @@ class EditTodoHandler
             if ($title == "") {
                 $out .= "Titel erforderlich";
             } else {
-                $todos->update($id, $title, $text, $priority, $status);
-                $auth->redirect("todo.php?id=" . $id);
+                $this->todos->update($id, $title, $text, $priority, $status);
+                $this->auth->redirect("todo.php?id=" . $id);
             }
         }
-        $t = $todos->find($id);
+        $t = $this->todos->find($id);
         $out .= "<html><body>\n";
         $out .= "<h1>Todo bearbeiten</h1>\n";
         $out .= "<form method='post'>\n";

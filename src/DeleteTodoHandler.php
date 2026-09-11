@@ -8,16 +8,20 @@ namespace Art4\LegacyTodo;
  */
 class DeleteTodoHandler
 {
-    /** @var Bootstrap */
-    private $app;
+    /** @var Auth */
+    private $auth;
+
+    /** @var Todos */
+    private $todos;
 
     /** @var Layout */
     private $layout;
 
-    public function __construct(Bootstrap $app)
+    public function __construct(Auth $auth, Todos $todos, Layout $layout)
     {
-        $this->app = $app;
-        $this->layout = $app->layout();
+        $this->auth = $auth;
+        $this->todos = $todos;
+        $this->layout = $layout;
     }
 
     /**
@@ -26,18 +30,17 @@ class DeleteTodoHandler
      */
     public function handle(int $id, array $get)
     {
-        $auth = $this->app->auth();
-        $auth->requireLogin();
-        if (!$auth->canManage($id)) {
+        $this->auth->requireLogin();
+        if (!$this->auth->canManage($id)) {
             echo "Keine Berechtigung";
             exit;
         }
         if (($get["confirm"] ?? "") == "1") {
-            $this->app->todos()->archive($id);
+            $this->todos->archive($id);
             header("Location: index.php");
             exit;
         }
-        $t = $this->app->todos()->find($id);
+        $t = $this->todos->find($id);
         $out = "<html><body>\n";
         $out .= "<h1>Löschen?</h1>\n";
         $out .= "<p>" . $this->layout->text($t["title"]) . " wirklich archivieren?</p>\n";

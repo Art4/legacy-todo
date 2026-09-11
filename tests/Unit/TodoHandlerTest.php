@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../Fakes/RunCliHelper.php';
 
-use Art4\LegacyTodo\Bootstrap;
+use Art4\LegacyTodo\Auth;
+use Art4\LegacyTodo\Csrf;
 use Art4\LegacyTodo\Fakes\RunCliHelper;
+use Art4\LegacyTodo\Layout;
+use Art4\LegacyTodo\Taxonomy;
+use Art4\LegacyTodo\TodoActivity;
 use Art4\LegacyTodo\TodoHandler;
+use Art4\LegacyTodo\Todos;
+use Art4\LegacyTodo\Users;
 
 final class TodoHandlerTest extends PHPUnit\Framework\TestCase
 {
@@ -31,9 +37,13 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
         $this->pdo->exec('CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, body TEXT, created_at TEXT)');
         $this->pdo->exec('CREATE TABLE IF NOT EXISTS assignments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, assigned_by INTEGER)');
         $this->session = [];
-        $app = new Bootstrap($this->pdo, $this->session, 'Legacy Todo');
-        $this->session['csrf_token'] = $app->auth()->csrfToken();
-        $this->handler = new TodoHandler($app);
+        $users = new Users($this->pdo);
+        $taxonomy = new Taxonomy($this->pdo);
+        $todos = new Todos($this->pdo, $taxonomy);
+        $auth = new Auth($users, $todos, $this->session);
+        $this->session['csrf_token'] = $auth->csrfToken();
+        $layout = new Layout('Legacy Todo', $auth);
+        $this->handler = new TodoHandler($auth, $todos, new TodoActivity($this->pdo), $users, new Csrf($auth, $layout), $layout);
     }
 
     private function seedTodo(array $row): int
@@ -69,7 +79,7 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
     public function testTodoAddCommentRedirectsToTodo(): void
     {
         $output = RunCliHelper::run(
-            '$h = new \Art4\LegacyTodo\TodoHandler($app); echo $h->handle((int) $get["id"], $get, $_POST);',
+            '$h = new \Art4\LegacyTodo\TodoHandler($app->auth(), $app->todos(), $app->todoActivity(), $app->users(), $app->csrf(), $app->layout()); echo $h->handle((int) $get["id"], $get, $_POST);',
             ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
             ["id" => 1],
             ["_csrf_token" => $this->session['csrf_token'], "add_comment" => "Kommentieren", "body" => "Neuer Kommentar"],
@@ -111,7 +121,7 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
     public function testTodoNotFoundPrintsNotFound(): void
     {
         $output = RunCliHelper::run(
-            '$h = new \Art4\LegacyTodo\TodoHandler($app); echo $h->handle((int) $get["id"], $get, $_POST);',
+            '$h = new \Art4\LegacyTodo\TodoHandler($app->auth(), $app->todos(), $app->todoActivity(), $app->users(), $app->csrf(), $app->layout()); echo $h->handle((int) $get["id"], $get, $_POST);',
             ["user_id" => 1, "username" => "alice", "role" => "admin"],
             ["id" => 9999],
             [],
@@ -123,7 +133,7 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
     public function testTodoAssignWithEvilNextRedirectsToDefaultTarget(): void
     {
         $output = RunCliHelper::run(
-            '$h = new \Art4\LegacyTodo\TodoHandler($app); echo $h->handle((int) $get["id"], $get, $_POST);',
+            '$h = new \Art4\LegacyTodo\TodoHandler($app->auth(), $app->todos(), $app->todoActivity(), $app->users(), $app->csrf(), $app->layout()); echo $h->handle((int) $get["id"], $get, $_POST);',
             ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
             ["id" => 1, "next" => "https://evil.com"],
             ["_csrf_token" => $this->session['csrf_token'], "assign" => "Zuweisen", "assignee" => "alice"],
@@ -136,7 +146,7 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
     public function testTodoAssignWithSafeNextHonoursTarget(): void
     {
         $output = RunCliHelper::run(
-            '$h = new \Art4\LegacyTodo\TodoHandler($app); echo $h->handle((int) $get["id"], $get, $_POST);',
+            '$h = new \Art4\LegacyTodo\TodoHandler($app->auth(), $app->todos(), $app->todoActivity(), $app->users(), $app->csrf(), $app->layout()); echo $h->handle((int) $get["id"], $get, $_POST);',
             ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
             ["id" => 1, "next" => "index.php"],
             ["_csrf_token" => $this->session['csrf_token'], "assign" => "Zuweisen", "assignee" => "alice"],

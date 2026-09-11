@@ -191,6 +191,36 @@ class Bootstrap
         return $this->csrf;
     }
 
+    public function addTodoHandler(): AddTodoHandler
+    {
+        return new AddTodoHandler($this->auth(), $this->todos(), $this->taxonomy(), $this->uploads(), $this->csrf(), $this->layout());
+    }
+
+    public function todoHandler(): TodoHandler
+    {
+        return new TodoHandler($this->auth(), $this->todos(), $this->todoActivity(), $this->users(), $this->csrf(), $this->layout());
+    }
+
+    public function loginHandler(): LoginHandler
+    {
+        return new LoginHandler($this->auth(), $this->users(), $this->csrf(), $this->layout(), $this->siteName);
+    }
+
+    public function adminHandler(): AdminHandler
+    {
+        return new AdminHandler($this->auth(), $this->users(), $this->taxonomy(), $this->csrf(), $this->layout(), $this->siteName);
+    }
+
+    public function deleteTodoHandler(): DeleteTodoHandler
+    {
+        return new DeleteTodoHandler($this->auth(), $this->todos(), $this->layout());
+    }
+
+    public function editTodoHandler(): EditTodoHandler
+    {
+        return new EditTodoHandler($this->auth(), $this->todos(), $this->csrf(), $this->layout());
+    }
+
     /**
      * @return array<string, mixed>|null
      */

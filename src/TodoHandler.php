@@ -8,8 +8,17 @@ namespace Art4\LegacyTodo;
  */
 class TodoHandler
 {
-    /** @var Bootstrap */
-    private $app;
+    /** @var Auth */
+    private $auth;
+
+    /** @var Todos */
+    private $todos;
+
+    /** @var TodoActivity */
+    private $todoActivity;
+
+    /** @var Users */
+    private $users;
 
     /** @var Csrf */
     private $csrf;
@@ -17,11 +26,14 @@ class TodoHandler
     /** @var Layout */
     private $layout;
 
-    public function __construct(Bootstrap $app)
+    public function __construct(Auth $auth, Todos $todos, TodoActivity $todoActivity, Users $users, Csrf $csrf, Layout $layout)
     {
-        $this->app = $app;
-        $this->layout = $app->layout();
-        $this->csrf = $app->csrf();
+        $this->auth = $auth;
+        $this->todos = $todos;
+        $this->todoActivity = $todoActivity;
+        $this->users = $users;
+        $this->csrf = $csrf;
+        $this->layout = $layout;
     }
 
     /**
@@ -32,39 +44,36 @@ class TodoHandler
     public function handle(int $id, array $get, array $post)
     {
         $this->csrf->guard($post);
-        $auth = $this->app->auth();
-        $todos = $this->app->todos();
-        $activity = $this->app->todoActivity();
-        $auth->requireLogin();
-        $t = $todos->find($id);
+        $this->auth->requireLogin();
+        $t = $this->todos->find($id);
         if ($t == null) {
             echo "Not found";
             exit;
         }
         if (!empty($post["add_comment"])) {
             $body = $post["body"] ?? "";
-            $uid = $auth->currentUser()["user_id"];
-            $activity->addComment($id, $uid, $body);
+            $uid = $this->auth->currentUser()["user_id"];
+            $this->todoActivity->addComment($id, $uid, $body);
             header("Location: todo.php?id=" . $id);
             exit;
         }
         if (!empty($post["assign"])) {
             $assignee = $post["assignee"] ?? "";
-            $activity->assign($id, $assignee, $auth->currentUser()["user_id"]);
+            $this->todoActivity->assign($id, $assignee, $this->auth->currentUser()["user_id"]);
             if (($get["next"] ?? "") != "") {
-                $auth->redirect("todo.php?id=" . $id);
+                $this->auth->redirect("todo.php?id=" . $id);
             }
         }
         if (!empty($get["del_comment"])) {
-            $comment = $activity->findComment($get["del_comment"]);
-            $uid = $auth->currentUser()["user_id"];
-            $role = $auth->currentUser()["role"];
+            $comment = $this->todoActivity->findComment($get["del_comment"]);
+            $uid = $this->auth->currentUser()["user_id"];
+            $role = $this->auth->currentUser()["role"];
             if ($comment !== null && ($comment["user_id"] == $uid || $role === "admin")) {
-                $activity->removeComment($get["del_comment"]);
+                $this->todoActivity->removeComment($get["del_comment"]);
             }
         }
-        $comments = $activity->commentsForTodo($id);
-        $assigns = $activity->assignmentsForTodo($id);
+        $comments = $this->todoActivity->commentsForTodo($id);
+        $assigns = $this->todoActivity->assignmentsForTodo($id);
 
         return $this->renderTodoDetail($t, $comments, $assigns, $id);
     }
@@ -77,7 +86,6 @@ class TodoHandler
      */
     private function renderTodoDetail(array $t, array $comments, array $assigns, int $id)
     {
-        $users = $this->app->users();
         $out = "<html><head><title>Todo - " . $this->layout->text($t["title"]) . "</title></head>\n";
         $out .= "<body>\n";
         $out .= "<h1>" . $this->layout->text($t["title"]) . "</h1>\n";
@@ -106,7 +114,7 @@ class TodoHandler
         $out .= "<form method=\"post\">\n";
         $out .= $this->csrf->field() . "\n";
         $out .= "<select name=\"assignee\">\n";
-        foreach ($users->listAll() as $u) {
+        foreach ($this->users->listAll() as $u) {
             $out .= "<option value='" . $this->layout->attr($u["id"]) . "'>" . $this->layout->text($u["username"]) . "</option>\n";
         }
         $out .= "</select>\n";

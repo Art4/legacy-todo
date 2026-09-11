@@ -8,8 +8,17 @@ namespace Art4\LegacyTodo;
  */
 class AddTodoHandler
 {
-    /** @var Bootstrap */
-    private $app;
+    /** @var Auth */
+    private $auth;
+
+    /** @var Todos */
+    private $todos;
+
+    /** @var Taxonomy */
+    private $taxonomy;
+
+    /** @var Uploads */
+    private $uploads;
 
     /** @var Csrf */
     private $csrf;
@@ -17,11 +26,14 @@ class AddTodoHandler
     /** @var Layout */
     private $layout;
 
-    public function __construct(Bootstrap $app)
+    public function __construct(Auth $auth, Todos $todos, Taxonomy $taxonomy, Uploads $uploads, Csrf $csrf, Layout $layout)
     {
-        $this->app = $app;
-        $this->layout = $app->layout();
-        $this->csrf = $app->csrf();
+        $this->auth = $auth;
+        $this->todos = $todos;
+        $this->taxonomy = $taxonomy;
+        $this->uploads = $uploads;
+        $this->csrf = $csrf;
+        $this->layout = $layout;
     }
 
     /**
@@ -32,8 +44,7 @@ class AddTodoHandler
     public function handle(array $post, array $files)
     {
         $this->csrf->guard($post);
-        $auth = $this->app->auth();
-        $auth->requireLogin("addtodo.php");
+        $this->auth->requireLogin("addtodo.php");
         $out = "";
         $msg = "";
         if (!empty($post["save"])) {
@@ -41,8 +52,8 @@ class AddTodoHandler
             $text = $post["text"] ?? "";
             $priority = $post["priority"] ?? "";
             $due = $post["due_date"] ?? "";
-            $userId = $auth->currentUser()["user_id"];
-            $uploaded = $this->app->uploads()->store($files["upload"] ?? []);
+            $userId = $this->auth->currentUser()["user_id"];
+            $uploaded = $this->uploads->store($files["upload"] ?? []);
             if ($uploaded !== null) {
                 $out .= "Upload: " . $uploaded;
             }
@@ -50,7 +61,7 @@ class AddTodoHandler
                 $msg = "Titel erforderlich";
                 $out .= $msg;
             } else {
-                $r = $this->app->todos()->create($userId, $title, $text, $priority, $due);
+                $r = $this->todos->create($userId, $title, $text, $priority, $due);
                 if ($r == true) {
                     header("Location: index.php");
                     exit;
@@ -75,7 +86,7 @@ class AddTodoHandler
         $out .= "<option value='3'>Niedrig</option>\n";
         $out .= "</select>\n";
         $out .= "<select name='category_id'>\n";
-        foreach ($this->app->taxonomy()->listCategories() as $c) {
+        foreach ($this->taxonomy->listCategories() as $c) {
             $out .= "<option value='" . $this->layout->attr($c["id"]) . "'>" . $this->layout->text($c["name"]) . "</option>\n";
         }
         $out .= "</select>\n";

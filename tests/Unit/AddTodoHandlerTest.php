@@ -5,8 +5,14 @@ declare(strict_types=1);
 require_once __DIR__ . '/../Fakes/RunCliHelper.php';
 
 use Art4\LegacyTodo\AddTodoHandler;
-use Art4\LegacyTodo\Bootstrap;
+use Art4\LegacyTodo\Auth;
+use Art4\LegacyTodo\Csrf;
 use Art4\LegacyTodo\Fakes\RunCliHelper;
+use Art4\LegacyTodo\Layout;
+use Art4\LegacyTodo\Taxonomy;
+use Art4\LegacyTodo\Todos;
+use Art4\LegacyTodo\Uploads;
+use Art4\LegacyTodo\Users;
 
 final class AddTodoHandlerTest extends PHPUnit\Framework\TestCase
 {
@@ -28,9 +34,14 @@ final class AddTodoHandlerTest extends PHPUnit\Framework\TestCase
         $pdo->exec('CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, body TEXT, created_at TEXT)');
         $pdo->exec('CREATE TABLE IF NOT EXISTS assignments (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_id INTEGER, user_id INTEGER, assigned_by INTEGER)');
         $this->session = [];
-        $app = new Bootstrap($pdo, $this->session, 'Legacy Todo');
-        $this->session['csrf_token'] = $app->auth()->csrfToken();
-        $this->handler = new AddTodoHandler($app);
+        $users = new Users($pdo);
+        $taxonomy = new Taxonomy($pdo);
+        $todos = new Todos($pdo, $taxonomy);
+        $auth = new Auth($users, $todos, $this->session);
+        $this->session['csrf_token'] = $auth->csrfToken();
+        $layout = new Layout('Legacy Todo', $auth);
+        $csrf = new Csrf($auth, $layout);
+        $this->handler = new AddTodoHandler($auth, $todos, $taxonomy, new Uploads(dirname(__DIR__, 2) . '/public/uploads'), $csrf, $layout);
     }
 
     public function testAddTodoRendersFormAndEscapesPostValues(): void
@@ -62,7 +73,7 @@ final class AddTodoHandlerTest extends PHPUnit\Framework\TestCase
     public function testAddTodoSaveSuccessRedirectsToIndex(): void
     {
         $output = RunCliHelper::run(
-            '$h = new \Art4\LegacyTodo\AddTodoHandler($app); echo $h->handle($_POST, $_FILES);',
+            '$h = new \Art4\LegacyTodo\AddTodoHandler($app->auth(), $app->todos(), $app->taxonomy(), $app->uploads(), $app->csrf(), $app->layout()); echo $h->handle($_POST, $_FILES);',
             ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
             [],
             ["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "Neu", "text" => "Text", "priority" => "1", "due_date" => "2026-02-01"],
@@ -81,7 +92,7 @@ final class AddTodoHandlerTest extends PHPUnit\Framework\TestCase
 
         try {
             $output = RunCliHelper::run(
-                '$h = new \Art4\LegacyTodo\AddTodoHandler($app); echo $h->handle($_POST, $_FILES);',
+                '$h = new \Art4\LegacyTodo\AddTodoHandler($app->auth(), $app->todos(), $app->taxonomy(), $app->uploads(), $app->csrf(), $app->layout()); echo $h->handle($_POST, $_FILES);',
                 ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
                 [],
                 ["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "Upload-Todo", "text" => "", "priority" => "1", "due_date" => "2026-02-01"],

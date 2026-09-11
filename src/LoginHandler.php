@@ -8,8 +8,11 @@ namespace Art4\LegacyTodo;
  */
 class LoginHandler
 {
-    /** @var Bootstrap */
-    private $app;
+    /** @var Auth */
+    private $auth;
+
+    /** @var Users */
+    private $users;
 
     /** @var Csrf */
     private $csrf;
@@ -17,11 +20,16 @@ class LoginHandler
     /** @var Layout */
     private $layout;
 
-    public function __construct(Bootstrap $app)
+    /** @var string */
+    private $siteName;
+
+    public function __construct(Auth $auth, Users $users, Csrf $csrf, Layout $layout, string $siteName)
     {
-        $this->app = $app;
-        $this->layout = $app->layout();
-        $this->csrf = $app->csrf();
+        $this->auth = $auth;
+        $this->users = $users;
+        $this->csrf = $csrf;
+        $this->layout = $layout;
+        $this->siteName = $siteName;
     }
 
     /**
@@ -31,14 +39,12 @@ class LoginHandler
     public function handle(array $post)
     {
         $this->csrf->guard($post);
-        $auth = $this->app->auth();
-        $users = $this->app->users();
         $out = "";
         $msg = "";
         if (!empty($post["login"])) {
             $u = $post["username"] ?? "";
             $p = $post["password"] ?? "";
-            if ($auth->login($u, $p)) {
+            if ($this->auth->login($u, $p)) {
                 header("Location: index.php");
                 exit;
             }
@@ -49,7 +55,7 @@ class LoginHandler
             $u = $post["username"] ?? "";
             $p = $post["password"] ?? "";
             $email = $post["email"] ?? "";
-            $result = $users->register($u, $p, $email);
+            $result = $this->users->register($u, $p, $email);
             if ($result->isRegistered()) {
                 $msg = "Registriert";
             } elseif ($result->status() === RegistrationResult::STATUS_INVALID_INPUT) {
@@ -60,7 +66,7 @@ class LoginHandler
                 $msg = "Fehler: Registrierung fehlgeschlagen.";
             }
         }
-        $siteName = $this->layout->text($this->app->siteName());
+        $siteName = $this->layout->text($this->siteName);
         $out .= "<html><head><title>Login - " . $siteName . "</title></head>\n";
         $out .= "<body>\n";
         $out .= "<h1>Login</h1>\n";
