@@ -9,6 +9,9 @@
 **Pending candidates:**
 - none
 
+**Skip streak:**
+- psr-4: 1
+
 **Fulfilled nodes:**
 - git
 - loop-config (#72)

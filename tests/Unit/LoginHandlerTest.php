@@ -82,12 +82,30 @@ final class LoginHandlerTest extends PHPUnit\Framework\TestCase
         $this->assertStringContainsString('<p>Registriert</p>', $output);
     }
 
-    public function testRegisterWithEmptyFieldsReportsRegistriertDueToLooseComparison(): void
+    public function testRegisterWithEmptyFieldsReportsErrorAndWritesNoUser(): void
     {
         $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "", "password" => "", "email" => "x@example.com"]);
 
-        $this->assertStringContainsString('<p>Registriert</p>', $output);
-        $this->assertStringNotContainsString('Fehler:', $output);
+        $this->assertStringContainsString('Fehler: Benutzername und Passwort sind erforderlich.', $output);
+        $this->assertStringNotContainsString('Registriert', $output);
+        $this->assertSame(0, (int) $this->pdo->query("SELECT COUNT(*) FROM users")->fetchColumn());
+    }
+
+    public function testRegisterWithTakenUsernameRendersError(): void
+    {
+        $this->seedUser(["username" => "alice", "password" => "pw", "role" => "user", "email" => "alice@example.com"]);
+
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "alice", "password" => "pw2", "email" => "x@example.com"]);
+
+        $this->assertStringContainsString('Fehler: Dieser Benutzername ist bereits vergeben.', $output);
+        $this->assertStringNotContainsString('Registriert', $output);
+    }
+
+    public function testRegisterErrorMessageRenderedOnce(): void
+    {
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "", "password" => "", "email" => "x@example.com"]);
+
+        $this->assertSame(1, substr_count($output, 'Fehler: Benutzername und Passwort sind erforderlich.'));
     }
 
     public function testLoginSuccessRedirectsToIndex(): void

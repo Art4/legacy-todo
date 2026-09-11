@@ -72,17 +72,19 @@ class Users
         $stmt->execute([password_hash($password, PASSWORD_BCRYPT), $id]);
     }
 
-    /** @return bool|string */
+    /**
+     * @return RegistrationResult
+     */
     public function register($u, $p, $email)
     {
         if ($u == "" || $p == "") {
-            return "Titel fehlt?";
+            return RegistrationResult::invalidInput();
         }
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE username=?");
         $stmt->execute([$u]);
         $exists = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($exists != null) {
-            return "exists";
+            return RegistrationResult::usernameTaken();
         }
         $hash = password_hash($p, PASSWORD_BCRYPT);
         $sql = "INSERT INTO users (username,password,role,email,created_at) VALUES (?,?,'user',?,?)";
@@ -90,10 +92,10 @@ class Users
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$u, $hash, $email, date("Y-m-d")]);
         } catch (\Exception $e) {
-            return false;
+            return RegistrationResult::storageFailure();
         }
 
-        return true;
+        return RegistrationResult::registered();
     }
 
     /** @return bool */
