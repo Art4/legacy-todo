@@ -29,8 +29,10 @@ case "$cmd" in
     # Einmalige (idempotente) Datenbank-Einrichtung: Schema anlegen und bei
     # leerer Datenbank mit Demo-Daten befüllen. Läuft bewusst NICHT im
     # Request-Lebenszyklus, sondern nur beim ersten Start (ADR-0010).
+    # Verwendet dieselbe PHP-Version wie die CI-Werkzeuge (nicht die 7.4-Laufzeit),
+    # da der Composer-Dev-Stack nur auf PHP 8.x parst (siehe issue #239).
     echo "Richte SQLite-Datenbank ein ($SRC/database.sqlite)..."
-    docker run --rm -v "${SRC}:/app" -w /app "$IMAGE" php src/install.php
+    docker run --rm -v "${SRC}:/app" -w /app php:8.3-cli php src/install.php
     ;;
   down)
     docker rm -f "$CONTAINER" 2>/dev/null || echo "Container $CONTAINER nicht gefunden"

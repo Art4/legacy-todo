@@ -15,6 +15,7 @@ Kein Host-PHP nötig – die Laufzeit läuft komplett über Docker.
 
 ```bash
 ./run.sh up      # PHP-7.4-Apache-Container starten (Port 8086), SQLite
+./run.sh install # Einmalige Datenbank-Einrichtung (Schema + Demo-Daten, idempotent)
 ./run.sh lint    # php -l über alle .php-Dateien
 ./run.sh shell   # Bash im Container
 ./run.sh logs    # Container-Logs verfolgen

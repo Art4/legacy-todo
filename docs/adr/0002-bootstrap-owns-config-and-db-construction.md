@@ -20,3 +20,4 @@ Goes with a process correction: when the `refactor-prioritize` Select step recor
 
 - A future scan should not re-propose absorbing `config.php`/`db.php`/`functions.php` into the startup path, nor deleting them from the repo while PHPStan/Rector/LegacySmokeTest still reference them.
 - `start()` keeps a backward-compatible no-argument form; callers may pass `db_file` and `siteName` overrides.
+- ADR-0010 supersedes this decision's "connects, creates the schema and seeds" clause: `start()` now only connects, and the schema/seed step moved to an explicit one-time install path (`Bootstrap::install()` → `Installer`, `./run.sh install`).
