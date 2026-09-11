@@ -124,7 +124,7 @@ class Auth
         exit;
     }
 
-    private function isSafeInAppTarget($next): bool
+    private function isSafeInAppTarget(string $next): bool
     {
         if (strpos($next, "://") !== false) {
             return false;
