@@ -6,6 +6,7 @@ use Art4\LegacyTodo\Auth;
 use Art4\LegacyTodo\Bootstrap;
 use Art4\LegacyTodo\Csrf;
 use Art4\LegacyTodo\Dashboard;
+use Art4\LegacyTodo\Installer;
 use Art4\LegacyTodo\Layout;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\TodoActivity;
@@ -164,7 +165,7 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
         session_write_close();
     }
 
-    public function testStartWithTempDbCreatesSchema(): void
+    public function testStartDoesNotInstallSchema(): void
     {
         $dbFile = $this->tempDb();
 
@@ -174,93 +175,7 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
         $tables = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name")->fetchAll(\PDO::FETCH_COLUMN);
         @unlink($dbFile);
 
-        $this->assertSame(
-            ['assignments', 'categories', 'comments', 'tags', 'todo_tags', 'todos', 'users'],
-            $tables,
-        );
-    }
-
-    public function testStartWithTempDbSeedsWhenEmpty(): void
-    {
-        $dbFile = $this->tempDb();
-
-        Bootstrap::start(['db_file' => $dbFile]);
-
-        $pdo = new \PDO('sqlite:' . $dbFile);
-        $users = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
-        $todos = (int) $pdo->query('SELECT COUNT(*) FROM todos')->fetchColumn();
-        $categories = (int) $pdo->query('SELECT COUNT(*) FROM categories')->fetchColumn();
-        $tags = (int) $pdo->query('SELECT COUNT(*) FROM tags')->fetchColumn();
-        $comments = (int) $pdo->query('SELECT COUNT(*) FROM comments')->fetchColumn();
-        @unlink($dbFile);
-
-        $this->assertSame(2, $users);
-        $this->assertSame(3, $todos);
-        $this->assertSame(1, $categories);
-        $this->assertSame(1, $tags);
-        $this->assertSame(1, $comments);
-    }
-
-    public function testStartDoesNotReseedPopulatedDb(): void
-    {
-        $dbFile = $this->tempDb();
-        $seed = new \PDO('sqlite:' . $dbFile);
-        $seed->exec('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT)');
-        $seed->exec("INSERT INTO users (username) VALUES ('alice')");
-        unset($seed);
-
-        Bootstrap::start(['db_file' => $dbFile]);
-
-        $pdo = new \PDO('sqlite:' . $dbFile);
-        $users = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
-        @unlink($dbFile);
-
-        $this->assertSame(1, $users);
-    }
-
-    public function testStartHonoursLegacyTodoDbFileEnvVar(): void
-    {
-        $dbFile = $this->tempDb();
-        putenv('LEGACY_TODO_DB_FILE=' . $dbFile);
-
-        try {
-            Bootstrap::start();
-        } finally {
-            putenv('LEGACY_TODO_DB_FILE');
-        }
-
-        $pdo = new \PDO('sqlite:' . $dbFile);
-        $users = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
-        @unlink($dbFile);
-
-        $this->assertSame(2, $users);
-    }
-
-    public function testStartConfigDbFileWinsOverEnvVar(): void
-    {
-        $envFile = $this->tempDb();
-        $configFile = $this->tempDb();
-        $seed = new \PDO('sqlite:' . $envFile);
-        $seed->exec('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT)');
-        $seed->exec("INSERT INTO users (username) VALUES ('alice')");
-        unset($seed);
-        putenv('LEGACY_TODO_DB_FILE=' . $envFile);
-
-        try {
-            Bootstrap::start(['db_file' => $configFile]);
-        } finally {
-            putenv('LEGACY_TODO_DB_FILE');
-        }
-
-        $envPdo = new \PDO('sqlite:' . $envFile);
-        $envUsers = (int) $envPdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
-        $configPdo = new \PDO('sqlite:' . $configFile);
-        $configUsers = (int) $configPdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
-        @unlink($envFile);
-        @unlink($configFile);
-
-        $this->assertSame(1, $envUsers);
-        $this->assertSame(2, $configUsers);
+        $this->assertSame([], $tables);
     }
 
     public function testStartDefaultsToLegacyTodoSiteName(): void
@@ -281,6 +196,103 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
         @unlink($dbFile);
 
         $this->assertSame('Custom Site', $app->siteName());
+    }
+
+    public function testInstallCreatesSchema(): void
+    {
+        $dbFile = $this->tempDb();
+        $pdo = new \PDO('sqlite:' . $dbFile);
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $installer = new Installer($pdo);
+        $installer->install();
+
+        $tables = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name")->fetchAll(\PDO::FETCH_COLUMN);
+        @unlink($dbFile);
+
+        $this->assertSame(
+            ['assignments', 'categories', 'comments', 'tags', 'todo_tags', 'todos', 'users'],
+            $tables,
+        );
+    }
+
+    public function testInstallSeedsWhenEmpty(): void
+    {
+        $dbFile = $this->tempDb();
+        $pdo = new \PDO('sqlite:' . $dbFile);
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $installer = new Installer($pdo);
+        $installer->install();
+
+        $users = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
+        $todos = (int) $pdo->query('SELECT COUNT(*) FROM todos')->fetchColumn();
+        $categories = (int) $pdo->query('SELECT COUNT(*) FROM categories')->fetchColumn();
+        $tags = (int) $pdo->query('SELECT COUNT(*) FROM tags')->fetchColumn();
+        $comments = (int) $pdo->query('SELECT COUNT(*) FROM comments')->fetchColumn();
+        @unlink($dbFile);
+
+        $this->assertSame(2, $users);
+        $this->assertSame(3, $todos);
+        $this->assertSame(1, $categories);
+        $this->assertSame(1, $tags);
+        $this->assertSame(1, $comments);
+    }
+
+    public function testInstallDoesNotReseedPopulatedDb(): void
+    {
+        $dbFile = $this->tempDb();
+        $pdo = new \PDO('sqlite:' . $dbFile);
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT)');
+        $pdo->exec("INSERT INTO users (username) VALUES ('alice')");
+
+        $installer = new Installer($pdo);
+        $installer->install();
+
+        $users = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
+        @unlink($dbFile);
+
+        $this->assertSame(1, $users);
+    }
+
+    public function testInstallHonoursLegacyTodoDbFileEnvVar(): void
+    {
+        $dbFile = $this->tempDb();
+        putenv('LEGACY_TODO_DB_FILE=' . $dbFile);
+
+        try {
+            Bootstrap::install();
+        } finally {
+            putenv('LEGACY_TODO_DB_FILE');
+        }
+
+        $pdo = new \PDO('sqlite:' . $dbFile);
+        $users = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
+        @unlink($dbFile);
+
+        $this->assertSame(2, $users);
+    }
+
+    public function testInstallConfigDbFileWinsOverEnvVar(): void
+    {
+        $envFile = $this->tempDb();
+        $configFile = $this->tempDb();
+        putenv('LEGACY_TODO_DB_FILE=' . $envFile);
+
+        try {
+            Bootstrap::install(['db_file' => $configFile]);
+        } finally {
+            putenv('LEGACY_TODO_DB_FILE');
+        }
+
+        $envPdo = new \PDO('sqlite:' . $envFile);
+        $envUsers = $envPdo->query("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='users'")->fetchColumn();
+        $configPdo = new \PDO('sqlite:' . $configFile);
+        $configUsers = (int) $configPdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
+        @unlink($envFile);
+        @unlink($configFile);
+
+        $this->assertSame(0, (int) $envUsers);
+        $this->assertSame(2, $configUsers);
     }
 
     private function tempDb(): string
