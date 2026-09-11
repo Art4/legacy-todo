@@ -108,6 +108,23 @@ final class UsersTest extends PHPUnit\Framework\TestCase
         $this->assertNull($this->users->authenticate("hank", "wrong"));
     }
 
+    public function testAuthenticateUpgradesLowCostBcryptHashToCurrentDefault(): void
+    {
+        $legacy = password_hash("secret", PASSWORD_BCRYPT, ["cost" => 4]);
+        $this->pdo->exec(
+            "INSERT INTO users (username,password,role,email,created_at) VALUES ("
+            . "'lena','" . $legacy . "','user','lena@example.com','2026-01-01')",
+        );
+
+        $row = $this->users->authenticate("lena", "secret");
+
+        $this->assertSame("lena", $row["username"]);
+        $stored = $this->pdo->query("SELECT password FROM users WHERE username='lena'")->fetchColumn();
+        $this->assertNotSame($legacy, $stored);
+        $this->assertTrue(password_verify("secret", $stored));
+        $this->assertFalse(password_needs_rehash((string) $stored, PASSWORD_BCRYPT));
+    }
+
     public function testRegisterRejectsInjectedUsername(): void
     {
         $result = $this->users->register("a'--", "pw", "e@e.com");
@@ -155,6 +172,15 @@ final class UsersTest extends PHPUnit\Framework\TestCase
         $this->assertTrue(password_verify("pw", $rows[0]["password"]));
     }
 
+    public function testRegisterReturnsStorageFailureWhenInsertFails(): void
+    {
+        $this->pdo->exec("CREATE TRIGGER fail_register BEFORE INSERT ON users BEGIN SELECT raise(ABORT, 'boom'); END;");
+
+        $result = $this->users->register("julia", "pw", "julia@example.com");
+
+        $this->assertSame(RegistrationResult::STATUS_STORAGE_FAILURE, $result->status());
+    }
+
     public function testCreateInsertsUserWithGivenRoleAndExampleComEmail(): void
     {
         $result = $this->users->create("frank", "pw456", "admin");
@@ -166,6 +192,13 @@ final class UsersTest extends PHPUnit\Framework\TestCase
         $this->assertSame("admin", $row["role"]);
         $this->assertSame("frank@example.com", $row["email"]);
         $this->assertSame(date("Y-m-d"), $row["created_at"]);
+    }
+
+    public function testCreateReturnsFalseWhenInsertFails(): void
+    {
+        $this->pdo->exec("DROP TABLE users");
+
+        $this->assertFalse($this->users->create("kevin", "pw789", "user"));
     }
 
     public function testListReturnsAllUsers(): void

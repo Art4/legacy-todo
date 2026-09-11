@@ -126,20 +126,10 @@ class Auth
 
     private function isSafeInAppTarget(string $next): bool
     {
-        if (strpos($next, "://") !== false) {
-            return false;
-        }
-        if (preg_match('/^[a-zA-Z][a-zA-Z0-9+.\-]*:/', $next) === 1) {
-            return false;
-        }
-        if (substr($next, 0, 2) === "//") {
-            return false;
-        }
-        if (strpos($next, "\\") !== false) {
-            return false;
-        }
-
-        return true;
+        return strpos($next, "://") === false
+            && preg_match('/^[a-zA-Z][a-zA-Z0-9+.\-]*:/', $next) !== 1
+            && substr($next, 0, 2) !== "//"
+            && strpos($next, "\\") === false;
     }
 
     public function csrfToken(): string

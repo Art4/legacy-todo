@@ -181,6 +181,13 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertSame(0, (int) $this->pdo->query("SELECT COUNT(*) FROM todos")->fetchColumn());
     }
 
+    public function testCreateReturnsFalseWhenInsertFails(): void
+    {
+        $this->pdo->exec("DROP TABLE todos");
+
+        $this->assertFalse($this->todos->create(7, "Neues Todo", "Text", 2, "2026-12-01"));
+    }
+
     public function testUpdateChangesTitleTextPriorityAndStatus(): void
     {
         $id = $this->seedTodo(["user_id" => 1, "title" => "Alt", "text" => "alter text", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);

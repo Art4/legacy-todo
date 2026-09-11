@@ -142,6 +142,17 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
         $this->assertNull($this->bootstrap->currentUser());
     }
 
+    public function testConstructorFallsBackToSessionSuperglobalWhenNullPassed(): void
+    {
+        $pdo = new \PDO('sqlite::memory:');
+        $session = null;
+        $_SESSION = [];
+        $bootstrap = new Bootstrap($pdo, $session);
+
+        $this->assertInstanceOf(Bootstrap::class, $bootstrap);
+        $this->assertNull($bootstrap->currentUser());
+    }
+
     public function testStartBootsRealRequestContext(): void
     {
         $app = Bootstrap::start();

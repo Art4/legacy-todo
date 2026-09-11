@@ -40,6 +40,15 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->assertNull($this->auth->currentUser());
     }
 
+    public function testConstructorFallsBackToSessionSuperglobalWhenNullPassed(): void
+    {
+        $session = null;
+        $_SESSION = [];
+        $auth = new Auth(new Users($this->pdo), new Todos($this->pdo, new Taxonomy($this->pdo)), $session);
+
+        $this->assertFalse($auth->loggedIn());
+    }
+
     public function testCurrentUserReturnsIdentityFromSession(): void
     {
         $this->session['user_id'] = 1;
@@ -205,6 +214,11 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->session["role"] = "user";
 
         $this->assertFalse($this->auth->canManage(9999));
+    }
+
+    public function testCanManageDeniesWithoutIdentity(): void
+    {
+        $this->assertFalse($this->auth->canManage(5));
     }
 
     public function testRedirectFallsBackToGivenUrlWithoutNext(): void
