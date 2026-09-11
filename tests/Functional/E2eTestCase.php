@@ -70,7 +70,10 @@ abstract class E2eTestCase extends \PHPUnit\Framework\TestCase
 
     protected function tearDown(): void
     {
-        if ($this->status()->isError() || $this->status()->isFailure()) {
+        $hasFailed = method_exists($this, 'status')
+            ? ($this->status()->isError() || $this->status()->isFailure())
+            : $this->hasFailed();
+        if ($hasFailed) {
             $tail = $this->tailFile($this->serverStderr);
             if ($tail !== '') {
                 fwrite(STDERR, "\n[E2E server stderr tail]\n" . $tail);

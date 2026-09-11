@@ -19,7 +19,7 @@ final class RunCliHelper
         array $post,
         string $setup = '',
         string $uploadsDir = '',
-        array $files = [],
+        array $files = []
     ): string {
         $hash = md5('secret');
         $moveOverride = '';
