@@ -222,6 +222,45 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         );
     }
 
+    public function testExportCsvQuotesTitleContainingComma(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => "Eins, zwei", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+
+        $csv = $this->todos->exportCsv(1);
+
+        $this->assertSame(
+            "id,title,status,priority,due_date,category,owner\n"
+            . $id . ",\"Eins, zwei\",open,1,2026-01-01,,1\n",
+            $csv,
+        );
+    }
+
+    public function testExportCsvDoublesQuoteInsideQuotedTitle(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => 'Sagt "Hallo"', "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+
+        $csv = $this->todos->exportCsv(1);
+
+        $this->assertSame(
+            "id,title,status,priority,due_date,category,owner\n"
+            . $id . ',"Sagt ""Hallo""",open,1,2026-01-01,,1' . "\n",
+            $csv,
+        );
+    }
+
+    public function testExportCsvQuotesTitleContainingNewline(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => "Zeile 1\nZeile 2", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+
+        $csv = $this->todos->exportCsv(1);
+
+        $this->assertSame(
+            "id,title,status,priority,due_date,category,owner\n"
+            . $id . ",\"Zeile 1\nZeile 2\",open,1,2026-01-01,,1\n",
+            $csv,
+        );
+    }
+
     public function testDashboardStatsCountsActiveOpenDoneAndOverdueAsOfDate(): void
     {
         $this->seedTodo(["user_id" => 1, "title" => "Offen vorher", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-06-14", "archived" => 0]);
