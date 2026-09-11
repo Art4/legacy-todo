@@ -61,7 +61,7 @@ class TodoHandler
             $assignee = $post["assignee"] ?? "";
             $this->todoActivity->assign($id, $assignee, $this->auth->currentUser()["user_id"]);
             if (($get["next"] ?? "") != "") {
-                $this->auth->redirect("todo.php?id=" . $id);
+                $this->auth->redirect("todo.php?id=" . $id, $get["next"]);
             }
         }
         if (!empty($get["del_comment"])) {

@@ -29,10 +29,11 @@ class EditTodoHandler
     }
 
     /**
+     * @param array<string, mixed> $get
      * @param array<string, mixed> $post
      * @return string
      */
-    public function handle(int $id, array $post)
+    public function handle(int $id, array $get, array $post)
     {
         $this->csrf->guard($post);
         $this->auth->requireLogin();
@@ -50,7 +51,7 @@ class EditTodoHandler
                 $out .= "Titel erforderlich";
             } else {
                 $this->todos->update($id, $title, $text, $priority, $status);
-                $this->auth->redirect("todo.php?id=" . $id);
+                $this->auth->redirect("todo.php?id=" . $id, $get["next"] ?? "");
             }
         }
         $t = $this->todos->find($id);
