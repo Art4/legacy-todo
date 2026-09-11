@@ -208,7 +208,7 @@ class Bootstrap
 
     public function adminHandler(): AdminHandler
     {
-        return new AdminHandler($this);
+        return new AdminHandler($this->auth(), $this->users(), $this->taxonomy(), $this->csrf(), $this->layout(), $this->siteName);
     }
 
     public function deleteTodoHandler(): DeleteTodoHandler

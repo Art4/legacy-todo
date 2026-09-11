@@ -8,8 +8,14 @@ namespace Art4\LegacyTodo;
  */
 class AdminHandler
 {
-    /** @var Bootstrap */
-    private $app;
+    /** @var Auth */
+    private $auth;
+
+    /** @var Users */
+    private $users;
+
+    /** @var Taxonomy */
+    private $taxonomy;
 
     /** @var Csrf */
     private $csrf;
@@ -17,11 +23,17 @@ class AdminHandler
     /** @var Layout */
     private $layout;
 
-    public function __construct(Bootstrap $app)
+    /** @var string */
+    private $siteName;
+
+    public function __construct(Auth $auth, Users $users, Taxonomy $taxonomy, Csrf $csrf, Layout $layout, string $siteName)
     {
-        $this->app = $app;
-        $this->layout = $app->layout();
-        $this->csrf = $app->csrf();
+        $this->auth = $auth;
+        $this->users = $users;
+        $this->taxonomy = $taxonomy;
+        $this->csrf = $csrf;
+        $this->layout = $layout;
+        $this->siteName = $siteName;
     }
 
     /**
@@ -31,11 +43,8 @@ class AdminHandler
     public function handle(array $post)
     {
         $this->csrf->guard($post);
-        $auth = $this->app->auth();
-        $auth->requireLogin();
-        $auth->requireRole("admin");
-        $users = $this->app->users();
-        $taxonomy = $this->app->taxonomy();
+        $this->auth->requireLogin();
+        $this->auth->requireRole("admin");
         $out = "";
         if (!empty($post["add_cat"])) {
             $name = $post["kategorie"] ?? "";
@@ -48,21 +57,21 @@ class AdminHandler
             if ($name == "") {
                 $out .= "Name fehlt";
             } else {
-                $taxonomy->createCategory($name, $auth->currentUser()["user_id"]);
+                $this->taxonomy->createCategory($name, $this->auth->currentUser()["user_id"]);
             }
         }
         if (!empty($post["add_user"])) {
             $u = $post["username"] ?? "";
             $p = $post["password"] ?? "";
             $role = $post["role"] ?? "";
-            $users->create($u, $p, $role);
+            $this->users->create($u, $p, $role);
         }
         if (!empty($post["add_tag"])) {
-            $taxonomy->createTag($post["tag"] ?? "");
+            $this->taxonomy->createTag($post["tag"] ?? "");
         }
-        $userRows = $users->listAll();
-        $cats = $taxonomy->listCategories();
-        $tags = $taxonomy->listTags();
+        $userRows = $this->users->listAll();
+        $cats = $this->taxonomy->listCategories();
+        $tags = $this->taxonomy->listTags();
 
         return $out . $this->renderAdmin($userRows, $cats, $tags);
     }
@@ -75,7 +84,7 @@ class AdminHandler
      */
     private function renderAdmin(array $userRows, array $cats, array $tags)
     {
-        $siteName = $this->layout->text($this->app->siteName());
+        $siteName = $this->layout->text($this->siteName);
         $out = "<html><head><title>Admin - " . $siteName . "</title></head>\n";
         $out .= "<body>\n";
         $out .= "<h1>Admin</h1>\n";
