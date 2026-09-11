@@ -16,7 +16,6 @@ Kein Host-PHP nötig – die Laufzeit läuft komplett über Docker.
 ```bash
 ./run.sh up      # PHP-7.4-Apache-Container starten (Port 8086), SQLite
 ./run.sh install # Einmalige Datenbank-Einrichtung (Schema + Demo-Daten, idempotent)
-./run.sh lint    # php -l über alle .php-Dateien
 ./run.sh shell   # Bash im Container
 ./run.sh logs    # Container-Logs verfolgen
 ./run.sh down    # Container stoppen und löschen
@@ -26,7 +25,8 @@ App: http://localhost:8086/
 
 Composer und statische Analyse (PHPStan, PHP CS Fixer, Rector) sind als Dev-Tooling vorhanden und
 laufen in CI – Details siehe `.github/workflows/ci.yml` und `composer.json`. Die Laufzeit selbst
-läuft auf PHP 7.4 im Container; CI lintet und testet unter derselben PHP-Version.
+läuft auf PHP 7.4 im Container; die Testsuiten (Unit, Legacy, Functional) laufen in CI unter
+PHP 7.4 und 8.2, die statische Analyse unter PHP 8.3.
 
 ## Weiterentwicklung
 

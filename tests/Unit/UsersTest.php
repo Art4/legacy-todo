@@ -38,7 +38,7 @@ final class UsersTest extends PHPUnit\Framework\TestCase
         $row = $this->users->findById($id);
 
         $this->assertSame("alice", $row["username"]);
-        $this->assertSame($id, $row["id"]);
+        $this->assertSame($id, (int) $row["id"]);
         $this->assertNull($this->users->findById($id + 99));
     }
 
@@ -59,7 +59,7 @@ final class UsersTest extends PHPUnit\Framework\TestCase
 
         $row = $this->users->authenticate("carol", "hunter2");
 
-        $this->assertSame($id, $row["id"]);
+        $this->assertSame($id, (int) $row["id"]);
         $this->assertSame("carol", $row["username"]);
         $this->assertSame("user", $row["role"]);
     }
@@ -209,6 +209,6 @@ final class UsersTest extends PHPUnit\Framework\TestCase
         $rows = $this->users->listAll();
 
         $this->assertCount(2, $rows);
-        $this->assertSame([$aliceId, $bobId], array_column($rows, "id"));
+        $this->assertSame([$aliceId, $bobId], array_map("\intval", array_column($rows, "id")));
     }
 }

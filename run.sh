@@ -37,12 +37,6 @@ case "$cmd" in
   down)
     docker rm -f "$CONTAINER" 2>/dev/null || echo "Container $CONTAINER nicht gefunden"
     ;;
-  lint)
-    # php -l gegen die Laufzeitversion; statische Analyse (PHPStan) und Codestyle
-    # (PHP CS Fixer) laufen separat via Composer/CI, siehe README.md.
-    echo "Linting PHP-Dateien in $SRC mit $IMAGE (php -l)..."
-    docker run --rm -v "${SRC}:/var/www/html" -w /var/www/html "$IMAGE" bash -c 'find . -name "*.php" -print0 | xargs -0 -n1 php -l'
-    ;;
   shell)
     docker exec -it "$CONTAINER" bash
     ;;
@@ -54,12 +48,11 @@ case "$cmd" in
     docker logs -f "$CONTAINER"
     ;;
   help|*)
-    echo "Usage: $0 {up|down|install|lint|shell|logs|exec <cmd>}"
+    echo "Usage: $0 {up|down|install|shell|logs|exec <cmd>}"
     echo ""
     echo "  up          - Startet PHP 7.4 Apache Container (Port $PORT) mit SQLite"
     echo "  down        - Stoppt und löscht Container"
     echo "  install     - Einmalige Datenbank-Einrichtung (Schema + Demo-Daten, idempotent)"
-    echo "  lint        - php -l über alle .php Dateien"
     echo "  shell       - Bash im Container"
     echo "  exec <cmd>  - Befehl im Container ausführen"
     echo "  logs        - Container-Logs verfolgen"

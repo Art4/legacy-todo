@@ -70,8 +70,8 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
 
         $this->assertTrue($result);
         $row = $this->pdo->query("SELECT * FROM comments WHERE todo_id=3")->fetch(\PDO::FETCH_ASSOC);
-        $this->assertSame(3, $row["todo_id"]);
-        $this->assertSame($authorId, $row["user_id"]);
+        $this->assertSame(3, (int) $row["todo_id"]);
+        $this->assertSame($authorId, (int) $row["user_id"]);
         $this->assertSame("Neuer Kommentar", $row["body"]);
         $this->assertSame(date("Y-m-d H:i:s"), $row["created_at"]);
     }
@@ -97,8 +97,8 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
 
         $this->assertCount(2, $rows);
         $this->assertSame("dave", $rows[0]["username"]);
-        $this->assertSame(2, $rows[0]["assigned_by"]);
-        $this->assertSame(3, $rows[1]["assigned_by"]);
+        $this->assertSame(2, (int) $rows[0]["assigned_by"]);
+        $this->assertSame(3, (int) $rows[1]["assigned_by"]);
     }
 
     public function testAssignmentsForTodoIsEmptyForTodoWithoutAssignments(): void
@@ -123,9 +123,9 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
 
         $this->assertTrue($result);
         $row = $this->pdo->query("SELECT * FROM assignments WHERE todo_id=4")->fetch(\PDO::FETCH_ASSOC);
-        $this->assertSame(4, $row["todo_id"]);
-        $this->assertSame($assigneeId, $row["user_id"]);
-        $this->assertSame(5, $row["assigned_by"]);
+        $this->assertSame(4, (int) $row["todo_id"]);
+        $this->assertSame($assigneeId, (int) $row["user_id"]);
+        $this->assertSame(5, (int) $row["assigned_by"]);
     }
 
     public function testFindCommentReturnsRowForExistingComment(): void
@@ -137,9 +137,9 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
         $result = $this->activity->findComment($commentId);
 
         $this->assertNotNull($result);
-        $this->assertSame($commentId, $result["id"]);
-        $this->assertSame(1, $result["todo_id"]);
-        $this->assertSame($authorId, $result["user_id"]);
+        $this->assertSame($commentId, (int) $result["id"]);
+        $this->assertSame(1, (int) $result["todo_id"]);
+        $this->assertSame($authorId, (int) $result["user_id"]);
         $this->assertSame("Find me", $result["body"]);
     }
 

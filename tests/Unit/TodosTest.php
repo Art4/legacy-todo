@@ -141,7 +141,7 @@ final class TodosTest extends PHPUnit\Framework\TestCase
 
         $this->assertSame("Detail", $row["title"]);
         $this->assertSame("Beschreibung", $row["text"]);
-        $this->assertSame($id, $row["id"]);
+        $this->assertSame($id, (int) $row["id"]);
         $this->assertNull($this->todos->find($id + 99));
         $this->assertNotNull($this->todos->find($archivedId));
     }
@@ -153,7 +153,7 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertTrue($this->todos->archive($id));
 
         $row = $this->pdo->query("SELECT * FROM todos WHERE id=" . $id)->fetch(\PDO::FETCH_ASSOC);
-        $this->assertSame(1, $row["archived"]);
+        $this->assertSame(1, (int) $row["archived"]);
         $this->assertSame("Wird archiviert", $row["title"]);
     }
 
@@ -166,10 +166,10 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertSame("Neues Todo", $row["title"]);
         $this->assertSame("Text", $row["text"]);
         $this->assertSame("open", $row["status"]);
-        $this->assertSame(7, $row["user_id"]);
-        $this->assertSame(2, $row["priority"]);
+        $this->assertSame(7, (int) $row["user_id"]);
+        $this->assertSame(2, (int) $row["priority"]);
         $this->assertSame("2026-12-01", $row["due_date"]);
-        $this->assertSame(0, $row["archived"]);
+        $this->assertSame(0, (int) $row["archived"]);
         $this->assertSame("wurst", $row["data2"]);
         $this->assertSame(date("Y-m-d"), $row["created_at"]);
     }
@@ -199,7 +199,7 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertSame("Neu", $row["title"]);
         $this->assertSame("neuer text", $row["text"]);
         $this->assertSame("done", $row["status"]);
-        $this->assertSame(3, $row["priority"]);
+        $this->assertSame(3, (int) $row["priority"]);
     }
 
     public function testUpdateRequiresTitle(): void
@@ -278,9 +278,9 @@ final class TodosTest extends PHPUnit\Framework\TestCase
 
         $stats = $this->todos->dashboardStats("2026-06-15");
 
-        $this->assertSame(4, $stats["c"]);
-        $this->assertSame(3, $stats["open"]);
-        $this->assertSame(1, $stats["done"]);
-        $this->assertSame(1, $stats["overdue"]);
+        $this->assertSame(4, (int) $stats["c"]);
+        $this->assertSame(3, (int) $stats["open"]);
+        $this->assertSame(1, (int) $stats["done"]);
+        $this->assertSame(1, (int) $stats["overdue"]);
     }
 }

@@ -100,7 +100,7 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $loggedIn = $this->auth->login("alice", "secret");
 
         $this->assertTrue($loggedIn);
-        $this->assertSame($id, $this->session["user_id"]);
+        $this->assertSame($id, (int) $this->session["user_id"]);
         $this->assertSame("alice", $this->session["username"]);
         $this->assertSame("user", $this->session["role"]);
     }

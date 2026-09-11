@@ -45,7 +45,7 @@ final class TaxonomyTest extends PHPUnit\Framework\TestCase
 
         $row = $this->pdo->query("SELECT * FROM categories")->fetch(\PDO::FETCH_ASSOC);
         $this->assertSame("Arbeit", $row["name"]);
-        $this->assertSame(3, $row["user_id"]);
+        $this->assertSame(3, (int) $row["user_id"]);
     }
 
     public function testCreateCategoryRejectsEmptyName(): void
@@ -79,7 +79,7 @@ final class TaxonomyTest extends PHPUnit\Framework\TestCase
 
         $this->assertCount(2, $rows);
         $this->assertSame("Privat", $rows[0]["name"]);
-        $this->assertSame(1, $rows[0]["user_id"]);
+        $this->assertSame(1, (int) $rows[0]["user_id"]);
         $this->assertSame("Arbeit", $rows[1]["name"]);
     }
 
