@@ -48,6 +48,10 @@ _Avoid_: creator, assignee
 The single data-access module (`Art4\LegacyTodo\Users`) that owns every read and mutation of a User's auth data — find by id or username, authenticate, register, create, list. Login state (user id, username, role) is written to the session by the page, not by the module.
 _Avoid_: UserManager, per-page user SQL
 
+**RegistrationResult**:
+The typed value object returned by `Users::register()`, replacing the old `bool|string` contract. One of four statuses: `registered`, `invalid-input`, `username-taken`, `storage-failure`. Each carries exactly one meaning — the page handler maps status to a user-facing message.
+_Avoid_: bool|string return from register, loose `== true` comparisons on register results
+
 **Auth**:
 The single data-access module (`Art4\LegacyTodo\Auth`) that owns login state and permission decisions — session reads/writes, identity lookup, role checks, and redirect-on-denial. Delegates data lookups to the `Users` / `Todos` it receives as constructor collaborators (injected by Bootstrap, ADR-0009); never touches SQL and never holds the connection. Complements `Users` (which stays session-free per above).
 _Avoid_: AuthManager, session keys written outside Auth
