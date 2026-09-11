@@ -40,6 +40,15 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->assertNull($this->auth->currentUser());
     }
 
+    public function testConstructorFallsBackToSessionSuperglobalWhenNullPassed(): void
+    {
+        $session = null;
+        $_SESSION = [];
+        $auth = new Auth(new Users($this->pdo), new Todos($this->pdo, new Taxonomy($this->pdo)), $session);
+
+        $this->assertFalse($auth->loggedIn());
+    }
+
     public function testCurrentUserReturnsIdentityFromSession(): void
     {
         $this->session['user_id'] = 1;
@@ -207,6 +216,11 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->assertFalse($this->auth->canManage(9999));
     }
 
+    public function testCanManageDeniesWithoutIdentity(): void
+    {
+        $this->assertFalse($this->auth->canManage(5));
+    }
+
     public function testRedirectFallsBackToGivenUrlWithoutNext(): void
     {
         $output = $this->runCli('$auth->redirect("todo.php?id=5");', [], []);
@@ -226,6 +240,55 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $output = $this->runCli('$auth->redirect("index.php");', [], ["next" => ""]);
 
         $this->assertSame("Location: index.php", $output);
+    }
+
+    public function testRedirectFallsBackToGivenUrlForExternalNext(): void
+    {
+        $output = $this->runCli('$auth->redirect("todo.php?id=5");', [], ["next" => "https://evil.com/"]);
+
+        $this->assertSame("Location: todo.php?id=5", $output);
+    }
+
+    public function testRedirectFallsBackToGivenUrlForSchemePrefixedNext(): void
+    {
+        $output = $this->runCli('$auth->redirect("todo.php?id=5");', [], ["next" => "javascript:alert(1)"]);
+
+        $this->assertSame("Location: todo.php?id=5", $output);
+    }
+
+    public function testRedirectFallsBackToGivenUrlForProtocolRelativeNext(): void
+    {
+        $output = $this->runCli('$auth->redirect("todo.php?id=5");', [], ["next" => "//evil.com"]);
+
+        $this->assertSame("Location: todo.php?id=5", $output);
+    }
+
+    public function testRedirectFallsBackToGivenUrlForBackslashRootedNext(): void
+    {
+        $output = $this->runCli('$auth->redirect("todo.php?id=5");', [], ["next" => "/\\evil.com"]);
+
+        $this->assertSame("Location: todo.php?id=5", $output);
+    }
+
+    public function testRedirectFallsBackToGivenUrlForBackslashOnlyNext(): void
+    {
+        $output = $this->runCli('$auth->redirect("todo.php?id=5");', [], ["next" => "\\evil.com"]);
+
+        $this->assertSame("Location: todo.php?id=5", $output);
+    }
+
+    public function testRedirectHonoursSafeRelativeNextWithQuery(): void
+    {
+        $output = $this->runCli('$auth->redirect("index.php");', [], ["next" => "todo.php?id=9"]);
+
+        $this->assertSame("Location: todo.php?id=9", $output);
+    }
+
+    public function testRedirectHonoursRootRelativeSingleSlashNext(): void
+    {
+        $output = $this->runCli('$auth->redirect("index.php");', [], ["next" => "/admin.php"]);
+
+        $this->assertSame("Location: /admin.php", $output);
     }
 
     private function runCli(string $body, array $session, array $get): string

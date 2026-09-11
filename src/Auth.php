@@ -117,11 +117,19 @@ class Auth
     public function redirect($url)
     {
         $next = $_GET["next"] ?? "";
-        if ($next != "") {
+        if ($next != "" && $this->isSafeInAppTarget($next)) {
             $url = $next;
         }
         header("Location: " . $url);
         exit;
+    }
+
+    private function isSafeInAppTarget(string $next): bool
+    {
+        return strpos($next, "://") === false
+            && preg_match('/^[a-zA-Z][a-zA-Z0-9+.\-]*:/', $next) !== 1
+            && substr($next, 0, 2) !== "//"
+            && strpos($next, "\\") === false;
     }
 
     public function csrfToken(): string

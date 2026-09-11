@@ -133,6 +133,59 @@ final class UploadsTest extends PHPUnit\Framework\TestCase
         $this->assertSame([$stored], array_map('basename', glob($this->dir . '/*') ?: []));
     }
 
+    public function testStoreReturnsNullWhenMoveFailsForNonUploadedFile(): void
+    {
+        $tmp = $this->tmpFile('data');
+        $uploads = new Uploads($this->dir);
+
+        $stored = $uploads->store([
+            'name' => 'photo.png',
+            'tmp_name' => $tmp,
+            'error' => UPLOAD_ERR_OK,
+            'size' => (int) filesize($tmp),
+        ]);
+
+        @unlink($tmp);
+
+        $this->assertNull($stored);
+    }
+
+    public function testStoreRejectsNameContainingSlashInProcess(): void
+    {
+        $tmp = $this->tmpFile('data');
+        $uploads = new Uploads($this->dir);
+
+        $stored = $uploads->store([
+            'name' => 'foo/bar.png',
+            'tmp_name' => $tmp,
+            'error' => UPLOAD_ERR_OK,
+            'size' => (int) filesize($tmp),
+        ]);
+
+        @unlink($tmp);
+
+        $this->assertNull($stored);
+        $this->assertSame([], glob($this->dir . '/*') ?: []);
+    }
+
+    public function testStoreRejectsNameContainingDotDotInProcess(): void
+    {
+        $tmp = $this->tmpFile('data');
+        $uploads = new Uploads($this->dir);
+
+        $stored = $uploads->store([
+            'name' => 'foo..bar.png',
+            'tmp_name' => $tmp,
+            'error' => UPLOAD_ERR_OK,
+            'size' => (int) filesize($tmp),
+        ]);
+
+        @unlink($tmp);
+
+        $this->assertNull($stored);
+        $this->assertSame([], glob($this->dir . '/*') ?: []);
+    }
+
     private function tmpFile(string $contents): string
     {
         $tmp = tempnam(sys_get_temp_dir(), 'legacy-todo-up-');

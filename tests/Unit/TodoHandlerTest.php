@@ -119,4 +119,30 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
 
         $this->assertSame("Not found", $output);
     }
+
+    public function testTodoAssignWithEvilNextRedirectsToDefaultTarget(): void
+    {
+        $output = RunCliHelper::run(
+            '$h = new \Art4\LegacyTodo\TodoHandler($app); echo $h->handle((int) $get["id"], $get, $_POST);',
+            ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
+            ["id" => 1, "next" => "https://evil.com"],
+            ["_csrf_token" => $this->session['csrf_token'], "assign" => "Zuweisen", "assignee" => "alice"],
+            '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,1,\'Titel\',\'\',\'open\',0,\'2026-01-10\')");',
+        );
+
+        $this->assertSame("Location: todo.php?id=1", $output);
+    }
+
+    public function testTodoAssignWithSafeNextHonoursTarget(): void
+    {
+        $output = RunCliHelper::run(
+            '$h = new \Art4\LegacyTodo\TodoHandler($app); echo $h->handle((int) $get["id"], $get, $_POST);',
+            ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
+            ["id" => 1, "next" => "index.php"],
+            ["_csrf_token" => $this->session['csrf_token'], "assign" => "Zuweisen", "assignee" => "alice"],
+            '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,1,\'Titel\',\'\',\'open\',0,\'2026-01-10\')");',
+        );
+
+        $this->assertSame("Location: index.php", $output);
+    }
 }

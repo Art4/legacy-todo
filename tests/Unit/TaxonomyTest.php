@@ -160,4 +160,14 @@ final class TaxonomyTest extends PHPUnit\Framework\TestCase
 
         $this->assertSame(1, CountingStatement::$count);
     }
+
+    public function testCategoryNamesForTodosReturnsEmptyMapForEmptyBatch(): void
+    {
+        $this->assertSame([], $this->taxonomy->categoryNamesForTodos([]));
+    }
+
+    public function testTagsForTodosReturnsEmptyMapForEmptyBatch(): void
+    {
+        $this->assertSame([], $this->taxonomy->tagsForTodos([]));
+    }
 }

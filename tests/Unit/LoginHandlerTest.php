@@ -108,6 +108,15 @@ final class LoginHandlerTest extends PHPUnit\Framework\TestCase
         $this->assertSame(1, substr_count($output, 'Fehler: Benutzername und Passwort sind erforderlich.'));
     }
 
+    public function testRegisterStorageFailureRendersErrorMessage(): void
+    {
+        $this->pdo->exec("CREATE TRIGGER fail_register BEFORE INSERT ON users BEGIN SELECT raise(ABORT, 'boom'); END;");
+
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "jon", "password" => "pw", "email" => "jon@example.com"]);
+
+        $this->assertStringContainsString('Fehler: Registrierung fehlgeschlagen.', $output);
+    }
+
     public function testLoginSuccessRedirectsToIndex(): void
     {
         $this->seedUser(["username" => "alice", "password" => "secret", "role" => "user", "email" => "alice@example.com"]);
