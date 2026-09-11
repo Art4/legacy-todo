@@ -16,6 +16,7 @@ case "$cmd" in
       echo "Container $CONTAINER existiert bereits – starte neu..."
       docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
     fi
+    "$0" install
     echo "Starte $IMAGE auf Port $PORT -> $SRC:/var/www/html (Webroot: public/)"
     docker run -d --name "$CONTAINER" -p "${PORT}:80" \
       -v "${SRC}:/var/www/html" \
@@ -23,6 +24,13 @@ case "$cmd" in
       "$IMAGE" >/dev/null
     echo "-> http://localhost:${PORT}/"
     docker ps --filter "name=${CONTAINER}"
+    ;;
+  install)
+    # Einmalige (idempotente) Datenbank-Einrichtung: Schema anlegen und bei
+    # leerer Datenbank mit Demo-Daten befüllen. Läuft bewusst NICHT im
+    # Request-Lebenszyklus, sondern nur beim ersten Start (ADR-0010).
+    echo "Richte SQLite-Datenbank ein ($SRC/database.sqlite)..."
+    docker run --rm -v "${SRC}:/app" -w /app "$IMAGE" php src/install.php
     ;;
   down)
     docker rm -f "$CONTAINER" 2>/dev/null || echo "Container $CONTAINER nicht gefunden"
@@ -44,10 +52,11 @@ case "$cmd" in
     docker logs -f "$CONTAINER"
     ;;
   help|*)
-    echo "Usage: $0 {up|down|lint|shell|logs|exec <cmd>}"
+    echo "Usage: $0 {up|down|install|lint|shell|logs|exec <cmd>}"
     echo ""
     echo "  up          - Startet PHP 7.4 Apache Container (Port $PORT) mit SQLite"
     echo "  down        - Stoppt und löscht Container"
+    echo "  install     - Einmalige Datenbank-Einrichtung (Schema + Demo-Daten, idempotent)"
     echo "  lint        - php -l über alle .php Dateien"
     echo "  shell       - Bash im Container"
     echo "  exec <cmd>  - Befehl im Container ausführen"
