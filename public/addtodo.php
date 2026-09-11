@@ -2,5 +2,5 @@
 
 require_once __DIR__ . "/../src/Bootstrap.php";
 $app = \Art4\LegacyTodo\Bootstrap::start();
-$handler = new \Art4\LegacyTodo\AddTodoHandler($app);
+$handler = $app->addTodoHandler();
 echo $handler->handle($_POST, $_FILES);

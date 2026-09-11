@@ -193,7 +193,7 @@ class Bootstrap
 
     public function addTodoHandler(): AddTodoHandler
     {
-        return new AddTodoHandler($this);
+        return new AddTodoHandler($this->auth(), $this->todos(), $this->taxonomy(), $this->uploads(), $this->csrf(), $this->layout());
     }
 
     public function todoHandler(): TodoHandler
