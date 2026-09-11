@@ -4,7 +4,7 @@ namespace Art4\LegacyTodo;
 
 /**
  * Typed result returned by Users::register(), replacing the old
- * bool|string contract. One instance per registration attempt.
+ * bool-or-string return contract. One instance per registration attempt.
  */
 final class RegistrationResult
 {
