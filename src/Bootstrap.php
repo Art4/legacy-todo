@@ -213,7 +213,7 @@ class Bootstrap
 
     public function deleteTodoHandler(): DeleteTodoHandler
     {
-        return new DeleteTodoHandler($this);
+        return new DeleteTodoHandler($this->auth(), $this->todos(), $this->layout());
     }
 
     public function editTodoHandler(): EditTodoHandler
