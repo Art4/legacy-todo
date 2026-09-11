@@ -287,6 +287,34 @@ final class FrontControllerE2ETest extends E2eTestCase
         $this->assertStringNotContainsString('Registriert', $response->body());
     }
 
+    public function testEditTodoWithEvilNextRedirectsToDefaultTarget(): void
+    {
+        $this->login('user', 'user123');
+
+        $createToken = $this->csrfTokenFrom($this->http->request('GET', '/addtodo.php'));
+        $this->http->request('POST', '/addtodo.php', [
+            '_csrf_token' => $createToken,
+            'save' => 'Speichern',
+            'title' => 'E2E Evil-Next Todo',
+            'text' => 'test',
+            'priority' => '2',
+            'due_date' => '2026-12-31',
+        ]);
+        $id = $this->todoIdByTitle('E2E Evil-Next Todo');
+
+        $editToken = $this->csrfTokenFrom($this->http->request('GET', '/edittodo.php?id=' . $id));
+        $edit = $this->http->request('POST', '/edittodo.php?id=' . $id . '&next=https://evil.com', [
+            '_csrf_token' => $editToken,
+            'save' => 'Speichern',
+            'title' => 'E2E Evil-Next Edited',
+            'text' => 'updated',
+            'priority' => '1',
+            'status' => 'open',
+        ]);
+
+        $this->assertRedirect($edit, 'todo.php?id=' . $id);
+    }
+
     private function todoIdByTitle(string $title): int
     {
         $stmt = $this->dbPdo()->prepare('SELECT id FROM todos WHERE title = ?');
