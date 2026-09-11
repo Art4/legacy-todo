@@ -191,6 +191,36 @@ class Bootstrap
         return $this->csrf;
     }
 
+    public function addTodoHandler(): AddTodoHandler
+    {
+        return new AddTodoHandler($this);
+    }
+
+    public function todoHandler(): TodoHandler
+    {
+        return new TodoHandler($this);
+    }
+
+    public function loginHandler(): LoginHandler
+    {
+        return new LoginHandler($this);
+    }
+
+    public function adminHandler(): AdminHandler
+    {
+        return new AdminHandler($this);
+    }
+
+    public function deleteTodoHandler(): DeleteTodoHandler
+    {
+        return new DeleteTodoHandler($this);
+    }
+
+    public function editTodoHandler(): EditTodoHandler
+    {
+        return new EditTodoHandler($this);
+    }
+
     /**
      * @return array<string, mixed>|null
      */
