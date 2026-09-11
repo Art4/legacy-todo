@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Art4\LegacyTodo\RegistrationResult;
 use Art4\LegacyTodo\Users;
 
 final class UsersTest extends PHPUnit\Framework\TestCase
@@ -111,7 +112,8 @@ final class UsersTest extends PHPUnit\Framework\TestCase
     {
         $result = $this->users->register("a'--", "pw", "e@e.com");
 
-        $this->assertTrue($result);
+        $this->assertInstanceOf(RegistrationResult::class, $result);
+        $this->assertTrue($result->isRegistered());
         $row = $this->pdo->query("SELECT * FROM users")->fetch(\PDO::FETCH_ASSOC);
         $this->assertSame("a'--", $row["username"]);
     }
@@ -120,7 +122,8 @@ final class UsersTest extends PHPUnit\Framework\TestCase
     {
         $result = $this->users->register("dave", "pw123", "dave@example.com");
 
-        $this->assertTrue($result);
+        $this->assertInstanceOf(RegistrationResult::class, $result);
+        $this->assertTrue($result->isRegistered());
         $row = $this->pdo->query("SELECT * FROM users")->fetch(\PDO::FETCH_ASSOC);
         $this->assertSame("dave", $row["username"]);
         $this->assertTrue(password_verify("pw123", $row["password"]));
@@ -131,8 +134,11 @@ final class UsersTest extends PHPUnit\Framework\TestCase
 
     public function testRegisterRejectsEmptyUsernameOrPassword(): void
     {
-        $this->assertSame("Titel fehlt?", $this->users->register("", "pw", "e@example.com"));
-        $this->assertSame("Titel fehlt?", $this->users->register("dave", "", "e@example.com"));
+        $result1 = $this->users->register("", "pw", "e@example.com");
+        $result2 = $this->users->register("dave", "", "e@example.com");
+
+        $this->assertSame(RegistrationResult::STATUS_INVALID_INPUT, $result1->status());
+        $this->assertSame(RegistrationResult::STATUS_INVALID_INPUT, $result2->status());
         $this->assertSame(0, (int) $this->pdo->query("SELECT COUNT(*) FROM users")->fetchColumn());
     }
 
@@ -140,7 +146,9 @@ final class UsersTest extends PHPUnit\Framework\TestCase
     {
         $this->seedUser(["username" => "erin", "password" => "pw", "role" => "user", "email" => "erin@example.com"]);
 
-        $this->assertSame("exists", $this->users->register("erin", "other", "other@example.com"));
+        $result = $this->users->register("erin", "other", "other@example.com");
+
+        $this->assertSame(RegistrationResult::STATUS_USERNAME_TAKEN, $result->status());
 
         $rows = $this->pdo->query("SELECT * FROM users")->fetchAll(\PDO::FETCH_ASSOC);
         $this->assertCount(1, $rows);

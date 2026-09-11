@@ -49,12 +49,15 @@ class LoginHandler
             $u = $post["username"] ?? "";
             $p = $post["password"] ?? "";
             $email = $post["email"] ?? "";
-            $r = $users->register($u, $p, $email);
-            if ($r == true) {
+            $result = $users->register($u, $p, $email);
+            if ($result->isRegistered()) {
                 $msg = "Registriert";
+            } elseif ($result->status() === RegistrationResult::STATUS_INVALID_INPUT) {
+                $msg = "Fehler: Benutzername und Passwort sind erforderlich.";
+            } elseif ($result->status() === RegistrationResult::STATUS_USERNAME_TAKEN) {
+                $msg = "Fehler: Dieser Benutzername ist bereits vergeben.";
             } else {
-                $msg = "Fehler: " . $r;
-                $out .= $msg;
+                $msg = "Fehler: Registrierung fehlgeschlagen.";
             }
         }
         $siteName = $this->layout->text($this->app->siteName());
