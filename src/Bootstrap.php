@@ -198,7 +198,7 @@ class Bootstrap
 
     public function todoHandler(): TodoHandler
     {
-        return new TodoHandler($this);
+        return new TodoHandler($this->auth(), $this->todos(), $this->todoActivity(), $this->users(), $this->csrf(), $this->layout());
     }
 
     public function loginHandler(): LoginHandler
