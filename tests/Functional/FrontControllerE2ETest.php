@@ -226,6 +226,67 @@ final class FrontControllerE2ETest extends E2eTestCase
         $this->trackUploadedFile($stored);
     }
 
+    public function testRegisterJourneyCreatesUserAndReportsSuccess(): void
+    {
+        $token = $this->csrfTokenFromLoginForm();
+        $response = $this->http->request('POST', '/login.php', [
+            '_csrf_token' => $token,
+            'register' => 'Registrieren',
+            'username' => 'newe2euser',
+            'password' => 'securepw123',
+            'email' => 'newe2euser@example.com',
+        ]);
+
+        $this->assertSame(200, $response->status());
+        $this->assertStringContainsString('<p>Registriert</p>', $response->body());
+
+        $stmt = $this->dbPdo()->prepare('SELECT * FROM users WHERE username = ?');
+        $stmt->execute(['newe2euser']);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $this->assertNotFalse($row);
+        $this->assertSame('newe2euser', $row['username']);
+        $this->assertTrue(password_verify('securepw123', $row['password']));
+        $this->assertSame('user', $row['role']);
+    }
+
+    public function testRegisterWithEmptyFieldsReportsErrorAndWritesNoUser(): void
+    {
+        $token = $this->csrfTokenFromLoginForm();
+        $response = $this->http->request('POST', '/login.php', [
+            '_csrf_token' => $token,
+            'register' => 'Registrieren',
+            'username' => '',
+            'password' => '',
+            'email' => 'x@example.com',
+        ]);
+
+        $this->assertSame(200, $response->status());
+        $this->assertStringContainsString('Fehler: Benutzername und Passwort sind erforderlich.', $response->body());
+        $this->assertStringNotContainsString('Registriert', $response->body());
+
+        $stmt = $this->dbPdo()->query('SELECT COUNT(*) FROM users WHERE username = ""');
+        $this->assertSame(0, (int) $stmt->fetchColumn());
+    }
+
+    public function testRegisterWithTakenUsernameReportsError(): void
+    {
+        $this->login('user', 'user123');
+        $this->http->request('GET', '/logout.php');
+
+        $token = $this->csrfTokenFromLoginForm();
+        $response = $this->http->request('POST', '/login.php', [
+            '_csrf_token' => $token,
+            'register' => 'Registrieren',
+            'username' => 'user',
+            'password' => 'pw',
+            'email' => 'x@example.com',
+        ]);
+
+        $this->assertSame(200, $response->status());
+        $this->assertStringContainsString('Fehler: Dieser Benutzername ist bereits vergeben.', $response->body());
+        $this->assertStringNotContainsString('Registriert', $response->body());
+    }
+
     private function todoIdByTitle(string $title): int
     {
         $stmt = $this->dbPdo()->prepare('SELECT id FROM todos WHERE title = ?');
