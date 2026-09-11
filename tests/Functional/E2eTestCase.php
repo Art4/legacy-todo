@@ -42,6 +42,9 @@ abstract class E2eTestCase extends \PHPUnit\Framework\TestCase
         $this->cookieJar = (string) tempnam(sys_get_temp_dir(), 'e2e-cookies-');
         $this->serverStderr = (string) tempnam(sys_get_temp_dir(), 'e2e-server-err-');
         $this->serverStdout = (string) tempnam(sys_get_temp_dir(), 'e2e-server-out-');
+
+        Bootstrap::install(['db_file' => $this->dbFile]);
+
         $docroot = dirname(__DIR__) . '/../public';
 
         $port = $this->freePort();
