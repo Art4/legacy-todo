@@ -140,10 +140,20 @@ class Todos
         $stmt->execute([(int) $userId]);
         $out = "id,title,status,priority,due_date,category,owner\n";
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $out .= $row["id"] . "," . $row["title"] . "," . $row["status"] . "," . $row["priority"] . "," . $row["due_date"] . "," . $row["category_id"] . "," . $row["user_id"] . "\n";
+            $out .= $this->csvField($row["id"]) . "," . $this->csvField($row["title"]) . "," . $this->csvField($row["status"]) . "," . $this->csvField($row["priority"]) . "," . $this->csvField($row["due_date"]) . "," . $this->csvField($row["category_id"]) . "," . $this->csvField($row["user_id"]) . "\n";
         }
 
         return $out;
+    }
+
+    private function csvField($value): string
+    {
+        $value = (string) $value;
+        if (strpbrk($value, ",\"\r\n") === false) {
+            return $value;
+        }
+
+        return '"' . str_replace('"', '""', $value) . '"';
     }
 
     /** @return array<string, int> */
