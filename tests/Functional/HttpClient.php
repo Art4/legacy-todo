@@ -53,7 +53,7 @@ final class HttpClient
             $error = curl_error($ch);
             curl_close($ch);
 
-            throw new RuntimeException('cURL request failed for ' . $path . ': ' . $error);
+            throw new \RuntimeException('cURL request failed for ' . $path . ': ' . $error);
         }
         curl_close($ch);
 

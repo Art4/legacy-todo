@@ -287,6 +287,40 @@ final class FrontControllerE2ETest extends E2eTestCase
         $this->assertStringNotContainsString('Registriert', $response->body());
     }
 
+    public function testCommentAndAssignAllowedForNonManagerOnForeignTodo(): void
+    {
+        $this->login('user', 'user123');
+
+        $detail = $this->http->request('GET', '/todo.php?id=1');
+        $this->assertSame(200, $detail->status());
+        $this->assertStringContainsString('Erstes Todo', $detail->body());
+
+        $comment = $this->http->request('POST', '/todo.php?id=1', [
+            '_csrf_token' => $this->csrfTokenFrom($detail),
+            'add_comment' => 'Kommentieren',
+            'body' => 'E2E Kommentar für fremdes Todo',
+        ]);
+        $this->assertRedirect($comment, 'todo.php?id=1');
+
+        $withComment = $this->http->request('GET', '/todo.php?id=1');
+        $this->assertStringContainsString('E2E Kommentar für fremdes Todo', $withComment->body());
+
+        $assign = $this->http->request('POST', '/todo.php?id=1', [
+            '_csrf_token' => $this->csrfTokenFrom($withComment),
+            'assign' => 'Zuweisen',
+            'assignee' => '2',
+        ]);
+        $this->assertSame(200, $assign->status());
+
+        $stmt = $this->dbPdo()->prepare("SELECT COUNT(*) FROM comments WHERE body = 'E2E Kommentar für fremdes Todo'");
+        $stmt->execute();
+        $this->assertSame(1, (int) $stmt->fetchColumn());
+
+        $stmt = $this->dbPdo()->prepare('SELECT COUNT(*) FROM assignments WHERE todo_id = 1');
+        $stmt->execute();
+        $this->assertSame(1, (int) $stmt->fetchColumn());
+    }
+
     public function testEditTodoWithEvilNextRedirectsToDefaultTarget(): void
     {
         $this->login('user', 'user123');

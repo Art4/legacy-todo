@@ -221,6 +221,68 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->assertFalse($this->auth->canManage(5));
     }
 
+    public function testCanDeleteCommentAllowsAuthor(): void
+    {
+        $this->session["user_id"] = 5;
+        $this->session["role"] = "user";
+
+        $this->assertTrue($this->auth->canDeleteComment(["user_id" => 5]));
+    }
+
+    public function testCanDeleteCommentAllowsAdmin(): void
+    {
+        $this->session["user_id"] = 1;
+        $this->session["role"] = "admin";
+
+        $this->assertTrue($this->auth->canDeleteComment(["user_id" => 9]));
+    }
+
+    public function testCanDeleteCommentDeniesNonAuthorNonAdmin(): void
+    {
+        $this->session["user_id"] = 5;
+        $this->session["role"] = "user";
+
+        $this->assertFalse($this->auth->canDeleteComment(["user_id" => 9]));
+    }
+
+    public function testCanDeleteCommentDeniesAnonymous(): void
+    {
+        $this->assertFalse($this->auth->canDeleteComment(["user_id" => 5]));
+    }
+
+    public function testRequireManageAllowsOwner(): void
+    {
+        $id = $this->seedTodo(["user_id" => 5, "title" => "Eigenes", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->session["user_id"] = 5;
+        $this->session["role"] = "user";
+
+        $this->auth->requireManage($id);
+
+        $this->assertTrue(true);
+    }
+
+    public function testRequireManageAllowsAdmin(): void
+    {
+        $id = $this->seedTodo(["user_id" => 7, "title" => "Fremdes", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->session["user_id"] = 1;
+        $this->session["role"] = "admin";
+
+        $this->auth->requireManage($id);
+
+        $this->assertTrue(true);
+    }
+
+    public function testRequireManageDeniesNonOwnerNonAdmin(): void
+    {
+        $output = $this->runCli(
+            '$pdo->exec("CREATE TABLE todos (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, title TEXT, text TEXT, status TEXT, priority INTEGER, due_date TEXT, category_id INTEGER, archived INTEGER DEFAULT 0, created_at TEXT, data2 TEXT, x_status INTEGER)"); $auth->requireManage(5);',
+            ["user_id" => 9, "role" => "user"],
+            [],
+        );
+
+        $this->assertSame("Keine Berechtigung", $output);
+    }
+
     public function testRedirectFallsBackToGivenUrlWithoutNext(): void
     {
         $output = $this->runCli('$auth->redirect("todo.php?id=5");', [], []);

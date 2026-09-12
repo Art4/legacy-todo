@@ -66,9 +66,7 @@ class TodoHandler
         }
         if (!empty($get["del_comment"])) {
             $comment = $this->todoActivity->findComment($get["del_comment"]);
-            $uid = $this->auth->currentUser()["user_id"];
-            $role = $this->auth->currentUser()["role"];
-            if ($comment !== null && ($comment["user_id"] == $uid || $role === "admin")) {
+            if ($comment !== null && $this->auth->canDeleteComment($comment)) {
                 $this->todoActivity->removeComment($get["del_comment"]);
             }
         }
