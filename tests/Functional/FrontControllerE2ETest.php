@@ -174,14 +174,26 @@ final class FrontControllerE2ETest extends E2eTestCase
         $this->assertStringContainsString('Kategorien', $admin->body());
     }
 
-    public function testTodoNotFoundRendersNotfound(): void
+    public function testTodoNotFoundRendersComposed404(): void
     {
         $this->login('user', 'user123');
 
         $response = $this->http->request('GET', '/todo.php?id=99999');
 
-        $this->assertSame(200, $response->status());
+        $this->assertSame(404, $response->status());
         $this->assertStringContainsString('Not found', $response->body());
+        $this->assertStringContainsString('</body></html>', $response->body());
+    }
+
+    public function testNonAdminHittingAdminPageGetsComposed403(): void
+    {
+        $this->login('user', 'user123');
+
+        $response = $this->http->request('GET', '/admin.php');
+
+        $this->assertSame(403, $response->status());
+        $this->assertStringContainsString('Keine Rechte', $response->body());
+        $this->assertStringContainsString('</body></html>', $response->body());
     }
 
     public function testUploadViaAddTodoStoresFileInWebroot(): void
