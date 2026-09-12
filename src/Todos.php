@@ -16,15 +16,15 @@ class Todos
         $this->taxonomy = $taxonomy;
     }
 
-    /** @return array<int, array<string, mixed>> */
+    /** @return array<int, Todo> */
     public function listActive()
     {
         $rows = $this->pdo->query("SELECT * FROM todos WHERE archived=0 ORDER BY status ASC, due_date ASC")->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $this->decorate($rows);
+        return $this->hydrate($rows);
     }
 
-    /** @return array<int, array<string, mixed>> */
+    /** @return array<int, Todo> */
     public function listFiltered($status, $prio, $due)
     {
         $sql = "SELECT * FROM todos WHERE archived=0";
@@ -46,39 +46,16 @@ class Todos
         $stmt->execute($params);
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $this->decorate($rows);
+        return $this->hydrate($rows);
     }
 
-    /** @param array<int, array<string, mixed>> $rows
-     *  @return array<int, array<string, mixed>>
-     */
-    private function decorate($rows)
-    {
-        $ids = [];
-        foreach ($rows as $row) {
-            $ids[] = (int) $row["id"];
-        }
-        if ($ids === []) {
-            return $rows;
-        }
-        $catNames = $this->taxonomy->categoryNamesForTodos($ids);
-        $tagsMap = $this->taxonomy->tagsForTodos($ids);
-        foreach ($rows as &$row) {
-            $row["cat"] = $catNames[(int) $row["id"]] ?? "";
-            $row["tags"] = $tagsMap[(int) $row["id"]] ?? [];
-        }
-        unset($row);
-
-        return $rows;
-    }
-
-    /** @return array<int, array<string, mixed>> */
+    /** @return array<int, Todo> */
     public function search($q)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM todos WHERE LOWER(title) LIKE LOWER(?) AND archived=0 ORDER BY status ASC, due_date ASC");
         $stmt->execute(["%" . $q . "%"]);
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->hydrate($stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
     /** @return Todo|null */
@@ -91,9 +68,26 @@ class Todos
             return null;
         }
 
-        $catNames = $this->taxonomy->categoryNamesForTodos([(int) $row["id"]]);
+        return $this->hydrate([$row])[0];
+    }
 
-        return $this->todoFromRow($row, $catNames[(int) $row["id"]] ?? "");
+    /** @param array<int, array<string, mixed>> $rows
+     *  @return array<int, Todo>
+     */
+    private function hydrate(array $rows)
+    {
+        $ids = [];
+        foreach ($rows as $row) {
+            $ids[] = (int) $row["id"];
+        }
+        $catNames = $this->taxonomy->categoryNamesForTodos($ids);
+
+        $todos = [];
+        foreach ($rows as $row) {
+            $todos[] = $this->todoFromRow($row, $catNames[(int) $row["id"]] ?? "");
+        }
+
+        return $todos;
     }
 
     /** @param array<string, mixed> $row

@@ -32,7 +32,7 @@ if (count($todos) === 0) {
 } else {
     echo "<ul>";
     foreach ($todos as $t) {
-        echo "<li><a href='todo.php?id=" . $layout->attr($t["id"]) . "'>" . $layout->text($t["title"]) . "</a> - " . $layout->text($t["status"]) . " - " . $layout->text($t["due_date"]) . "</li>";
+        echo "<li><a href='todo.php?id=" . $layout->attr($t->id()) . "'>" . $layout->text($t->title()) . "</a> - " . $layout->text($t->status()) . " - " . $layout->text($t->dueDate()) . "</li>";
     }
     echo "</ul>";
 }

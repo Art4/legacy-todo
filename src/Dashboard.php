@@ -14,7 +14,7 @@ class Dashboard
 
     /**
      * @param array<string, mixed> $query
-     * @return array{todos: array<int, array<string, mixed>>, stats: array{c: int, open: int, done: int, overdue: int}}
+     * @return array{todos: array<int, Todo>, stats: array{c: int, open: int, done: int, overdue: int}}
      */
     public function overview(array $query)
     {
