@@ -108,7 +108,7 @@ class Auth
         }
         $found = $this->todos->find($todoId);
 
-        return $found != null && $found["user_id"] == $userId;
+        return $found != null && $found->userId() == $userId;
     }
 
     public function requireManage($todoId): bool

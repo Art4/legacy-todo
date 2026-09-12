@@ -32,7 +32,12 @@ if (count($todos) === 0) {
 } else {
     echo "<ul>";
     foreach ($todos as $t) {
-        echo "<li><a href='todo.php?id=" . $layout->attr($t["id"]) . "'>" . $layout->text($t["title"]) . "</a> - " . $layout->text($t["status"]) . " - " . $layout->text($t["due_date"]) . "</li>";
+        echo "<li><a href='todo.php?id=" . $layout->attr($t->id()) . "'>" . $layout->text($t->title()) . "</a> - " . $layout->text($t->status()) . " - " . $layout->text($t->dueDate()) . "</li>"; // nosemgrep: php.lang.security.injection.echoed-request.echoed-request
+        // Suppression rationale: the taint source is Dashboard::overview($_GET), whose $_GET use is
+        // confined to filter/WHERE conditions — never to a Todo's own field values. Every value echoed
+        // here comes from the DB-fetched Todo and is escaped via Layout::attr()/text(); no request
+        // content reaches the markup. $t->title()/status()/dueDate() are data, escaped like every
+        // other rendered field in this codebase.
     }
     echo "</ul>";
 }

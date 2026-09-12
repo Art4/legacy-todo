@@ -54,14 +54,16 @@ class EditTodoHandler
             }
         }
         $t = $this->todos->find($id);
+        $title = $t === null ? "" : $t->title();
+        $text = $t === null ? "" : $t->text();
         $out .= $this->layout->header("Todo bearbeiten");
         $out .= "<h1>Todo bearbeiten</h1>\n";
         $out .= "<form method='post'>\n";
         $out .= $this->csrf->field() . "\n";
-        $out .= "<input name='title' value='" . $this->layout->attr($t["title"] ?? "") . "'>\n";
-        $out .= "<textarea name='text'>" . $this->layout->text($t["text"] ?? "") . "</textarea>\n";
+        $out .= "<input name='title' value='" . $this->layout->attr($title) . "'>\n";
+        $out .= "<textarea name='text'>" . $this->layout->text($text) . "</textarea>\n";
         $out .= "<select name='priority'>\n";
-        if (($t["priority"] ?? null) == 1) {
+        if ($t !== null && $t->priority() == 1) {
             $out .= "<option selected value='1'>Hoch</option>\n";
         } else {
             $out .= "<option value='1'>Hoch</option>\n";

@@ -76,17 +76,17 @@ class TodoHandler
     }
 
     /**
-     * @param array<string, mixed> $t
+     * @param Todo $t
      * @param array<int, array<string, mixed>> $comments
      * @param array<int, array<string, mixed>> $assigns
      * @return string
      */
-    private function renderTodoDetail(array $t, array $comments, array $assigns, int $id)
+    private function renderTodoDetail(Todo $t, array $comments, array $assigns, int $id)
     {
-        $out = $this->layout->header("Todo - " . $t["title"]);
-        $out .= "<h1>" . $this->layout->text($t["title"]) . "</h1>\n";
-        $out .= "<p>" . $this->layout->text($t["text"]) . "</p>\n";
-        $out .= "<p>Status: " . $this->layout->text($t["status"]) . " | Prio: " . $this->layout->text($t["priority"]) . " | Fällig: " . $this->layout->text($t["due_date"]) . "</p>\n";
+        $out = $this->layout->header("Todo - " . $t->title());
+        $out .= "<h1>" . $this->layout->text($t->title()) . "</h1>\n";
+        $out .= "<p>" . $this->layout->text($t->text()) . "</p>\n";
+        $out .= "<p>Status: " . $this->layout->text($t->status()) . " | Prio: " . $this->layout->text($t->priority()) . " | Fällig: " . $this->layout->text($t->dueDate()) . "</p>\n";
         if (count($comments) > 0) {
             $out .= "<h3>Kommentare</h3>\n";
             foreach ($comments as $c) {

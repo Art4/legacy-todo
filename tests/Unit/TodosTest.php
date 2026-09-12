@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Art4\LegacyTodo\Taxonomy;
+use Art4\LegacyTodo\Todo;
 use Art4\LegacyTodo\Todos;
 
 final class TodosTest extends PHPUnit\Framework\TestCase
@@ -41,19 +42,38 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->seedTodo(["user_id" => 1, "title" => "Done stays", "text" => "", "status" => "done", "priority" => 2, "due_date" => "2026-01-01", "archived" => 0]);
         $this->seedTodo(["user_id" => 3, "title" => "Archived hidden", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 1]);
 
-        $titles = array_column($this->todos->listActive(), "title");
+        $titles = array_map(fn($todo) => $todo->title(), $this->todos->listActive());
 
         $this->assertSame(["Done stays", "Earlier open", "Later open"], $titles);
     }
 
-    public function testListActiveBoltsTagsOntoEachRow(): void
+    public function testEveryReadPathReturnsTheSameTodoShape(): void
     {
-        $id = $this->seedTodo(["user_id" => 1, "title" => "Tagged", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
-        $this->pdo->exec("INSERT INTO todo_tags (todo_id, tag_id) VALUES (" . $id . ", 7)");
+        $id = $this->seedTodo(["user_id" => 1, "title" => "Einziges", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->pdo->exec('INSERT INTO categories (name,user_id) VALUES ("Arbeit",1)');
+        $this->pdo->exec("UPDATE todos SET category_id=1 WHERE id=" . $id);
 
-        $row = $this->todos->listActive()[0];
+        $shape = static function (Todo $todo): array {
+            return [
+                $todo->id(),
+                $todo->userId(),
+                $todo->title(),
+                $todo->text(),
+                $todo->status(),
+                $todo->priority(),
+                $todo->dueDate(),
+                $todo->archived(),
+                $todo->createdAt(),
+                $todo->categoryId(),
+                $todo->category(),
+            ];
+        };
+        $expected = [$id, 1, "Einziges", "", "open", 1, "2026-01-01", false, "2026-01-10", 1, "Arbeit"];
 
-        $this->assertSame([["todo_id" => $id, "tag_id" => 7]], $row["tags"]);
+        $this->assertSame($expected, $shape($this->todos->find($id)));
+        $this->assertSame($expected, $shape($this->todos->search("Einziges")[0]));
+        $this->assertSame($expected, $shape($this->todos->listActive()[0]));
+        $this->assertSame($expected, $shape($this->todos->listFiltered("", "", "")[0]));
     }
 
     public function testListFilteredAppliesStatusPriorityAndDueFilters(): void
@@ -65,31 +85,12 @@ final class TodosTest extends PHPUnit\Framework\TestCase
 
         $this->assertSame(
             ["Low done", "High open", "Medium open late"],
-            array_column($this->todos->listFiltered("", "", ""), "title"),
+            array_map(fn($todo) => $todo->title(), $this->todos->listFiltered("", "", "")),
         );
-        $this->assertSame(["Low done"], array_column($this->todos->listFiltered("done", "", ""), "title"));
-        $this->assertSame(["High open"], array_column($this->todos->listFiltered("", "1", ""), "title"));
-        $this->assertSame(["Low done", "High open"], array_column($this->todos->listFiltered("", "", "2026-06-15"), "title"));
-        $this->assertSame(["Medium open late"], array_column($this->todos->listFiltered("open", "2", ""), "title"));
-    }
-
-    public function testListFilteredBoltsCatAndTagsOntoEachRow(): void
-    {
-        $uncategorized = $this->seedTodo(["user_id" => 1, "title" => "No category", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
-        $this->pdo->exec('INSERT INTO categories (name,user_id) VALUES ("Arbeit",1)');
-        $categorized = $this->seedTodo(["user_id" => 1, "title" => "Categorized", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-02", "archived" => 0]);
-        $this->pdo->exec("UPDATE todos SET category_id=1 WHERE id=" . $categorized);
-        $this->pdo->exec("INSERT INTO todo_tags (todo_id, tag_id) VALUES (" . $uncategorized . ", 9)");
-
-        $rows = [];
-        foreach ($this->todos->listFiltered("", "", "") as $row) {
-            $rows[$row["id"]] = $row;
-        }
-
-        $this->assertSame("", $rows[$uncategorized]["cat"]);
-        $this->assertSame("Arbeit", $rows[$categorized]["cat"]);
-        $this->assertSame([["todo_id" => $uncategorized, "tag_id" => 9]], $rows[$uncategorized]["tags"]);
-        $this->assertSame([], $rows[$categorized]["tags"]);
+        $this->assertSame(["Low done"], array_map(fn($todo) => $todo->title(), $this->todos->listFiltered("done", "", "")));
+        $this->assertSame(["High open"], array_map(fn($todo) => $todo->title(), $this->todos->listFiltered("", "1", "")));
+        $this->assertSame(["Low done", "High open"], array_map(fn($todo) => $todo->title(), $this->todos->listFiltered("", "", "2026-06-15")));
+        $this->assertSame(["Medium open late"], array_map(fn($todo) => $todo->title(), $this->todos->listFiltered("open", "2", "")));
     }
 
     public function testListFilteredRejectsInjectedStatus(): void
@@ -117,33 +118,34 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->seedTodo(["user_id" => 2, "title" => "noch was", "text" => "", "status" => "done", "priority" => 2, "due_date" => "2026-11-01", "archived" => 0]);
         $this->seedTodo(["user_id" => 3, "title" => "Erstes TODO archiviert", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 1]);
 
-        $this->assertSame(["Erstes Todo"], array_column($this->todos->search("ERSTES"), "title"));
-        $this->assertSame(["noch was"], array_column($this->todos->search("NOCH"), "title"));
-        $this->assertSame(["Erstes Todo"], array_column($this->todos->search("todo"), "title"));
+        $this->assertSame(["Erstes Todo"], array_map(fn($todo) => $todo->title(), $this->todos->search("ERSTES")));
+        $this->assertSame(["noch was"], array_map(fn($todo) => $todo->title(), $this->todos->search("NOCH")));
+        $this->assertSame(["Erstes Todo"], array_map(fn($todo) => $todo->title(), $this->todos->search("todo")));
     }
 
-    public function testSearchRowsCarryNeitherCatNorTags(): void
-    {
-        $this->seedTodo(["user_id" => 1, "title" => "Treffer", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
-
-        $row = $this->todos->search("tref")[0];
-
-        $this->assertArrayNotHasKey("cat", $row);
-        $this->assertArrayNotHasKey("tags", $row);
-    }
-
-    public function testFindReturnsRowOrNull(): void
+    public function testFindReturnsTodoOrNull(): void
     {
         $id = $this->seedTodo(["user_id" => 1, "title" => "Detail", "text" => "Beschreibung", "status" => "open", "priority" => 2, "due_date" => "2026-06-01", "archived" => 0]);
+        $this->pdo->exec('INSERT INTO categories (name,user_id) VALUES ("Arbeit",1)');
+        $this->pdo->exec("UPDATE todos SET category_id=1 WHERE id=" . $id);
         $archivedId = $this->seedTodo(["user_id" => 1, "title" => "Archived detail", "text" => "", "status" => "done", "priority" => 3, "due_date" => "2026-01-01", "archived" => 1]);
 
-        $row = $this->todos->find($id);
+        $todo = $this->todos->find($id);
 
-        $this->assertSame("Detail", $row["title"]);
-        $this->assertSame("Beschreibung", $row["text"]);
-        $this->assertSame($id, (int) $row["id"]);
+        $this->assertInstanceOf(Todo::class, $todo);
+        $this->assertSame("Detail", $todo->title());
+        $this->assertSame("Beschreibung", $todo->text());
+        $this->assertSame($id, $todo->id());
+        $this->assertSame(1, $todo->userId());
+        $this->assertSame("open", $todo->status());
+        $this->assertSame(2, $todo->priority());
+        $this->assertSame("2026-06-01", $todo->dueDate());
+        $this->assertFalse($todo->archived());
+        $this->assertSame("2026-01-10", $todo->createdAt());
+        $this->assertSame(1, $todo->categoryId());
+        $this->assertSame("Arbeit", $todo->category());
         $this->assertNull($this->todos->find($id + 99));
-        $this->assertNotNull($this->todos->find($archivedId));
+        $this->assertInstanceOf(\Art4\LegacyTodo\Todo::class, $this->todos->find($archivedId));
     }
 
     public function testArchiveMarksTodoArchivedWithoutDeleting(): void
@@ -222,9 +224,24 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $csv = $this->todos->exportCsv(1);
 
         $this->assertSame(
-            "id,title,status,priority,due_date,category,owner\n"
-            . $archived . ",Archiviert,done,3,2026-01-03,,1\n"
-            . $mine . ",Eins,open,1,2026-01-01,,1\n",
+            "id,title,status,priority,due_date,category_id,category,owner\n"
+            . $archived . ",Archiviert,done,3,2026-01-03,,,1\n"
+            . $mine . ",Eins,open,1,2026-01-01,,,1\n",
+            $csv,
+        );
+    }
+
+    public function testExportCsvShipsCategoryIdAndResolvedCategoryName(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => "Kategorisiert", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->pdo->exec('INSERT INTO categories (id,name,user_id) VALUES (1,"Arbeit",1)');
+        $this->pdo->exec("UPDATE todos SET category_id=1 WHERE id=" . $id);
+
+        $csv = $this->todos->exportCsv(1);
+
+        $this->assertSame(
+            "id,title,status,priority,due_date,category_id,category,owner\n"
+            . $id . ",Kategorisiert,open,1,2026-01-01,1,Arbeit,1\n",
             $csv,
         );
     }
@@ -236,8 +253,8 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $csv = $this->todos->exportCsv(1);
 
         $this->assertSame(
-            "id,title,status,priority,due_date,category,owner\n"
-            . $id . ",\"Eins, zwei\",open,1,2026-01-01,,1\n",
+            "id,title,status,priority,due_date,category_id,category,owner\n"
+            . $id . ",\"Eins, zwei\",open,1,2026-01-01,,,1\n",
             $csv,
         );
     }
@@ -249,8 +266,8 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $csv = $this->todos->exportCsv(1);
 
         $this->assertSame(
-            "id,title,status,priority,due_date,category,owner\n"
-            . $id . ',"Sagt ""Hallo""",open,1,2026-01-01,,1' . "\n",
+            "id,title,status,priority,due_date,category_id,category,owner\n"
+            . $id . ',"Sagt ""Hallo""",open,1,2026-01-01,,,1' . "\n",
             $csv,
         );
     }
@@ -262,8 +279,8 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $csv = $this->todos->exportCsv(1);
 
         $this->assertSame(
-            "id,title,status,priority,due_date,category,owner\n"
-            . $id . ",\"Zeile 1\nZeile 2\",open,1,2026-01-01,,1\n",
+            "id,title,status,priority,due_date,category_id,category,owner\n"
+            . $id . ",\"Zeile 1\nZeile 2\",open,1,2026-01-01,,,1\n",
             $csv,
         );
     }

@@ -16,15 +16,15 @@ class Todos
         $this->taxonomy = $taxonomy;
     }
 
-    /** @return array<int, array<string, mixed>> */
+    /** @return array<int, Todo> */
     public function listActive()
     {
         $rows = $this->pdo->query("SELECT * FROM todos WHERE archived=0 ORDER BY status ASC, due_date ASC")->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $this->decorate($rows);
+        return $this->hydrate($rows);
     }
 
-    /** @return array<int, array<string, mixed>> */
+    /** @return array<int, Todo> */
     public function listFiltered($status, $prio, $due)
     {
         $sql = "SELECT * FROM todos WHERE archived=0";
@@ -46,42 +46,19 @@ class Todos
         $stmt->execute($params);
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $this->decorate($rows);
+        return $this->hydrate($rows);
     }
 
-    /** @param array<int, array<string, mixed>> $rows
-     *  @return array<int, array<string, mixed>>
-     */
-    private function decorate($rows)
-    {
-        $ids = [];
-        foreach ($rows as $row) {
-            $ids[] = (int) $row["id"];
-        }
-        if ($ids === []) {
-            return $rows;
-        }
-        $catNames = $this->taxonomy->categoryNamesForTodos($ids);
-        $tagsMap = $this->taxonomy->tagsForTodos($ids);
-        foreach ($rows as &$row) {
-            $row["cat"] = $catNames[(int) $row["id"]] ?? "";
-            $row["tags"] = $tagsMap[(int) $row["id"]] ?? [];
-        }
-        unset($row);
-
-        return $rows;
-    }
-
-    /** @return array<int, array<string, mixed>> */
+    /** @return array<int, Todo> */
     public function search($q)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM todos WHERE LOWER(title) LIKE LOWER(?) AND archived=0 ORDER BY status ASC, due_date ASC");
         $stmt->execute(["%" . $q . "%"]);
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->hydrate($stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
-    /** @return array<string, mixed>|null */
+    /** @return Todo|null */
     public function find($id)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM todos WHERE id=?");
@@ -91,7 +68,46 @@ class Todos
             return null;
         }
 
-        return $row;
+        return $this->hydrate([$row])[0];
+    }
+
+    /** @param array<int, array<string, mixed>> $rows
+     *  @return array<int, Todo>
+     */
+    private function hydrate(array $rows)
+    {
+        $ids = [];
+        foreach ($rows as $row) {
+            $ids[] = (int) $row["id"];
+        }
+        $catNames = $this->taxonomy->categoryNamesForTodos($ids);
+
+        $todos = [];
+        foreach ($rows as $row) {
+            $todos[] = $this->todoFromRow($row, $catNames[(int) $row["id"]] ?? "");
+        }
+
+        return $todos;
+    }
+
+    /** @param array<string, mixed> $row
+     *  @return Todo
+     */
+    private function todoFromRow(array $row, string $category)
+    {
+        return new Todo(
+            (int) $row["id"],
+            (int) $row["user_id"],
+            (string) $row["title"],
+            (string) $row["text"],
+            (string) $row["status"],
+            (int) $row["priority"],
+            (string) $row["due_date"],
+            (bool) $row["archived"],
+            (string) $row["created_at"],
+            $row["category_id"] === null ? null : (int) $row["category_id"],
+            $category,
+        );
     }
 
     /** @return bool */
@@ -138,9 +154,9 @@ class Todos
     {
         $stmt = $this->pdo->prepare("SELECT * FROM todos WHERE user_id=? ORDER BY status ASC, due_date ASC");
         $stmt->execute([(int) $userId]);
-        $out = "id,title,status,priority,due_date,category,owner\n";
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $out .= $this->csvField($row["id"]) . "," . $this->csvField($row["title"]) . "," . $this->csvField($row["status"]) . "," . $this->csvField($row["priority"]) . "," . $this->csvField($row["due_date"]) . "," . $this->csvField($row["category_id"]) . "," . $this->csvField($row["user_id"]) . "\n";
+        $out = "id,title,status,priority,due_date,category_id,category,owner\n";
+        foreach ($this->hydrate($stmt->fetchAll(\PDO::FETCH_ASSOC)) as $todo) {
+            $out .= $this->csvField($todo->id()) . "," . $this->csvField($todo->title()) . "," . $this->csvField($todo->status()) . "," . $this->csvField($todo->priority()) . "," . $this->csvField($todo->dueDate()) . "," . $this->csvField($todo->categoryId()) . "," . $this->csvField($todo->category()) . "," . $this->csvField($todo->userId()) . "\n";
         }
 
         return $out;
