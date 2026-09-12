@@ -30,8 +30,7 @@ class Csrf
     public function guard(array $post): void
     {
         if (!empty($post) && !$this->auth->validateCsrfToken($post["_csrf_token"] ?? null)) {
-            http_response_code(403);
-            echo "CSRF token invalid";
+            echo $this->layout->errorPage(403, "CSRF token invalid");
             exit;
         }
     }

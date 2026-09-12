@@ -52,7 +52,7 @@ final class CsrfTest extends PHPUnit\Framework\TestCase
         $this->assertSame('ok', $output);
     }
 
-    public function testPostWithoutCsrfTokenReturns403(): void
+    public function testPostWithoutCsrfTokenRendersComposed403(): void
     {
         $output = RunCliHelper::run(
             '$csrf = $app->csrf(); $csrf->guard($_POST); echo "unreachable";',
@@ -61,10 +61,12 @@ final class CsrfTest extends PHPUnit\Framework\TestCase
             ["login" => "Login", "username" => "alice", "password" => "secret"],
         );
 
-        $this->assertSame('CSRF token invalid', $output);
+        $this->assertStringContainsString('CSRF token invalid', $output);
+        $this->assertStringContainsString('<title>CSRF token invalid</title>', $output);
+        $this->assertStringContainsString('</body></html>', $output);
     }
 
-    public function testPostWithInvalidCsrfTokenReturns403(): void
+    public function testPostWithInvalidCsrfTokenRendersComposed403(): void
     {
         $output = RunCliHelper::run(
             '$csrf = $app->csrf(); $csrf->guard($_POST); echo "unreachable";',
@@ -73,7 +75,9 @@ final class CsrfTest extends PHPUnit\Framework\TestCase
             ["_csrf_token" => "wrong-token", "login" => "Login", "username" => "alice", "password" => "secret"],
         );
 
-        $this->assertSame('CSRF token invalid', $output);
+        $this->assertStringContainsString('CSRF token invalid', $output);
+        $this->assertStringContainsString('<title>CSRF token invalid</title>', $output);
+        $this->assertStringContainsString('</body></html>', $output);
     }
 
     public function testPostWithValidCsrfTokenPassesGuard(): void
