@@ -59,4 +59,13 @@ class Layout
             . "</div>\n"
             . "</body></html>\n";
     }
+
+    public function errorPage(int $status, string $message): string
+    {
+        http_response_code($status);
+        $out = $this->header($message);
+        $out .= "<h1>" . $this->text($message) . "</h1>\n";
+
+        return $out . $this->footer();
+    }
 }

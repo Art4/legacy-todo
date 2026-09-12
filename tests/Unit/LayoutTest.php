@@ -89,4 +89,28 @@ final class LayoutTest extends PHPUnit\Framework\TestCase
 
         $this->assertStringContainsString('<p>&copy; 2026 LegacyTodo - Version 0.1</p>', $output);
     }
+
+    public function testErrorPageSetsHttpStatusCode(): void
+    {
+        $this->layout->errorPage(403, 'Keine Rechte');
+
+        $this->assertSame(403, http_response_code());
+    }
+
+    public function testErrorPageRendersMessageWithinChrome(): void
+    {
+        $output = $this->layout->errorPage(404, 'Not found');
+
+        $this->assertStringContainsString('<title>Not found</title>', $output);
+        $this->assertStringContainsString('<h1>Not found</h1>', $output);
+        $this->assertStringContainsString('</body></html>', $output);
+    }
+
+    public function testErrorPageEscapesMessage(): void
+    {
+        $output = $this->layout->errorPage(403, '<script>alert("x")</script>');
+
+        $this->assertStringNotContainsString('<h1><script>', $output);
+        $this->assertStringContainsString('&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;', $output);
+    }
 }
