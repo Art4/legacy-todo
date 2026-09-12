@@ -31,10 +31,7 @@ class DeleteTodoHandler
     public function handle(int $id, array $get)
     {
         $this->auth->requireLogin();
-        if (!$this->auth->canManage($id)) {
-            echo "Keine Berechtigung";
-            exit;
-        }
+        $this->auth->requireManage($id);
         if (($get["confirm"] ?? "") == "1") {
             $this->todos->archive($id);
             header("Location: index.php");

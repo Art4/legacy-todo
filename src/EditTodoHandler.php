@@ -37,10 +37,7 @@ class EditTodoHandler
     {
         $this->csrf->guard($post);
         $this->auth->requireLogin();
-        if (!$this->auth->canManage($id)) {
-            echo "Keine Berechtigung";
-            exit;
-        }
+        $this->auth->requireManage($id);
         $out = "";
         if (!empty($post["save"])) {
             $title = $post["title"] ?? "";

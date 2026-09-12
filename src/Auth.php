@@ -114,6 +114,14 @@ class Auth
         return $found != null && $found["user_id"] == $userId;
     }
 
+    public function requireManage($todoId)
+    {
+        if (!$this->canManage($todoId)) {
+            echo "Keine Berechtigung";
+            exit;
+        }
+    }
+
     /**
      * @param array<string, mixed> $comment
      * @return bool
