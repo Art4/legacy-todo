@@ -154,8 +154,8 @@ class Todos
         $stmt = $this->pdo->prepare("SELECT * FROM todos WHERE user_id=? ORDER BY status ASC, due_date ASC");
         $stmt->execute([(int) $userId]);
         $out = "id,title,status,priority,due_date,category,owner\n";
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $out .= $this->csvField($row["id"]) . "," . $this->csvField($row["title"]) . "," . $this->csvField($row["status"]) . "," . $this->csvField($row["priority"]) . "," . $this->csvField($row["due_date"]) . "," . $this->csvField($row["category_id"]) . "," . $this->csvField($row["user_id"]) . "\n";
+        foreach ($this->hydrate($stmt->fetchAll(\PDO::FETCH_ASSOC)) as $todo) {
+            $out .= $this->csvField($todo->id()) . "," . $this->csvField($todo->title()) . "," . $this->csvField($todo->status()) . "," . $this->csvField($todo->priority()) . "," . $this->csvField($todo->dueDate()) . "," . $this->csvField($todo->category()) . "," . $this->csvField($todo->userId()) . "\n";
         }
 
         return $out;

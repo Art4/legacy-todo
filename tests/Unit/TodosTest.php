@@ -229,6 +229,21 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         );
     }
 
+    public function testExportCsvCategoryColumnShipsCategoryNameNotFk(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => "Kategorisiert", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
+        $this->pdo->exec('INSERT INTO categories (id,name,user_id) VALUES (1,"Arbeit",1)');
+        $this->pdo->exec("UPDATE todos SET category_id=1 WHERE id=" . $id);
+
+        $csv = $this->todos->exportCsv(1);
+
+        $this->assertSame(
+            "id,title,status,priority,due_date,category,owner\n"
+            . $id . ",Kategorisiert,open,1,2026-01-01,Arbeit,1\n",
+            $csv,
+        );
+    }
+
     public function testExportCsvQuotesTitleContainingComma(): void
     {
         $id = $this->seedTodo(["user_id" => 1, "title" => "Eins, zwei", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
