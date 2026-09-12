@@ -66,10 +66,10 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
 
         $output = $this->handler->handle($tid, [], []);
 
-        $this->assertStringContainsString('<title>Todo - &lt;b&gt;Titel&lt;/b&gt;</title>', $output);
-        $this->assertStringContainsString('<div class="header">', $output);
-        $this->assertStringContainsString('<div class="footer">', $output);
-        $this->assertStringNotContainsString('<html><body>', $output);
+        $this->assertStringContainsString('<title>Todo - &lt;b&gt;Titel&lt;/b&gt;</title>', (string) $output);
+        $this->assertStringContainsString('<div class="header">', (string) $output);
+        $this->assertStringContainsString('<div class="footer">', (string) $output);
+        $this->assertStringNotContainsString('<html><body>', (string) $output);
     }
 
     public function testTodoDetailRendersAndEscapesFields(): void
