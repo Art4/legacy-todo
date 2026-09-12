@@ -161,7 +161,7 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
         $this->assertStringNotContainsString("Keine Berechtigung", $output);
     }
 
-    public function testTodoNotFoundPrintsNotFound(): void
+    public function testTodoNotFoundRendersComposed404(): void
     {
         $output = RunCliHelper::run(
             '$h = new \Art4\LegacyTodo\TodoHandler($app->auth(), $app->todos(), $app->todoActivity(), $app->users(), $app->csrf(), $app->layout()); echo $h->handle((int) $get["id"], $get, $_POST);',
@@ -170,7 +170,9 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
             [],
         );
 
-        $this->assertSame("Not found", $output);
+        $this->assertStringContainsString("Not found", $output);
+        $this->assertStringContainsString("<title>Not found</title>", $output);
+        $this->assertStringContainsString("</body></html>", $output);
     }
 
     public function testTodoAssignWithEvilNextRedirectsToDefaultTarget(): void
