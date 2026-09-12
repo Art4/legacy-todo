@@ -5,7 +5,7 @@ namespace Art4\LegacyTodo;
 /**
  * Immutable value object holding one Todo's read shape. Same class returned
  * by every read path of Todos; hydrated only by Todos, never written to
- * after construction. The public accessor count and 10-parameter constructor
+ * after construction. The public accessor count and 11-parameter constructor
  * are the shape itself — one accessor per field, one Todo per row — so the
  * PHPMD thresholds on both count as a Signal here, not a reason to split
  * the value object.
@@ -42,10 +42,13 @@ final class Todo
     /** @var string */
     private $createdAt;
 
+    /** @var int|null */
+    private $categoryId;
+
     /** @var string */
     private $category;
 
-    public function __construct(int $id, int $userId, string $title, string $text, string $status, int $priority, string $dueDate, bool $archived, string $createdAt, string $category)
+    public function __construct(int $id, int $userId, string $title, string $text, string $status, int $priority, string $dueDate, bool $archived, string $createdAt, ?int $categoryId, string $category)
     {
         $this->id = $id;
         $this->userId = $userId;
@@ -56,6 +59,7 @@ final class Todo
         $this->dueDate = $dueDate;
         $this->archived = $archived;
         $this->createdAt = $createdAt;
+        $this->categoryId = $categoryId;
         $this->category = $category;
     }
 
@@ -111,6 +115,12 @@ final class Todo
     public function createdAt()
     {
         return $this->createdAt;
+    }
+
+    /** @return int|null */
+    public function categoryId()
+    {
+        return $this->categoryId;
     }
 
     /** @return string */

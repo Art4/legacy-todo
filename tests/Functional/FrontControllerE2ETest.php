@@ -83,7 +83,7 @@ final class FrontControllerE2ETest extends E2eTestCase
         $csv = $this->http->request('GET', '/index.php?export=csv');
         $this->assertSame(200, $csv->status());
         $this->assertStringStartsWith('text/csv', (string) $csv->header('Content-Type'));
-        $this->assertStringContainsString('id,title,status,priority,due_date,category,owner', $csv->body());
+        $this->assertStringContainsString('id,title,status,priority,due_date,category_id,category,owner', $csv->body());
         $this->assertStringContainsString('Zweites Todo', $csv->body());
 
         $logout = $this->http->request('GET', '/logout.php');

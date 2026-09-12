@@ -5,7 +5,7 @@ A small PHP/SQLite to-do application. All todo data access lives behind one modu
 ## Language
 
 **Todo / To-do**:
-The core entity — a unit of work tracked by the app. A Todo has exactly one Owner, exactly one status (`open` or `done`), and is archived, never deleted, when it leaves the active view. Every read path returns the same immutable `Todo` value object (`Art4\LegacyTodo\Todo`), hydrated only inside `Todos`; the CSV `category` column ships the resolved category name, not the `category_id` foreign key.
+The core entity — a unit of work tracked by the app. A Todo has exactly one Owner, exactly one status (`open` or `done`), and is archived, never deleted, when it leaves the active view. Every read path returns the same immutable `Todo` value object (`Art4\LegacyTodo\Todo`), hydrated only inside `Todos`; the CSV export ships both the `category_id` foreign key and the resolved category name in separate columns.
 _Avoid_: task, item, note
 
 **Todos**:

@@ -64,10 +64,11 @@ final class TodosTest extends PHPUnit\Framework\TestCase
                 $todo->dueDate(),
                 $todo->archived(),
                 $todo->createdAt(),
+                $todo->categoryId(),
                 $todo->category(),
             ];
         };
-        $expected = [$id, 1, "Einziges", "", "open", 1, "2026-01-01", false, "2026-01-10", "Arbeit"];
+        $expected = [$id, 1, "Einziges", "", "open", 1, "2026-01-01", false, "2026-01-10", 1, "Arbeit"];
 
         $this->assertSame($expected, $shape($this->todos->find($id)));
         $this->assertSame($expected, $shape($this->todos->search("Einziges")[0]));
@@ -141,6 +142,7 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertSame("2026-06-01", $todo->dueDate());
         $this->assertFalse($todo->archived());
         $this->assertSame("2026-01-10", $todo->createdAt());
+        $this->assertSame(1, $todo->categoryId());
         $this->assertSame("Arbeit", $todo->category());
         $this->assertNull($this->todos->find($id + 99));
         $this->assertInstanceOf(\Art4\LegacyTodo\Todo::class, $this->todos->find($archivedId));
@@ -222,14 +224,14 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $csv = $this->todos->exportCsv(1);
 
         $this->assertSame(
-            "id,title,status,priority,due_date,category,owner\n"
-            . $archived . ",Archiviert,done,3,2026-01-03,,1\n"
-            . $mine . ",Eins,open,1,2026-01-01,,1\n",
+            "id,title,status,priority,due_date,category_id,category,owner\n"
+            . $archived . ",Archiviert,done,3,2026-01-03,,,1\n"
+            . $mine . ",Eins,open,1,2026-01-01,,,1\n",
             $csv,
         );
     }
 
-    public function testExportCsvCategoryColumnShipsCategoryNameNotFk(): void
+    public function testExportCsvShipsCategoryIdAndResolvedCategoryName(): void
     {
         $id = $this->seedTodo(["user_id" => 1, "title" => "Kategorisiert", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);
         $this->pdo->exec('INSERT INTO categories (id,name,user_id) VALUES (1,"Arbeit",1)');
@@ -238,8 +240,8 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $csv = $this->todos->exportCsv(1);
 
         $this->assertSame(
-            "id,title,status,priority,due_date,category,owner\n"
-            . $id . ",Kategorisiert,open,1,2026-01-01,Arbeit,1\n",
+            "id,title,status,priority,due_date,category_id,category,owner\n"
+            . $id . ",Kategorisiert,open,1,2026-01-01,1,Arbeit,1\n",
             $csv,
         );
     }
@@ -251,8 +253,8 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $csv = $this->todos->exportCsv(1);
 
         $this->assertSame(
-            "id,title,status,priority,due_date,category,owner\n"
-            . $id . ",\"Eins, zwei\",open,1,2026-01-01,,1\n",
+            "id,title,status,priority,due_date,category_id,category,owner\n"
+            . $id . ",\"Eins, zwei\",open,1,2026-01-01,,,1\n",
             $csv,
         );
     }
@@ -264,8 +266,8 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $csv = $this->todos->exportCsv(1);
 
         $this->assertSame(
-            "id,title,status,priority,due_date,category,owner\n"
-            . $id . ',"Sagt ""Hallo""",open,1,2026-01-01,,1' . "\n",
+            "id,title,status,priority,due_date,category_id,category,owner\n"
+            . $id . ',"Sagt ""Hallo""",open,1,2026-01-01,,,1' . "\n",
             $csv,
         );
     }
@@ -277,8 +279,8 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $csv = $this->todos->exportCsv(1);
 
         $this->assertSame(
-            "id,title,status,priority,due_date,category,owner\n"
-            . $id . ",\"Zeile 1\nZeile 2\",open,1,2026-01-01,,1\n",
+            "id,title,status,priority,due_date,category_id,category,owner\n"
+            . $id . ",\"Zeile 1\nZeile 2\",open,1,2026-01-01,,,1\n",
             $csv,
         );
     }
