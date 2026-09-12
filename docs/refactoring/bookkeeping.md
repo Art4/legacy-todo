@@ -7,7 +7,7 @@
 **Secret history scan:** done
 
 **Pending candidates:**
-- #262
+- none
 
 **Fulfilled nodes:**
 - git
