@@ -3,9 +3,10 @@
 namespace Art4\LegacyTodo;
 
 /**
- * Single responsible module: owns the page chrome and the escaping surface
- * behind the page seam (issue #209) — text/attr escaping plus the header
- * and footer markup the front controllers compose against.
+ * Single responsible module: owns the page chrome, the escaping surface
+ * and the error/abort response behind the page seam (issue #209) — text/attr
+ * escaping plus the header and footer markup the front controllers compose
+ * against, and the status-carrying error page every denial path renders.
  */
 class Layout
 {
