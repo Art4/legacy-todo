@@ -16,8 +16,6 @@ if (($_GET["export"] ?? "") == "csv") {
 $overview = $dashboard->overview($_GET);
 echo $layout->header();
 ?>
-<html><head><title><?php echo $app->siteName(); ?></title></head>
-<body>
 <h1>Dashboard</h1>
 <p>Offene: <?php echo $overview["stats"]["open"]; ?> | Erledigte: <?php echo $overview["stats"]["done"]; ?> | Überfällig: <?php echo $overview["stats"]["overdue"]; ?></p>
 <form method="get">
@@ -41,4 +39,3 @@ if (count($todos) === 0) {
 ?>
 <a href="addtodo.php">Neues Todo</a> | <a href="admin.php">Admin</a> | <a href="logout.php">Logout</a> | <a href="index.php?export=csv">CSV Export</a>
 <?php echo $layout->footer(); ?>
-</body></html>
