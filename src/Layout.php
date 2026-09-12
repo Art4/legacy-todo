@@ -3,9 +3,10 @@
 namespace Art4\LegacyTodo;
 
 /**
- * Single responsible module: owns the page chrome and the escaping surface
- * behind the page seam (issue #209) — text/attr escaping plus the header
- * and footer markup the front controllers compose against.
+ * Single responsible module: owns the page chrome, the escaping surface
+ * and the error/abort response behind the page seam (issue #209) — text/attr
+ * escaping plus the header and footer markup the front controllers compose
+ * against, and the status-carrying error page every denial path renders.
  */
 class Layout
 {
@@ -58,5 +59,14 @@ class Layout
             . "<p>&copy; 2026 LegacyTodo - Version 0.1</p>\n"
             . "</div>\n"
             . "</body></html>\n";
+    }
+
+    public function errorPage(int $status, string $message): string
+    {
+        http_response_code($status);
+        $out = $this->header($message);
+        $out .= "<h1>" . $this->text($message) . "</h1>\n";
+
+        return $out . $this->footer();
     }
 }

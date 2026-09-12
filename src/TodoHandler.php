@@ -47,8 +47,7 @@ class TodoHandler
         $this->auth->requireLogin();
         $t = $this->todos->find($id);
         if ($t == null) {
-            echo "Not found";
-            exit;
+            return $this->layout->errorPage(404, "Not found");
         }
         if (!empty($post["add_comment"])) {
             $body = $post["body"] ?? "";

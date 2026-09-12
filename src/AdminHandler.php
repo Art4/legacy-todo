@@ -44,7 +44,9 @@ class AdminHandler
     {
         $this->csrf->guard($post);
         $this->auth->requireLogin();
-        $this->auth->requireRole("admin");
+        if (!$this->auth->requireRole("admin")) {
+            return $this->layout->errorPage(403, "Keine Rechte");
+        }
         $out = "";
         if (!empty($post["add_cat"])) {
             $name = $post["kategorie"] ?? "";

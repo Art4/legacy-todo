@@ -160,14 +160,21 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->assertTrue(true);
     }
 
-    public function testRequireRoleStopsNonAdminPage(): void
+    public function testRequireRoleReturnsBoolAndProducesNoOutput(): void
     {
         $this->session["user_id"] = 1;
         $this->session["role"] = "user";
 
-        $output = $this->runCli('$auth->requireRole("admin");', $this->session, []);
+        $output = $this->runCli('echo var_export($auth->requireRole("admin"), true);', $this->session, []);
 
-        $this->assertSame("Keine Rechte", $output);
+        $this->assertSame("false", $output);
+    }
+
+    public function testRequireRoleReturnsTrueForAdmin(): void
+    {
+        $this->session["role"] = "admin";
+
+        $this->assertTrue($this->auth->requireRole("admin"));
     }
 
     private function seedTodo(array $row): int
@@ -256,9 +263,7 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->session["user_id"] = 5;
         $this->session["role"] = "user";
 
-        $this->auth->requireManage($id);
-
-        $this->assertTrue(true);
+        $this->assertTrue($this->auth->requireManage($id));
     }
 
     public function testRequireManageAllowsAdmin(): void
@@ -267,20 +272,18 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->session["user_id"] = 1;
         $this->session["role"] = "admin";
 
-        $this->auth->requireManage($id);
-
-        $this->assertTrue(true);
+        $this->assertTrue($this->auth->requireManage($id));
     }
 
-    public function testRequireManageDeniesNonOwnerNonAdmin(): void
+    public function testRequireManageReturnsBoolAndProducesNoOutput(): void
     {
         $output = $this->runCli(
-            '$pdo->exec("CREATE TABLE todos (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, title TEXT, text TEXT, status TEXT, priority INTEGER, due_date TEXT, category_id INTEGER, archived INTEGER DEFAULT 0, created_at TEXT, data2 TEXT, x_status INTEGER)"); $auth->requireManage(5);',
+            '$pdo->exec("CREATE TABLE todos (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, title TEXT, text TEXT, status TEXT, priority INTEGER, due_date TEXT, category_id INTEGER, archived INTEGER DEFAULT 0, created_at TEXT, data2 TEXT, x_status INTEGER)"); echo var_export($auth->requireManage(5), true);',
             ["user_id" => 9, "role" => "user"],
             [],
         );
 
-        $this->assertSame("Keine Berechtigung", $output);
+        $this->assertSame("false", $output);
     }
 
     public function testRedirectFallsBackToGivenUrlWithoutNext(): void

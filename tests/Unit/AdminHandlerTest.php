@@ -94,4 +94,17 @@ final class AdminHandlerTest extends PHPUnit\Framework\TestCase
 
         $this->assertStringContainsString('<li>neu</li>', $output);
     }
+
+    public function testAdminDeniesNonAdminWithComposed403(): void
+    {
+        $this->session['user_id'] = 9;
+        $this->session['username'] = 'eve';
+        $this->session['role'] = 'user';
+
+        $output = $this->handler->handle([]);
+
+        $this->assertStringContainsString("Keine Rechte", $output);
+        $this->assertStringContainsString("<title>Keine Rechte</title>", $output);
+        $this->assertStringContainsString("</body></html>", $output);
+    }
 }
