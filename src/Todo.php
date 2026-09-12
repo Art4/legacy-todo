@@ -45,18 +45,8 @@ final class Todo
     /** @var string */
     private $category;
 
-    public function __construct(
-        int $id,
-        int $userId,
-        string $title,
-        string $text,
-        string $status,
-        int $priority,
-        string $dueDate,
-        bool $archived,
-        string $createdAt,
-        string $category,
-    ) {
+    public function __construct(int $id, int $userId, string $title, string $text, string $status, int $priority, string $dueDate, bool $archived, string $createdAt, string $category)
+    {
         $this->id = $id;
         $this->userId = $userId;
         $this->title = $title;
