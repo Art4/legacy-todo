@@ -221,6 +221,35 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->assertFalse($this->auth->canManage(5));
     }
 
+    public function testCanDeleteCommentAllowsAuthor(): void
+    {
+        $this->session["user_id"] = 5;
+        $this->session["role"] = "user";
+
+        $this->assertTrue($this->auth->canDeleteComment(["user_id" => 5]));
+    }
+
+    public function testCanDeleteCommentAllowsAdmin(): void
+    {
+        $this->session["user_id"] = 1;
+        $this->session["role"] = "admin";
+
+        $this->assertTrue($this->auth->canDeleteComment(["user_id" => 9]));
+    }
+
+    public function testCanDeleteCommentDeniesNonAuthorNonAdmin(): void
+    {
+        $this->session["user_id"] = 5;
+        $this->session["role"] = "user";
+
+        $this->assertFalse($this->auth->canDeleteComment(["user_id" => 9]));
+    }
+
+    public function testCanDeleteCommentDeniesAnonymous(): void
+    {
+        $this->assertFalse($this->auth->canDeleteComment(["user_id" => 5]));
+    }
+
     public function testRedirectFallsBackToGivenUrlWithoutNext(): void
     {
         $output = $this->runCli('$auth->redirect("todo.php?id=5");', [], []);

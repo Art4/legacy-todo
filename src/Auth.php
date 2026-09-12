@@ -114,6 +114,23 @@ class Auth
         return $found != null && $found["user_id"] == $userId;
     }
 
+    /**
+     * @param array<string, mixed> $comment
+     * @return bool
+     */
+    public function canDeleteComment(array $comment)
+    {
+        if (($this->session["role"] ?? null) == "admin") {
+            return true;
+        }
+        $userId = $this->session["user_id"] ?? null;
+        if ($userId == null || $userId == "") {
+            return false;
+        }
+
+        return ($comment["user_id"] ?? null) == $userId;
+    }
+
     /** @param string $next */
     public function redirect($url, $next = "")
     {
