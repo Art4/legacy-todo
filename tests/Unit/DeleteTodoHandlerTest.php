@@ -97,14 +97,12 @@ final class DeleteTodoHandlerTest extends PHPUnit\Framework\TestCase
 
     public function testDeleteTodoDeniesWhenCannotManage(): void
     {
-        $output = RunCliHelper::run(
-            '$h = new \Art4\LegacyTodo\DeleteTodoHandler($app->auth(), $app->todos(), $app->layout()); echo $h->handle((int) $get["id"], $get);',
-            ["user_id" => 9, "username" => "eve", "role" => "user"],
-            ["id" => 1],
-            [],
-            '$pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (9,\'eve\',\'\',\'user\',\'e@x.com\',\'2026-01-01\')");'
-                . '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,5,\'Fremdes\',\'\',\'open\',0,\'2026-01-10\')");',
-        );
+        $id = $this->seedTodo(["user_id" => 5, "title" => "Fremdes", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
+        $this->session['user_id'] = 9;
+        $this->session['username'] = 'eve';
+        $this->session['role'] = 'user';
+
+        $output = $this->handler->handle($id, []);
 
         $this->assertStringContainsString("Keine Berechtigung", $output);
         $this->assertStringContainsString("<title>Keine Berechtigung</title>", $output);

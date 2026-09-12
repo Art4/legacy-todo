@@ -2,12 +2,9 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../Fakes/RunCliHelper.php';
-
 use Art4\LegacyTodo\AdminHandler;
 use Art4\LegacyTodo\Auth;
 use Art4\LegacyTodo\Csrf;
-use Art4\LegacyTodo\Fakes\RunCliHelper;
 use Art4\LegacyTodo\Layout;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\Todos;
@@ -100,12 +97,11 @@ final class AdminHandlerTest extends PHPUnit\Framework\TestCase
 
     public function testAdminDeniesNonAdminWithComposed403(): void
     {
-        $output = RunCliHelper::run(
-            '$h = new \Art4\LegacyTodo\AdminHandler($app->auth(), $app->users(), $app->taxonomy(), $app->csrf(), $app->layout(), $app->siteName()); echo $h->handle([]);',
-            ["user_id" => 9, "username" => "eve", "role" => "user"],
-            [],
-            [],
-        );
+        $this->session['user_id'] = 9;
+        $this->session['username'] = 'eve';
+        $this->session['role'] = 'user';
+
+        $output = $this->handler->handle([]);
 
         $this->assertStringContainsString("Keine Rechte", $output);
         $this->assertStringContainsString("<title>Keine Rechte</title>", $output);
