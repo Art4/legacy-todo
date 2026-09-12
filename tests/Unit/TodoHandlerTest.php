@@ -57,6 +57,21 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
         return (int) $this->pdo->lastInsertId();
     }
 
+    public function testPageRendersWithinLayoutChrome(): void
+    {
+        $tid = $this->seedTodo(["user_id" => 1, "title" => '<b>Titel</b>', "text" => "Body", "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->handler->handle($tid, [], []);
+
+        $this->assertStringContainsString('<title>Todo - &lt;b&gt;Titel&lt;/b&gt;</title>', $output);
+        $this->assertStringContainsString('<div class="header">', $output);
+        $this->assertStringContainsString('<div class="footer">', $output);
+        $this->assertStringNotContainsString('<html><body>', $output);
+    }
+
     public function testTodoDetailRendersAndEscapesFields(): void
     {
         $this->pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (2,'carol','','user','c@x.com','2026-01-01')");
