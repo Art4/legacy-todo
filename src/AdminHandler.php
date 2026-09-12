@@ -84,9 +84,7 @@ class AdminHandler
      */
     private function renderAdmin(array $userRows, array $cats, array $tags)
     {
-        $siteName = $this->layout->text($this->siteName);
-        $out = "<html><head><title>Admin - " . $siteName . "</title></head>\n";
-        $out .= "<body>\n";
+        $out = $this->layout->header("Admin - " . $this->siteName);
         $out .= "<h1>Admin</h1>\n";
         $out .= "<h2>Benutzer</h2>\n";
         $out .= "<ul>\n";
@@ -126,7 +124,7 @@ class AdminHandler
         $out .= "<input type=\"submit\" name=\"add_tag\" value=\"Tag\">\n";
         $out .= "</form>\n";
         $out .= "<a href=\"index.php\">Zurück</a>\n";
-        $out .= "</body></html>\n";
+        $out .= $this->layout->footer();
 
         return $out;
     }

@@ -42,6 +42,20 @@ final class AdminHandlerTest extends PHPUnit\Framework\TestCase
         $this->handler = new AdminHandler($auth, $users, $taxonomy, new Csrf($auth, $layout), $layout, 'Legacy Todo');
     }
 
+    public function testPageRendersWithinLayoutChrome(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->handler->handle([]);
+
+        $this->assertStringContainsString('<html><head><title>Admin - Legacy Todo</title>', $output);
+        $this->assertStringContainsString('<div class="header">', $output);
+        $this->assertStringContainsString('<div class="footer">', $output);
+        $this->assertStringNotContainsString('<html><body>', $output);
+    }
+
     public function testAdminRendersUsersCategoriesAndTagsEscaped(): void
     {
         $this->pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (1,'<b>alice</b>','','admin','a@x.com','2026-01-01')");
