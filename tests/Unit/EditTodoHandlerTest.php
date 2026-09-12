@@ -55,6 +55,20 @@ final class EditTodoHandlerTest extends PHPUnit\Framework\TestCase
         return (int) $this->pdo->lastInsertId();
     }
 
+    public function testPageRendersWithinLayoutChrome(): void
+    {
+        $id = $this->seedTodo(["user_id" => 1, "title" => "T", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->handler->handle($id, [], []);
+
+        $this->assertStringContainsString('<div class="header">', $output);
+        $this->assertStringContainsString('<div class="footer">', $output);
+        $this->assertStringNotContainsString('<html><body>', $output);
+    }
+
     public function testEditTodoRendersFormAndEscapesFields(): void
     {
         $id = $this->seedTodo(["user_id" => 1, "title" => '<b>T</b>', "text" => 'x"y', "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
