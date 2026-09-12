@@ -37,7 +37,7 @@ The class that owns one stateful front controller's request flow — one per pag
 _Avoid_: a page-wide god-class, per-page request logic scattered outside the handler, a handler holding `Bootstrap` as a locator
 
 **Layout**:
-The single module (`Art4\LegacyTodo\Layout`) that owns the shared page chrome and the output-escaping surface — `header()`/`footer()` composition and `text()`/`attr()` escaping used by every page that renders markup. Constructed by Bootstrap with the site name and `Auth` (ADR-0009).
+The single module (`Art4\LegacyTodo\Layout`) that owns the full page chrome and the output-escaping surface — the one `<html>` scaffold, `<head>`, per-page `<title>`, and closing tags via `header(?string $title = null)`/`footer()`, plus `text()`/`attr()` escaping used by every page that renders markup. Every rendered page (the six page handlers and `index.php`) composes `header($title) . content . footer()` through this one seam; the per-page title is escaped inside via `text()` (ADR-0014). Constructed by Bootstrap with the site name and `Auth` (ADR-0009).
 _Avoid_: page-scattered `htmlspecialchars`, inline `<html>` scaffolding duplicated per page
 
 **Uploads**:
