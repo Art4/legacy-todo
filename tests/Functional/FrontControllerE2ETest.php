@@ -150,7 +150,7 @@ final class FrontControllerE2ETest extends E2eTestCase
             '/login.php' => 200,
             '/index.php' => 200,
             '/addtodo.php' => 200,
-            '/todo.php' => 200,
+            '/todo.php' => 404,
             '/edittodo.php' => 200,
             '/deletetodo.php' => 200,
             '/admin.php' => 200,
