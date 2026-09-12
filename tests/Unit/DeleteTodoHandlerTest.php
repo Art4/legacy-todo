@@ -106,6 +106,8 @@ final class DeleteTodoHandlerTest extends PHPUnit\Framework\TestCase
                 . '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,5,\'Fremdes\',\'\',\'open\',0,\'2026-01-10\')");',
         );
 
-        $this->assertSame("Keine Berechtigung", $output);
+        $this->assertStringContainsString("Keine Berechtigung", $output);
+        $this->assertStringContainsString("<title>Keine Berechtigung</title>", $output);
+        $this->assertStringContainsString("</body></html>", $output);
     }
 }

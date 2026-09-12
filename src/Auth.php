@@ -91,12 +91,9 @@ class Auth
         exit;
     }
 
-    public function requireRole($role)
+    public function requireRole($role): bool
     {
-        if (($this->session["role"] ?? null) != $role) {
-            echo "Keine Rechte";
-            exit;
-        }
+        return ($this->session["role"] ?? null) == $role;
     }
 
     /** @return bool */
@@ -114,12 +111,9 @@ class Auth
         return $found != null && $found["user_id"] == $userId;
     }
 
-    public function requireManage($todoId)
+    public function requireManage($todoId): bool
     {
-        if (!$this->canManage($todoId)) {
-            echo "Keine Berechtigung";
-            exit;
-        }
+        return $this->canManage($todoId);
     }
 
     /**

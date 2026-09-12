@@ -117,7 +117,9 @@ final class EditTodoHandlerTest extends PHPUnit\Framework\TestCase
             '$pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (9,\'eve\',\'\',\'user\',\'e@x.com\',\'2026-01-01\')");'
                 . '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,5,\'Fremdes\',\'\',\'open\',0,\'2026-01-10\')");',
         );
-        $this->assertSame("Keine Berechtigung", $output);
+        $this->assertStringContainsString("Keine Berechtigung", $output);
+        $this->assertStringContainsString("<title>Keine Berechtigung</title>", $output);
+        $this->assertStringContainsString("</body></html>", $output);
     }
 
     public function testEditTodoSaveSuccessRedirectsToTodo(): void
