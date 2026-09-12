@@ -45,7 +45,7 @@ The single module (`Art4\LegacyTodo\Uploads`) that owns every write to the `publ
 _Avoid_: page-local `move_uploaded_file`, client-chosen paths
 
 **Owner**:
-The User a Todo belongs to. The Owner or an Administrator may edit or archive a Todo; anyone else is refused permission.
+The User a Todo belongs to. The Owner or an Administrator may manage a Todo — edit, archive, comment, assign; anyone else is refused permission (ADR-0015).
 _Avoid_: creator, assignee
 
 **Users**:
@@ -57,7 +57,7 @@ The typed value object returned by `Users::register()`, replacing the old `bool|
 _Avoid_: bool|string return from register, loose `== true` comparisons on register results
 
 **Auth**:
-The single data-access module (`Art4\LegacyTodo\Auth`) that owns login state and permission decisions — session reads/writes, identity lookup, role checks, and redirect-on-denial. Delegates data lookups to the `Users` / `Todos` it receives as constructor collaborators (injected by Bootstrap, ADR-0009); never touches SQL and never holds the connection. Complements `Users` (which stays session-free per above).
+The single data-access module (`Art4\LegacyTodo\Auth`) that owns login state and permission decisions — session reads/writes, identity lookup, role checks, and redirect-on-denial. The todo-permission decision surface lives here: `canManage()`/`requireManage()`/`canDeleteComment()` — a handler either calls one of these or reads identity for a data write (`currentUser()["user_id"]`), never computes authorization itself; comment deletion is its own decision (comment author or Administrator), distinct from the todo-manage rule (ADR-0015). Delegates data lookups to the `Users` / `Todos` it receives as constructor collaborators (injected by Bootstrap, ADR-0009); never touches SQL and never holds the connection. Complements `Users` (which stays session-free per above).
 _Avoid_: AuthManager, session keys written outside Auth
 
 **TodoActivity**:
