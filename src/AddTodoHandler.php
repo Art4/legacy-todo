@@ -70,8 +70,7 @@ class AddTodoHandler
                 $out .= $msg;
             }
         }
-        $out .= "<html><head><title>Neues Todo</title></head>\n";
-        $out .= "<body>\n";
+        $out .= $this->layout->header("Neues Todo");
         $out .= "<h1>Todo erstellen</h1>\n";
         if ($msg !== "") {
             $out .= "<p>" . $this->layout->text($msg) . "</p>\n";
@@ -95,7 +94,7 @@ class AddTodoHandler
         $out .= "<input type='submit' name='save' value='Speichern'>\n";
         $out .= "</form>\n";
         $out .= "<a href=\"index.php\">Zurück</a>\n";
-        $out .= "</body></html>\n";
+        $out .= $this->layout->footer();
 
         return $out;
     }
