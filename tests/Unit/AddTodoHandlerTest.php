@@ -44,6 +44,20 @@ final class AddTodoHandlerTest extends PHPUnit\Framework\TestCase
         $this->handler = new AddTodoHandler($auth, $todos, $taxonomy, new Uploads(dirname(__DIR__, 2) . '/public/uploads'), $csrf, $layout);
     }
 
+    public function testPageRendersWithinLayoutChrome(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token']], []);
+
+        $this->assertStringContainsString('<html><head><title>Neues Todo</title>', (string) $output);
+        $this->assertStringContainsString('<div class="header">', (string) $output);
+        $this->assertStringContainsString('<div class="footer">', (string) $output);
+        $this->assertStringNotContainsString('<html><body>', (string) $output);
+    }
+
     public function testAddTodoRendersFormAndEscapesPostValues(): void
     {
         $this->session['user_id'] = 1;

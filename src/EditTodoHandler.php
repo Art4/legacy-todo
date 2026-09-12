@@ -55,7 +55,7 @@ class EditTodoHandler
             }
         }
         $t = $this->todos->find($id);
-        $out .= "<html><body>\n";
+        $out .= $this->layout->header("Todo bearbeiten");
         $out .= "<h1>Todo bearbeiten</h1>\n";
         $out .= "<form method='post'>\n";
         $out .= $this->csrf->field() . "\n";
@@ -76,7 +76,7 @@ class EditTodoHandler
         $out .= "</select>\n";
         $out .= "<input type='submit' name='save' value='Speichern'>\n";
         $out .= "</form>\n";
-        $out .= "</body></html>\n";
+        $out .= $this->layout->footer();
 
         return $out;
     }

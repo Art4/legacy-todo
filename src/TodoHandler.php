@@ -86,8 +86,7 @@ class TodoHandler
      */
     private function renderTodoDetail(array $t, array $comments, array $assigns, int $id)
     {
-        $out = "<html><head><title>Todo - " . $this->layout->text($t["title"]) . "</title></head>\n";
-        $out .= "<body>\n";
+        $out = $this->layout->header("Todo - " . $t["title"]);
         $out .= "<h1>" . $this->layout->text($t["title"]) . "</h1>\n";
         $out .= "<p>" . $this->layout->text($t["text"]) . "</p>\n";
         $out .= "<p>Status: " . $this->layout->text($t["status"]) . " | Prio: " . $this->layout->text($t["priority"]) . " | Fällig: " . $this->layout->text($t["due_date"]) . "</p>\n";
@@ -122,6 +121,6 @@ class TodoHandler
         $out .= "</form>\n";
         $out .= "<a href=\"edittodo.php?id=" . $this->layout->attr($id) . "\">Bearbeiten</a> | <a href=\"deletetodo.php?id=" . $this->layout->attr($id) . "\">Löschen</a> | <a href=\"index.php\">Zurück</a>\n";
 
-        return $out . "</body></html>\n";
+        return $out . $this->layout->footer();
     }
 }
