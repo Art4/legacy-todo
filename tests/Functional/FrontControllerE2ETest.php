@@ -287,7 +287,7 @@ final class FrontControllerE2ETest extends E2eTestCase
         $this->assertStringNotContainsString('Registriert', $response->body());
     }
 
-    public function testCommentAndAssignDeniedForNonManagerOnForeignTodo(): void
+    public function testCommentAndAssignAllowedForNonManagerOnForeignTodo(): void
     {
         $this->login('user', 'user123');
 
@@ -298,26 +298,27 @@ final class FrontControllerE2ETest extends E2eTestCase
         $comment = $this->http->request('POST', '/todo.php?id=1', [
             '_csrf_token' => $this->csrfTokenFrom($detail),
             'add_comment' => 'Kommentieren',
-            'body' => 'E2E kein Kommentar für fremdes Todo',
+            'body' => 'E2E Kommentar für fremdes Todo',
         ]);
-        $this->assertSame(200, $comment->status());
-        $this->assertStringContainsString('Keine Berechtigung', $comment->body());
+        $this->assertRedirect($comment, 'todo.php?id=1');
+
+        $withComment = $this->http->request('GET', '/todo.php?id=1');
+        $this->assertStringContainsString('E2E Kommentar für fremdes Todo', $withComment->body());
 
         $assign = $this->http->request('POST', '/todo.php?id=1', [
-            '_csrf_token' => $this->csrfTokenFrom($detail),
+            '_csrf_token' => $this->csrfTokenFrom($withComment),
             'assign' => 'Zuweisen',
             'assignee' => '2',
         ]);
         $this->assertSame(200, $assign->status());
-        $this->assertStringContainsString('Keine Berechtigung', $assign->body());
 
-        $stmt = $this->dbPdo()->prepare("SELECT COUNT(*) FROM comments WHERE body = 'E2E kein Kommentar für fremdes Todo'");
+        $stmt = $this->dbPdo()->prepare("SELECT COUNT(*) FROM comments WHERE body = 'E2E Kommentar für fremdes Todo'");
         $stmt->execute();
-        $this->assertSame(0, (int) $stmt->fetchColumn());
+        $this->assertSame(1, (int) $stmt->fetchColumn());
 
         $stmt = $this->dbPdo()->prepare('SELECT COUNT(*) FROM assignments WHERE todo_id = 1');
         $stmt->execute();
-        $this->assertSame(0, (int) $stmt->fetchColumn());
+        $this->assertSame(1, (int) $stmt->fetchColumn());
     }
 
     public function testEditTodoWithEvilNextRedirectsToDefaultTarget(): void

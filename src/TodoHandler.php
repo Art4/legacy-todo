@@ -51,7 +51,6 @@ class TodoHandler
             exit;
         }
         if (!empty($post["add_comment"])) {
-            $this->auth->requireManage($id);
             $body = $post["body"] ?? "";
             $uid = $this->auth->currentUser()["user_id"];
             $this->todoActivity->addComment($id, $uid, $body);
@@ -59,7 +58,6 @@ class TodoHandler
             exit;
         }
         if (!empty($post["assign"])) {
-            $this->auth->requireManage($id);
             $assignee = $post["assignee"] ?? "";
             $this->todoActivity->assign($id, $assignee, $this->auth->currentUser()["user_id"]);
             if (($get["next"] ?? "") != "") {
