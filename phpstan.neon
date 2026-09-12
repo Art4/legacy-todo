@@ -30,3 +30,8 @@ parameters:
             # method count past PHPMD's threshold by design, issue #202).
             identifier: phpDoc.parseError
             path: src/Auth.php
+        -
+            # Same suppression for Todo (a value object's accessor count and
+            # constructor arity are the shape itself; see the class docblock).
+            identifier: phpDoc.parseError
+            path: src/Todo.php

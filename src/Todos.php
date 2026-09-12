@@ -81,7 +81,7 @@ class Todos
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    /** @return array<string, mixed>|null */
+    /** @return Todo|null */
     public function find($id)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM todos WHERE id=?");
@@ -91,7 +91,28 @@ class Todos
             return null;
         }
 
-        return $row;
+        $catNames = $this->taxonomy->categoryNamesForTodos([(int) $row["id"]]);
+
+        return $this->todoFromRow($row, $catNames[(int) $row["id"]] ?? "");
+    }
+
+    /** @param array<string, mixed> $row
+     *  @return Todo
+     */
+    private function todoFromRow(array $row, string $category)
+    {
+        return new Todo(
+            (int) $row["id"],
+            (int) $row["user_id"],
+            (string) $row["title"],
+            (string) $row["text"],
+            (string) $row["status"],
+            (int) $row["priority"],
+            (string) $row["due_date"],
+            (bool) $row["archived"],
+            (string) $row["created_at"],
+            $category,
+        );
     }
 
     /** @return bool */

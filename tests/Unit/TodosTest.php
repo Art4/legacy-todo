@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Art4\LegacyTodo\Taxonomy;
+use Art4\LegacyTodo\Todo;
 use Art4\LegacyTodo\Todos;
 
 final class TodosTest extends PHPUnit\Framework\TestCase
@@ -132,18 +133,28 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertArrayNotHasKey("tags", $row);
     }
 
-    public function testFindReturnsRowOrNull(): void
+    public function testFindReturnsTodoOrNull(): void
     {
         $id = $this->seedTodo(["user_id" => 1, "title" => "Detail", "text" => "Beschreibung", "status" => "open", "priority" => 2, "due_date" => "2026-06-01", "archived" => 0]);
+        $this->pdo->exec('INSERT INTO categories (name,user_id) VALUES ("Arbeit",1)');
+        $this->pdo->exec("UPDATE todos SET category_id=1 WHERE id=" . $id);
         $archivedId = $this->seedTodo(["user_id" => 1, "title" => "Archived detail", "text" => "", "status" => "done", "priority" => 3, "due_date" => "2026-01-01", "archived" => 1]);
 
-        $row = $this->todos->find($id);
+        $todo = $this->todos->find($id);
 
-        $this->assertSame("Detail", $row["title"]);
-        $this->assertSame("Beschreibung", $row["text"]);
-        $this->assertSame($id, (int) $row["id"]);
+        $this->assertInstanceOf(Todo::class, $todo);
+        $this->assertSame("Detail", $todo->title());
+        $this->assertSame("Beschreibung", $todo->text());
+        $this->assertSame($id, $todo->id());
+        $this->assertSame(1, $todo->userId());
+        $this->assertSame("open", $todo->status());
+        $this->assertSame(2, $todo->priority());
+        $this->assertSame("2026-06-01", $todo->dueDate());
+        $this->assertFalse($todo->archived());
+        $this->assertSame("2026-01-10", $todo->createdAt());
+        $this->assertSame("Arbeit", $todo->category());
         $this->assertNull($this->todos->find($id + 99));
-        $this->assertNotNull($this->todos->find($archivedId));
+        $this->assertInstanceOf(\Art4\LegacyTodo\Todo::class, $this->todos->find($archivedId));
     }
 
     public function testArchiveMarksTodoArchivedWithoutDeleting(): void
