@@ -66,9 +66,7 @@ class LoginHandler
                 $msg = "Fehler: Registrierung fehlgeschlagen.";
             }
         }
-        $siteName = $this->layout->text($this->siteName);
-        $out .= "<html><head><title>Login - " . $siteName . "</title></head>\n";
-        $out .= "<body>\n";
+        $out .= $this->layout->header("Login - " . $this->siteName);
         $out .= "<h1>Login</h1>\n";
         if ($msg != "") {
             $out .= "<p>" . $this->layout->text($msg) . "</p>\n";
@@ -87,7 +85,7 @@ class LoginHandler
         $out .= "<input name=\"email\" placeholder=\"Email\" value=\"" . $this->layout->attr($post["email"] ?? "") . "\">\n";
         $out .= "<input type=\"submit\" name=\"register\" value=\"Registrieren\">\n";
         $out .= "</form>\n";
-        $out .= "</body></html>\n";
+        $out .= $this->layout->footer();
 
         return $out;
     }

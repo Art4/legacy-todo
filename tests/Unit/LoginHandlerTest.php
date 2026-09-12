@@ -54,6 +54,16 @@ final class LoginHandlerTest extends PHPUnit\Framework\TestCase
         return (int) $this->pdo->lastInsertId();
     }
 
+    public function testPageRendersWithinLayoutChrome(): void
+    {
+        $output = $this->handler->handle([]);
+
+        $this->assertStringContainsString('<html><head><title>Login - Legacy Todo</title>', $output);
+        $this->assertStringContainsString('<div class="header">', $output);
+        $this->assertStringContainsString('<div class="footer">', $output);
+        $this->assertStringNotContainsString('<html><body>', $output);
+    }
+
     public function testLoginShowsLoginFormOnGetRequest(): void
     {
         $output = $this->handler->handle([]);
