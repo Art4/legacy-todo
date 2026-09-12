@@ -41,11 +41,11 @@ class DeleteTodoHandler
             exit;
         }
         $t = $this->todos->find($id);
-        $out = "<html><body>\n";
+        $out = $this->layout->header("Löschen?");
         $out .= "<h1>Löschen?</h1>\n";
         $out .= "<p>" . $this->layout->text($t["title"]) . " wirklich archivieren?</p>\n";
         $out .= "<a href=\"deletetodo.php?id=" . $this->layout->attr($id) . "&confirm=1\">Ja</a> | <a href=\"index.php\">Nein</a>\n";
-        $out .= "</body></html>\n";
+        $out .= $this->layout->footer();
 
         return $out;
     }
