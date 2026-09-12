@@ -169,9 +169,9 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
 
         $output = $this->handler->handle(9999, [], []);
 
-        $this->assertStringContainsString("Not found", $output);
-        $this->assertStringContainsString("<title>Not found</title>", $output);
-        $this->assertStringContainsString("</body></html>", $output);
+        $this->assertStringContainsString("Not found", (string) $output);
+        $this->assertStringContainsString("<title>Not found</title>", (string) $output);
+        $this->assertStringContainsString("</body></html>", (string) $output);
     }
 
     public function testTodoAssignWithEvilNextRedirectsToDefaultTarget(): void
