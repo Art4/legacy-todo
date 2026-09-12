@@ -33,10 +33,11 @@ class Layout
         return htmlspecialchars((string) $value, ENT_QUOTES);
     }
 
-    public function header(): string
+    public function header(?string $title = null): string
     {
         $siteName = $this->siteName;
-        $out = "<html><head><title>" . $siteName . " - " . $siteName . "</title>\n";
+        $pageTitle = $title === null ? $siteName . " - " . $siteName : $this->text($title);
+        $out = "<html><head><title>" . $pageTitle . "</title>\n";
         $out .= "<style>body{font-family:Arial}</style>\n";
         $out .= "</head>\n";
         $out .= "<body>\n";

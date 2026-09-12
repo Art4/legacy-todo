@@ -50,6 +50,21 @@ final class LayoutTest extends PHPUnit\Framework\TestCase
         $this->assertStringContainsString('<h2>Legacy Todo</h2>', $output);
     }
 
+    public function testHeaderRendersGivenPageTitle(): void
+    {
+        $output = $this->layout->header('Neues Todo');
+
+        $this->assertStringContainsString('<title>Neues Todo</title>', $output);
+    }
+
+    public function testHeaderEscapesGivenPageTitle(): void
+    {
+        $output = $this->layout->header('<b>Admin - Legacy Todo</b>');
+
+        $this->assertStringNotContainsString('<title><b>', $output);
+        $this->assertStringContainsString('<title>&lt;b&gt;Admin - Legacy Todo&lt;/b&gt;</title>', $output);
+    }
+
     public function testHeaderRendersLoggedInUserFromAuthWhenLoggedIn(): void
     {
         $this->session['user_id'] = 1;
