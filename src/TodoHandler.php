@@ -59,6 +59,7 @@ class TodoHandler
             exit;
         }
         if (!empty($post["assign"])) {
+            $this->auth->requireManage($id);
             $assignee = $post["assignee"] ?? "";
             $this->todoActivity->assign($id, $assignee, $this->auth->currentUser()["user_id"]);
             if (($get["next"] ?? "") != "") {

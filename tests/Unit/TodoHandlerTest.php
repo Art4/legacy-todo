@@ -147,6 +147,20 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
         $this->assertSame("Keine Berechtigung", $output);
     }
 
+    public function testTodoAssignDeniedWhenCannotManage(): void
+    {
+        $output = RunCliHelper::run(
+            '$h = new \Art4\LegacyTodo\TodoHandler($app->auth(), $app->todos(), $app->todoActivity(), $app->users(), $app->csrf(), $app->layout()); echo $h->handle((int) $get["id"], $get, $_POST);',
+            ["user_id" => 9, "username" => "eve", "role" => "user", "csrf_token" => $this->session['csrf_token']],
+            ["id" => 1],
+            ["_csrf_token" => $this->session['csrf_token'], "assign" => "Zuweisen", "assignee" => "9"],
+            '$pdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (9,\'eve\',\'\',\'user\',\'e@x.com\',\'2026-01-01\')");'
+                . '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,5,\'Fremdes\',\'\',\'open\',0,\'2026-01-10\')");',
+        );
+
+        $this->assertSame("Keine Berechtigung", $output);
+    }
+
     public function testTodoNotFoundPrintsNotFound(): void
     {
         $output = RunCliHelper::run(

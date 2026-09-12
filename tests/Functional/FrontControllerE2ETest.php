@@ -287,7 +287,7 @@ final class FrontControllerE2ETest extends E2eTestCase
         $this->assertStringNotContainsString('Registriert', $response->body());
     }
 
-    public function testTodoCommentDeniedForNonManagerOnForeignTodo(): void
+    public function testCommentAndAssignDeniedForNonManagerOnForeignTodo(): void
     {
         $this->login('user', 'user123');
 
@@ -303,7 +303,19 @@ final class FrontControllerE2ETest extends E2eTestCase
         $this->assertSame(200, $comment->status());
         $this->assertStringContainsString('Keine Berechtigung', $comment->body());
 
+        $assign = $this->http->request('POST', '/todo.php?id=1', [
+            '_csrf_token' => $this->csrfTokenFrom($detail),
+            'assign' => 'Zuweisen',
+            'assignee' => '2',
+        ]);
+        $this->assertSame(200, $assign->status());
+        $this->assertStringContainsString('Keine Berechtigung', $assign->body());
+
         $stmt = $this->dbPdo()->prepare("SELECT COUNT(*) FROM comments WHERE body = 'E2E kein Kommentar für fremdes Todo'");
+        $stmt->execute();
+        $this->assertSame(0, (int) $stmt->fetchColumn());
+
+        $stmt = $this->dbPdo()->prepare('SELECT COUNT(*) FROM assignments WHERE todo_id = 1');
         $stmt->execute();
         $this->assertSame(0, (int) $stmt->fetchColumn());
     }
