@@ -62,7 +62,7 @@ final class EditTodoHandlerTest extends PHPUnit\Framework\TestCase
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->handler->handle($id, []);
+        $output = $this->handler->handle($id, [], []);
 
         $this->assertStringContainsString('<h1>Todo bearbeiten</h1>', $output);
         $this->assertStringContainsString("value='&lt;b&gt;T&lt;/b&gt;'", $output);
@@ -76,7 +76,7 @@ final class EditTodoHandlerTest extends PHPUnit\Framework\TestCase
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->handler->handle($id, []);
+        $output = $this->handler->handle($id, [], []);
 
         $this->assertStringContainsString("<option selected value='1'>Hoch</option>", $output);
     }
@@ -88,7 +88,7 @@ final class EditTodoHandlerTest extends PHPUnit\Framework\TestCase
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->handler->handle($id, ["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "", "text" => "", "priority" => "1", "status" => "open"]);
+        $output = $this->handler->handle($id, [], ["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "", "text" => "", "priority" => "1", "status" => "open"]);
 
         $this->assertStringContainsString('Titel erforderlich', $output);
     }
@@ -96,7 +96,7 @@ final class EditTodoHandlerTest extends PHPUnit\Framework\TestCase
     public function testEditTodoDeniesWhenCannotManage(): void
     {
         $output = RunCliHelper::run(
-            '$h = new \Art4\LegacyTodo\EditTodoHandler($app->auth(), $app->todos(), $app->csrf(), $app->layout()); echo $h->handle((int) $get["id"], $_POST);',
+            '$h = new \Art4\LegacyTodo\EditTodoHandler($app->auth(), $app->todos(), $app->csrf(), $app->layout()); echo $h->handle((int) $get["id"], $get, $_POST);',
             ["user_id" => 9, "username" => "eve", "role" => "user", "csrf_token" => $this->session['csrf_token']],
             ["id" => 1],
             ["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "X", "text" => "", "priority" => "2", "status" => "open"],
@@ -109,7 +109,7 @@ final class EditTodoHandlerTest extends PHPUnit\Framework\TestCase
     public function testEditTodoSaveSuccessRedirectsToTodo(): void
     {
         $output = RunCliHelper::run(
-            '$h = new \Art4\LegacyTodo\EditTodoHandler($app->auth(), $app->todos(), $app->csrf(), $app->layout()); echo $h->handle((int) $get["id"], $_POST);',
+            '$h = new \Art4\LegacyTodo\EditTodoHandler($app->auth(), $app->todos(), $app->csrf(), $app->layout()); echo $h->handle((int) $get["id"], $get, $_POST);',
             ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
             ["id" => 1],
             ["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "Neu", "text" => "", "priority" => "2", "status" => "open"],
@@ -122,7 +122,7 @@ final class EditTodoHandlerTest extends PHPUnit\Framework\TestCase
     public function testEditTodoSaveWithEvilNextRedirectsToDefaultTarget(): void
     {
         $output = RunCliHelper::run(
-            '$h = new \Art4\LegacyTodo\EditTodoHandler($app->auth(), $app->todos(), $app->csrf(), $app->layout()); echo $h->handle((int) $get["id"], $_POST);',
+            '$h = new \Art4\LegacyTodo\EditTodoHandler($app->auth(), $app->todos(), $app->csrf(), $app->layout()); echo $h->handle((int) $get["id"], $get, $_POST);',
             ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
             ["id" => 1, "next" => "https://evil.com"],
             ["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "Neu", "text" => "", "priority" => "2", "status" => "open"],

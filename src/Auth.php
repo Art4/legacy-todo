@@ -114,9 +114,9 @@ class Auth
         return $found != null && $found["user_id"] == $userId;
     }
 
-    public function redirect($url)
+    /** @param string $next */
+    public function redirect($url, $next = "")
     {
-        $next = $_GET["next"] ?? "";
         if ($next != "" && $this->isSafeInAppTarget($next)) {
             $url = $next;
         }

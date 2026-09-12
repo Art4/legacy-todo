@@ -39,4 +39,5 @@
 - phpmd (#187)
 - coverage-floor (#228)
 - semgrep (#234)
+- php-minimal-version
 - psr-4 (done via #207/#221; tooling_tree.py false positive on scripts/check-coverage-floor.php)
