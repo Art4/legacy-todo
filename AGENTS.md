@@ -25,6 +25,15 @@ Composer, and the app runtime itself — always runs inside Docker, matching `ru
 `docker run --rm -v "$PWD":/app -w /app php:8.3-cli ...` (see `.github/workflows/ci.yml` for the exact
 command per tool) — never reach for the host's package manager to work around a missing extension.
 
+### Scratch files go under `/tmp/opencode/`, never directly under `/tmp/`
+
+This loop runs headless and unattended — nobody is watching to answer an interactive permission
+prompt. A tool call that writes a file directly under `/tmp/` (e.g. `/tmp/pr-body.md`) triggers an
+`external_directory` permission `ask` that can never be answered in that mode, stalling the pass
+indefinitely (observed twice: an implement step's own scratch write for a PR body). `/tmp/opencode/`
+is already pre-approved — write any scratch/temp file there instead (`/tmp/opencode/pr-body.md`,
+etc.), or use a path inside the repo checkout.
+
 ## Continuous-refactoring suite
 
 Refactoring Notes: `docs/refactoring/` — the continuous-refactoring
