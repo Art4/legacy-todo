@@ -76,16 +76,16 @@ class Auth
         $this->session = [];
     }
 
-    /** @param string|null $next */
-    public function requireLogin($next = null)
+    /** @param string $next */
+    public function requireLogin($next = "")
     {
         if ($this->loggedIn()) {
             return;
         }
 
         $target = "login.php";
-        if ($next != null) {
-            $target = "login.php?next=" . $next;
+        if ($next != "" && $this->isSafeInAppTarget($next)) {
+            $target = "login.php?next=" . urlencode($next);
         }
         header("Location: " . $target);
         exit;

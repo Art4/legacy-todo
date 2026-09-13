@@ -56,7 +56,7 @@ final class LoginHandlerTest extends PHPUnit\Framework\TestCase
 
     public function testPageRendersWithinLayoutChrome(): void
     {
-        $output = $this->handler->handle([]);
+        $output = $this->handler->handle([], []);
 
         $this->assertStringContainsString('<html><head><title>Login - Legacy Todo</title>', $output);
         $this->assertStringContainsString('<div class="header">', $output);
@@ -66,7 +66,7 @@ final class LoginHandlerTest extends PHPUnit\Framework\TestCase
 
     public function testLoginShowsLoginFormOnGetRequest(): void
     {
-        $output = $this->handler->handle([]);
+        $output = $this->handler->handle([], []);
 
         $this->assertStringContainsString('<h1>Login</h1>', $output);
         $this->assertStringContainsString("name='username'", $output);
@@ -77,7 +77,7 @@ final class LoginHandlerTest extends PHPUnit\Framework\TestCase
 
     public function testLoginEscapesUsernameAndEmailInFormFields(): void
     {
-        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "username" => '<a href="#">', "email" => 'a"&b']);
+        $output = $this->handler->handle([], ["_csrf_token" => $this->session['csrf_token'], "username" => '<a href="#">', "email" => 'a"&b']);
 
         $this->assertStringContainsString("value='&lt;a href=&quot;#&quot;&gt;'", $output);
         $this->assertStringContainsString('value="a&quot;&amp;b"', $output);
@@ -87,7 +87,7 @@ final class LoginHandlerTest extends PHPUnit\Framework\TestCase
     {
         $this->seedUser(["username" => "alice", "password" => "secret", "role" => "user", "email" => "alice@example.com"]);
 
-        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "login" => "Login", "username" => "alice", "password" => "wrong"]);
+        $output = $this->handler->handle([], ["_csrf_token" => $this->session['csrf_token'], "login" => "Login", "username" => "alice", "password" => "wrong"]);
 
         $this->assertStringContainsString('Login failed', $output);
         $this->assertStringContainsString('<p>Login failed</p>', $output);
@@ -95,14 +95,14 @@ final class LoginHandlerTest extends PHPUnit\Framework\TestCase
 
     public function testRegisterSuccessRendersRegistriertMessage(): void
     {
-        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "bob", "password" => "pw", "email" => "bob@example.com"]);
+        $output = $this->handler->handle([], ["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "bob", "password" => "pw", "email" => "bob@example.com"]);
 
         $this->assertStringContainsString('<p>Registriert</p>', $output);
     }
 
     public function testRegisterWithEmptyFieldsReportsErrorAndWritesNoUser(): void
     {
-        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "", "password" => "", "email" => "x@example.com"]);
+        $output = $this->handler->handle([], ["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "", "password" => "", "email" => "x@example.com"]);
 
         $this->assertStringContainsString('Fehler: Benutzername und Passwort sind erforderlich.', $output);
         $this->assertStringNotContainsString('Registriert', $output);
@@ -113,7 +113,7 @@ final class LoginHandlerTest extends PHPUnit\Framework\TestCase
     {
         $this->seedUser(["username" => "alice", "password" => "pw", "role" => "user", "email" => "alice@example.com"]);
 
-        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "alice", "password" => "pw2", "email" => "x@example.com"]);
+        $output = $this->handler->handle([], ["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "alice", "password" => "pw2", "email" => "x@example.com"]);
 
         $this->assertStringContainsString('Fehler: Dieser Benutzername ist bereits vergeben.', $output);
         $this->assertStringNotContainsString('Registriert', $output);
@@ -121,7 +121,7 @@ final class LoginHandlerTest extends PHPUnit\Framework\TestCase
 
     public function testRegisterErrorMessageRenderedOnce(): void
     {
-        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "", "password" => "", "email" => "x@example.com"]);
+        $output = $this->handler->handle([], ["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "", "password" => "", "email" => "x@example.com"]);
 
         $this->assertSame(1, substr_count($output, 'Fehler: Benutzername und Passwort sind erforderlich.'));
     }
@@ -130,7 +130,7 @@ final class LoginHandlerTest extends PHPUnit\Framework\TestCase
     {
         $this->pdo->exec("CREATE TRIGGER fail_register BEFORE INSERT ON users BEGIN SELECT raise(ABORT, 'boom'); END;");
 
-        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "jon", "password" => "pw", "email" => "jon@example.com"]);
+        $output = $this->handler->handle([], ["_csrf_token" => $this->session['csrf_token'], "register" => "Registrieren", "username" => "jon", "password" => "pw", "email" => "jon@example.com"]);
 
         $this->assertStringContainsString('Fehler: Registrierung fehlgeschlagen.', $output);
     }
@@ -140,9 +140,37 @@ final class LoginHandlerTest extends PHPUnit\Framework\TestCase
         $this->seedUser(["username" => "alice", "password" => "secret", "role" => "user", "email" => "alice@example.com"]);
 
         $output = RunCliHelper::run(
-            '$h = new \Art4\LegacyTodo\LoginHandler($app->auth(), $app->users(), $app->csrf(), $app->layout(), $app->siteName()); echo $h->handle($_POST);',
+            '$h = new \Art4\LegacyTodo\LoginHandler($app->auth(), $app->users(), $app->csrf(), $app->layout(), $app->siteName()); echo $h->handle($_GET, $_POST);',
             $this->session,
             [],
+            ["_csrf_token" => $this->session['csrf_token'], "login" => "Login", "username" => "alice", "password" => "secret"],
+        );
+
+        $this->assertSame("Location: index.php", $output);
+    }
+
+    public function testLoginSuccessRedirectsToSafeNextTarget(): void
+    {
+        $this->seedUser(["username" => "alice", "password" => "secret", "role" => "user", "email" => "alice@example.com"]);
+
+        $output = RunCliHelper::run(
+            '$h = new \Art4\LegacyTodo\LoginHandler($app->auth(), $app->users(), $app->csrf(), $app->layout(), $app->siteName()); echo $h->handle($_GET, $_POST);',
+            $this->session,
+            ["next" => "addtodo.php"],
+            ["_csrf_token" => $this->session['csrf_token'], "login" => "Login", "username" => "alice", "password" => "secret"],
+        );
+
+        $this->assertSame("Location: addtodo.php", $output);
+    }
+
+    public function testLoginSuccessDropsUnsafeNextTarget(): void
+    {
+        $this->seedUser(["username" => "alice", "password" => "secret", "role" => "user", "email" => "alice@example.com"]);
+
+        $output = RunCliHelper::run(
+            '$h = new \Art4\LegacyTodo\LoginHandler($app->auth(), $app->users(), $app->csrf(), $app->layout(), $app->siteName()); echo $h->handle($_GET, $_POST);',
+            $this->session,
+            ["next" => "https://evil.com"],
             ["_csrf_token" => $this->session['csrf_token'], "login" => "Login", "username" => "alice", "password" => "secret"],
         );
 

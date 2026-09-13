@@ -33,10 +33,11 @@ class LoginHandler
     }
 
     /**
+     * @param array<string, mixed> $get
      * @param array<string, mixed> $post
      * @return string
      */
-    public function handle(array $post)
+    public function handle(array $get, array $post)
     {
         $this->csrf->guard($post);
         $out = "";
@@ -45,8 +46,7 @@ class LoginHandler
             $u = $post["username"] ?? "";
             $p = $post["password"] ?? "";
             if ($this->auth->login($u, $p)) {
-                header("Location: index.php");
-                exit;
+                $this->auth->redirect("index.php", $get["next"] ?? "");
             }
             $msg = "Login failed";
             $out .= $msg;
