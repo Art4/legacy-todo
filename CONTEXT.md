@@ -5,7 +5,7 @@ A small PHP/SQLite to-do application. All todo data access lives behind one modu
 ## Language
 
 **Todo / To-do**:
-The core entity — a unit of work tracked by the app. A Todo has exactly one Owner, exactly one status (`open` or `done`), and is archived, never deleted, when it leaves the active view. Every read path returns the same immutable `Todo` value object (`Art4\LegacyTodo\Todo`), hydrated only inside `Todos`; the CSV export ships both the `category_id` foreign key and the resolved category name in separate columns.
+The core entity — a unit of work tracked by the app. A Todo has exactly one Owner, exactly one status (`open` or `done`), and is archived, never deleted, when it leaves the active view. Every read path returns the same immutable `Todo` value object (`Art4\LegacyTodo\Todo`), hydrated only inside `Todos`; the CSV export ships both the `category_id` foreign key and the resolved category name in separate columns. This is the seed of a project-wide rule (ADR-0017): every data-access module hydrates its own read shape into an immutable value object, and no caller outside the owning module decodes a row's array key.
 _Avoid_: task, item, note
 
 **Todos**:
@@ -49,24 +49,48 @@ The User a Todo belongs to. The Owner or an Administrator may edit, archive, or 
 _Avoid_: creator, assignee
 
 **Users**:
-The single data-access module (`Art4\LegacyTodo\Users`) that owns every read and mutation of a User's auth data — find by id or username, authenticate, register, create, list. Login state (user id, username, role) is written to the session by the page, not by the module.
-_Avoid_: UserManager, per-page user SQL
+The single data-access module (`Art4\LegacyTodo\Users`) that owns every read and mutation of a User's auth data — find by id or username, authenticate, register, create, list. Login state (user id, username, role) is written to the session by the page, not by the module. Every read (`findById`/`findByUsername`/`authenticate`/`listAll`) returns the immutable `User` value object (ADR-0017); the password hash never leaves the module.
+_Avoid_: UserManager, per-page user SQL, a caller reading `$row["password"]` or any other row key
+
+**User**:
+The immutable value object (`Art4\LegacyTodo\User`) holding one User's read shape — `id()`, `username()`, `role()`, `email()`. Hydrated only inside `Users`, returned by every one of its read methods (ADR-0017). Distinct from `AuthenticatedUser`: a `User` is a row from storage, not a session identity.
+_Avoid_: a raw `array<string,mixed>` user row surfacing outside `Users`
+
+**AuthenticatedUser**:
+The immutable value object (`Art4\LegacyTodo\AuthenticatedUser`) holding the session-derived identity of the logged-in user — `userId()`, `username()`, `role()`. Returned only by `Auth::currentUser()`, constructed only by `Auth`. Its own type rather than a partial `User`, because the session never stores an email and a `User` should never carry a fabricated `""` one (ADR-0017).
+_Avoid_: treating it as a `User`, adding an email to it
 
 **RegistrationResult**:
 The typed value object returned by `Users::register()`, replacing the old `bool|string` contract. One of four statuses: `registered`, `invalid-input`, `username-taken`, `storage-failure`. Each carries exactly one meaning — the page handler maps status to a user-facing message.
 _Avoid_: bool|string return from register, loose `== true` comparisons on register results
 
 **Auth**:
-The single data-access module (`Art4\LegacyTodo\Auth`) that owns login state and permission decisions — session reads/writes, identity lookup, role checks, and redirect-on-denial. The todo-permission decision surface lives here: `canManage()`/`requireManage()`/`canDeleteComment()` — a handler either calls one of these or reads identity for a data write (`currentUser()["user_id"]`), never computes authorization itself; comment deletion is its own decision (comment author or Administrator), distinct from the todo-manage rule. The guard verbs only decide: `requireRole($role)`/`requireManage($todoId)` return `bool` and render nothing — the owning handler composes any denial through the Layout errorPage seam as HTTP 403, so a wrong-role/wrong-owner page is a composed, status-carrying response, never a raw text line (ADR-0016). `requireLogin()` keeps its redirect-on-denial; `index.php`/`logout.php` sit directly on Auth (ADR-0008). Commenting and assigning are deliberately open to every authenticated user — the handler reads identity for those data writes, no Authorization call, a documented decision not an ungated seat (ADR-0015). Delegates data lookups to the `Users` / `Todos` it receives as constructor collaborators (injected by Bootstrap, ADR-0009); never touches SQL and never holds the connection. Complements `Users` (which stays session-free per above).
-_Avoid_: AuthManager, session keys written outside Auth
+The single data-access module (`Art4\LegacyTodo\Auth`) that owns login state and permission decisions — session reads/writes, identity lookup, role checks, and redirect-on-denial. The todo-permission decision surface lives here: `canManage()`/`requireManage()`/`canDeleteComment(Comment $comment)` — a handler either calls one of these or reads identity for a data write (`currentUser()->userId()`), never computes authorization itself; comment deletion is its own decision (comment author or Administrator), distinct from the todo-manage rule. The guard verbs only decide: `requireRole($role)`/`requireManage($todoId)` return `bool` and render nothing — the owning handler composes any denial through the Layout errorPage seam as HTTP 403, so a wrong-role/wrong-owner page is a composed, status-carrying response, never a raw text line (ADR-0016). `requireLogin()` keeps its redirect-on-denial; `index.php`/`logout.php` sit directly on Auth (ADR-0008). Commenting and assigning are deliberately open to every authenticated user — the handler reads identity for those data writes, no Authorization call, a documented decision not an ungated seat (ADR-0015). `currentUser()` returns the typed `AuthenticatedUser` (ADR-0017). Delegates data lookups to the `Users` / `Todos` it receives as constructor collaborators (injected by Bootstrap, ADR-0009); never touches SQL and never holds the connection. Complements `Users` (which stays session-free per above).
+_Avoid_: AuthManager, session keys written outside Auth, `currentUser()["user_id"]`
 
 **TodoActivity**:
-The single data-access module (`Art4\LegacyTodo\TodoActivity`) that owns every read and mutation of a Todo's comments and assignments — comments for a todo, add comment, remove comment, assignments for a todo, assign.
-_Avoid_: per-page comment/assignment SQL
+The single data-access module (`Art4\LegacyTodo\TodoActivity`) that owns every read and mutation of a Todo's comments and assignments — comments for a todo, add comment, remove comment, assignments for a todo, assign. Every read (`commentsForTodo`/`findComment`/`assignmentsForTodo`) returns the immutable `Comment`/`Assignment` value objects (ADR-0017); `findComment` joins `users.username` so a `Comment` is one shape across both read paths.
+_Avoid_: per-page comment/assignment SQL, a caller reading `$c["body"]` or any other row key
+
+**Comment**:
+The immutable value object (`Art4\LegacyTodo\Comment`) holding one comment's read shape — `id()`, `todoId()`, `userId()`, `body()`, `username()`, `createdAt()`. Hydrated only inside `TodoActivity`, the same shape returned by `commentsForTodo()` and `findComment()` (ADR-0017).
+_Avoid_: a raw `array<string,mixed>` comment row surfacing outside `TodoActivity`, `findComment()` returning a narrower shape than `commentsForTodo()`
+
+**Assignment**:
+The immutable value object (`Art4\LegacyTodo\Assignment`) holding one assignment's read shape — `id()`, `todoId()`, `userId()`, `assignedBy()`, `username()`. Hydrated only inside `TodoActivity`, returned by `assignmentsForTodo()` (ADR-0017).
+_Avoid_: a raw `array<string,mixed>` assignment row surfacing outside `TodoActivity`
 
 **Taxonomy**:
-The single data-access module (`Art4\LegacyTodo\Taxonomy`) that owns every read and mutation of the Todo classification data — the `categories`, `tags`, and `todo_tags` tables: list categories, list tags, create category, create tag, category names for a batch of todos, tags for a batch of todos.
-_Avoid_: per-page category/tag SQL
+The single data-access module (`Art4\LegacyTodo\Taxonomy`) that owns every read and mutation of the Todo classification data — the `categories`, `tags`, and `todo_tags` tables: list categories, list tags, create category, create tag, category names for a batch of todos, tags for a batch of todos. `listCategories()`/`listTags()` return the immutable `Category`/`Tag` value objects (ADR-0017); the batch helpers `categoryNamesForTodos()`/`tagsForTodos()` stay typed primitive maps — their only consumer is `Todos::hydrate`, never markup, so they sit outside that rule.
+_Avoid_: per-page category/tag SQL, a caller reading `$c["name"]` or any other row key from `listCategories()`/`listTags()`
+
+**Category**:
+The immutable value object (`Art4\LegacyTodo\Category`) holding one category's read shape — `id()`, `name()`, `userId()`. Hydrated only inside `Taxonomy`, returned by `listCategories()` (ADR-0017).
+_Avoid_: a raw `array<string,mixed>` category row surfacing outside `Taxonomy`
+
+**Tag**:
+The immutable value object (`Art4\LegacyTodo\Tag`) holding one tag's read shape — `id()`, `name()`. Hydrated only inside `Taxonomy`, returned by `listTags()` (ADR-0017).
+_Avoid_: a raw `array<string,mixed>` tag row surfacing outside `Taxonomy`
 
 **CSRF token**:
 The session-bound token that protects every state-changing POST form. `Auth` owns it (lazily generated with `bin2hex(random_bytes(32))`, stored in the session, verified with `hash_equals`) and exposes `csrfToken()`/`validateCsrfToken()`; `Csrf` turns it into the `_csrf_token` hidden form field (`field()`) and rejects any non-empty POST without a matching token (`guard()`) with a composed HTTP 403 through the Layout errorPage seam + `exit` (ADR-0007, ADR-0008, ADR-0016). GET-based state changes (`deletetodo.php?confirm=1`, `del_comment`) stay outside this protection.
