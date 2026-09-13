@@ -51,14 +51,14 @@ class TodoHandler
         }
         if (!empty($post["add_comment"])) {
             $body = $post["body"] ?? "";
-            $uid = $this->auth->currentUser()["user_id"];
+            $uid = $this->auth->currentUser()->userId();
             $this->todoActivity->addComment($id, $uid, $body);
             header("Location: todo.php?id=" . $id);
             exit;
         }
         if (!empty($post["assign"])) {
             $assignee = $post["assignee"] ?? "";
-            $this->todoActivity->assign($id, $assignee, $this->auth->currentUser()["user_id"]);
+            $this->todoActivity->assign($id, $assignee, $this->auth->currentUser()->userId());
             if (($get["next"] ?? "") != "") {
                 $this->auth->redirect("todo.php?id=" . $id, $get["next"]);
             }
@@ -111,7 +111,7 @@ class TodoHandler
         $out .= $this->csrf->field() . "\n";
         $out .= "<select name=\"assignee\">\n";
         foreach ($this->users->listAll() as $u) {
-            $out .= "<option value='" . $this->layout->attr($u["id"]) . "'>" . $this->layout->text($u["username"]) . "</option>\n";
+            $out .= "<option value='" . $this->layout->attr($u->id()) . "'>" . $this->layout->text($u->username()) . "</option>\n";
         }
         $out .= "</select>\n";
         $out .= "<input type=\"submit\" name=\"assign\" value=\"Zuweisen\">\n";

@@ -52,7 +52,7 @@ class AddTodoHandler
             $text = $post["text"] ?? "";
             $priority = $post["priority"] ?? "";
             $due = $post["due_date"] ?? "";
-            $userId = $this->auth->currentUser()["user_id"];
+            $userId = $this->auth->currentUser()->userId();
             $uploaded = $this->uploads->store($files["upload"] ?? []);
             if ($uploaded !== null) {
                 $out .= "Upload: " . $uploaded;

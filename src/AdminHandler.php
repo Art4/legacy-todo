@@ -59,7 +59,7 @@ class AdminHandler
             if ($name == "") {
                 $out .= "Name fehlt";
             } else {
-                $this->taxonomy->createCategory($name, $this->auth->currentUser()["user_id"]);
+                $this->taxonomy->createCategory($name, $this->auth->currentUser()->userId());
             }
         }
         if (!empty($post["add_user"])) {
@@ -79,7 +79,7 @@ class AdminHandler
     }
 
     /**
-     * @param array<int, array<string, mixed>> $userRows
+     * @param array<int, User> $userRows
      * @param array<int, array<string, mixed>> $cats
      * @param array<int, array<string, mixed>> $tags
      * @return string
@@ -91,7 +91,7 @@ class AdminHandler
         $out .= "<h2>Benutzer</h2>\n";
         $out .= "<ul>\n";
         foreach ($userRows as $u) {
-            $out .= "<li>" . $this->layout->text($u["username"]) . " - " . $this->layout->text($u["role"]) . " - " . $this->layout->text($u["email"]) . "</li>\n";
+            $out .= "<li>" . $this->layout->text($u->username()) . " - " . $this->layout->text($u->role()) . " - " . $this->layout->text($u->email()) . "</li>\n";
         }
         $out .= "</ul>\n";
         $out .= "<form method=\"post\">\n";

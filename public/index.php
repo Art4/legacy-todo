@@ -3,7 +3,7 @@ require_once __DIR__ . "/../src/Bootstrap.php";
 $app = \Art4\LegacyTodo\Bootstrap::start();
 $auth = $app->auth();
 $auth->requireLogin();
-$userId = $auth->currentUser()["user_id"];
+$userId = $auth->currentUser()->userId();
 $dashboard = $app->dashboard();
 $layout = $app->layout();
 if (($_GET["export"] ?? "") == "csv") {

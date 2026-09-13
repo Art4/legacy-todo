@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Art4\LegacyTodo\Auth;
+use Art4\LegacyTodo\AuthenticatedUser;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\Todos;
 use Art4\LegacyTodo\Users;
@@ -58,9 +59,10 @@ final class AuthTest extends PHPUnit\Framework\TestCase
 
         $user = $this->auth->currentUser();
 
-        $this->assertSame(1, $user['user_id']);
-        $this->assertSame('alice', $user['username']);
-        $this->assertSame('user', $user['role']);
+        $this->assertInstanceOf(AuthenticatedUser::class, $user);
+        $this->assertSame(1, $user->userId());
+        $this->assertSame('alice', $user->username());
+        $this->assertSame('user', $user->role());
     }
 
     public function testLoggedInIsFalseWithoutUserId(): void
