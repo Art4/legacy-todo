@@ -116,11 +116,8 @@ class Auth
         return $this->canManage($todoId);
     }
 
-    /**
-     * @param array<string, mixed> $comment
-     * @return bool
-     */
-    public function canDeleteComment(array $comment)
+    /** @return bool */
+    public function canDeleteComment(Comment $comment)
     {
         if (($this->session["role"] ?? null) == "admin") {
             return true;
@@ -130,7 +127,7 @@ class Auth
             return false;
         }
 
-        return ($comment["user_id"] ?? null) == $userId;
+        return $comment->userId() == $userId;
     }
 
     /** @param string $next */

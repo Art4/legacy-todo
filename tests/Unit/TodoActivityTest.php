@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Art4\LegacyTodo\Assignment;
+use Art4\LegacyTodo\Comment;
 use Art4\LegacyTodo\TodoActivity;
 
 final class TodoActivityTest extends PHPUnit\Framework\TestCase
@@ -43,9 +45,10 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
         $rows = $this->activity->commentsForTodo(1);
 
         $this->assertCount(2, $rows);
-        $this->assertSame("alice", $rows[0]["username"]);
-        $this->assertSame("Erster", $rows[0]["body"]);
-        $this->assertSame("Zweiter", $rows[1]["body"]);
+        $this->assertContainsOnlyInstancesOf(Comment::class, $rows);
+        $this->assertSame("alice", $rows[0]->username());
+        $this->assertSame("Erster", $rows[0]->body());
+        $this->assertSame("Zweiter", $rows[1]->body());
     }
 
     public function testCommentsForTodoIsEmptyForTodoWithoutComments(): void
@@ -96,9 +99,10 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
         $rows = $this->activity->assignmentsForTodo(1);
 
         $this->assertCount(2, $rows);
-        $this->assertSame("dave", $rows[0]["username"]);
-        $this->assertSame(2, (int) $rows[0]["assigned_by"]);
-        $this->assertSame(3, (int) $rows[1]["assigned_by"]);
+        $this->assertContainsOnlyInstancesOf(Assignment::class, $rows);
+        $this->assertSame("dave", $rows[0]->username());
+        $this->assertSame(2, $rows[0]->assignedBy());
+        $this->assertSame(3, $rows[1]->assignedBy());
     }
 
     public function testAssignmentsForTodoIsEmptyForTodoWithoutAssignments(): void
@@ -136,11 +140,12 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
 
         $result = $this->activity->findComment($commentId);
 
-        $this->assertNotNull($result);
-        $this->assertSame($commentId, (int) $result["id"]);
-        $this->assertSame(1, (int) $result["todo_id"]);
-        $this->assertSame($authorId, (int) $result["user_id"]);
-        $this->assertSame("Find me", $result["body"]);
+        $this->assertInstanceOf(Comment::class, $result);
+        $this->assertSame($commentId, $result->id());
+        $this->assertSame(1, $result->todoId());
+        $this->assertSame($authorId, $result->userId());
+        $this->assertSame("Find me", $result->body());
+        $this->assertSame("alice", $result->username());
     }
 
     public function testFindCommentReturnsNullForMissingId(): void
