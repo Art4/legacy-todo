@@ -12,16 +12,20 @@ class Taxonomy
         $this->pdo = $pdo;
     }
 
-    /** @return array<int, array<string, mixed>> */
+    /** @return array<int, Category> */
     public function listCategories()
     {
-        return $this->pdo->query("SELECT * FROM categories")->fetchAll(\PDO::FETCH_ASSOC);
+        $rows = $this->pdo->query("SELECT * FROM categories")->fetchAll(\PDO::FETCH_ASSOC);
+
+        return array_map(fn(array $row) => new Category((int) $row["id"], (string) $row["name"], (int) $row["user_id"]), $rows);
     }
 
-    /** @return array<int, array<string, mixed>> */
+    /** @return array<int, Tag> */
     public function listTags()
     {
-        return $this->pdo->query("SELECT * FROM tags")->fetchAll(\PDO::FETCH_ASSOC);
+        $rows = $this->pdo->query("SELECT * FROM tags")->fetchAll(\PDO::FETCH_ASSOC);
+
+        return array_map(fn(array $row) => new Tag((int) $row["id"], (string) $row["name"]), $rows);
     }
 
     /** @return bool */

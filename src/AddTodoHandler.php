@@ -86,7 +86,7 @@ class AddTodoHandler
         $out .= "</select>\n";
         $out .= "<select name='category_id'>\n";
         foreach ($this->taxonomy->listCategories() as $c) {
-            $out .= "<option value='" . $this->layout->attr($c["id"]) . "'>" . $this->layout->text($c["name"]) . "</option>\n";
+            $out .= "<option value='" . $this->layout->attr($c->id()) . "'>" . $this->layout->text($c->name()) . "</option>\n";
         }
         $out .= "</select>\n";
         $out .= "<input name='due_date' type='date' value='" . $this->layout->attr($post["due_date"] ?? "") . "'>\n";

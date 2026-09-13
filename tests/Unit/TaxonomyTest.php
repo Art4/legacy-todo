@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Art4\LegacyTodo\Category;
+use Art4\LegacyTodo\Tag;
 use Art4\LegacyTodo\Taxonomy;
 
 final class CountingStatement extends \PDOStatement
@@ -78,9 +80,10 @@ final class TaxonomyTest extends PHPUnit\Framework\TestCase
         $rows = $this->taxonomy->listCategories();
 
         $this->assertCount(2, $rows);
-        $this->assertSame("Privat", $rows[0]["name"]);
-        $this->assertSame(1, (int) $rows[0]["user_id"]);
-        $this->assertSame("Arbeit", $rows[1]["name"]);
+        $this->assertContainsOnlyInstancesOf(Category::class, $rows);
+        $this->assertSame("Privat", $rows[0]->name());
+        $this->assertSame(1, $rows[0]->userId());
+        $this->assertSame("Arbeit", $rows[1]->name());
     }
 
     public function testListTagsReturnsAllRowsInInsertionOrder(): void
@@ -91,8 +94,9 @@ final class TaxonomyTest extends PHPUnit\Framework\TestCase
         $rows = $this->taxonomy->listTags();
 
         $this->assertCount(2, $rows);
-        $this->assertSame("wichtig", $rows[0]["name"]);
-        $this->assertSame("dringend", $rows[1]["name"]);
+        $this->assertContainsOnlyInstancesOf(Tag::class, $rows);
+        $this->assertSame("wichtig", $rows[0]->name());
+        $this->assertSame("dringend", $rows[1]->name());
     }
 
     public function testCategoryNamesForTodosMapsEachTodoToItsCategoryNameInOneQuery(): void

@@ -80,8 +80,8 @@ class AdminHandler
 
     /**
      * @param array<int, User> $userRows
-     * @param array<int, array<string, mixed>> $cats
-     * @param array<int, array<string, mixed>> $tags
+     * @param array<int, Category> $cats
+     * @param array<int, Tag> $tags
      * @return string
      */
     private function renderAdmin(array $userRows, array $cats, array $tags)
@@ -104,7 +104,7 @@ class AdminHandler
         $out .= "<h2>Kategorien</h2>\n";
         $out .= "<ul>\n";
         foreach ($cats as $c) {
-            $out .= "<li>" . $this->layout->text($c["name"]) . "</li>\n";
+            $out .= "<li>" . $this->layout->text($c->name()) . "</li>\n";
         }
         $out .= "</ul>\n";
         $out .= "<form method=\"post\">\n";
@@ -117,7 +117,7 @@ class AdminHandler
         $out .= "<h2>Tags</h2>\n";
         $out .= "<ul>\n";
         foreach ($tags as $t) {
-            $out .= "<li>" . $this->layout->text($t["name"]) . "</li>\n";
+            $out .= "<li>" . $this->layout->text($t->name()) . "</li>\n";
         }
         $out .= "</ul>\n";
         $out .= "<form method=\"post\">\n";
