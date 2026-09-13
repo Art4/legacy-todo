@@ -152,6 +152,34 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->assertSame("Location: login.php?next=addtodo.php", $output);
     }
 
+    public function testRequireLoginEncodesQueryBearingNextTarget(): void
+    {
+        $output = $this->runCli('$auth->requireLogin("todo.php?id=9");', [], []);
+
+        $this->assertSame("Location: login.php?next=todo.php%3Fid%3D9", $output);
+    }
+
+    public function testRequireLoginDropsExternalNextTarget(): void
+    {
+        $output = $this->runCli('$auth->requireLogin("https://evil.com/");', [], []);
+
+        $this->assertSame("Location: login.php", $output);
+    }
+
+    public function testRequireLoginDropsSchemePrefixedNextTarget(): void
+    {
+        $output = $this->runCli('$auth->requireLogin("javascript:alert(1)");', [], []);
+
+        $this->assertSame("Location: login.php", $output);
+    }
+
+    public function testRequireLoginDropsProtocolRelativeNextTarget(): void
+    {
+        $output = $this->runCli('$auth->requireLogin("//evil.com");', [], []);
+
+        $this->assertSame("Location: login.php", $output);
+    }
+
     public function testRequireRoleAllowsAdmin(): void
     {
         $this->session["role"] = "admin";
