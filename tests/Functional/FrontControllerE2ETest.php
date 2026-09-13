@@ -361,6 +361,34 @@ final class FrontControllerE2ETest extends E2eTestCase
         $this->assertRedirect($edit, 'todo.php?id=' . $id);
     }
 
+    public function testLoginRoundTripReturnsToSafeNextTarget(): void
+    {
+        $target = '/login.php?next=addtodo.php';
+        $token = $this->csrfTokenFrom($this->http->request('GET', $target));
+        $response = $this->http->request('POST', $target, [
+            '_csrf_token' => $token,
+            'login' => '1',
+            'username' => 'user',
+            'password' => 'user123',
+        ]);
+
+        $this->assertRedirect($response, 'addtodo.php');
+    }
+
+    public function testLoginRoundTripDropsEvilNextTarget(): void
+    {
+        $target = '/login.php?next=https://evil.com';
+        $token = $this->csrfTokenFrom($this->http->request('GET', $target));
+        $response = $this->http->request('POST', $target, [
+            '_csrf_token' => $token,
+            'login' => '1',
+            'username' => 'user',
+            'password' => 'user123',
+        ]);
+
+        $this->assertRedirect($response, 'index.php');
+    }
+
     private function todoIdByTitle(string $title): int
     {
         $stmt = $this->dbPdo()->prepare('SELECT id FROM todos WHERE title = ?');
