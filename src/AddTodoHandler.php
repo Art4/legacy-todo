@@ -52,7 +52,7 @@ class AddTodoHandler
             $text = $post["text"] ?? "";
             $priority = $post["priority"] ?? "";
             $due = $post["due_date"] ?? "";
-            $userId = $this->auth->currentUser()["user_id"];
+            $userId = $this->auth->currentUser()->userId();
             $uploaded = $this->uploads->store($files["upload"] ?? []);
             if ($uploaded !== null) {
                 $out .= "Upload: " . $uploaded;
@@ -86,7 +86,7 @@ class AddTodoHandler
         $out .= "</select>\n";
         $out .= "<select name='category_id'>\n";
         foreach ($this->taxonomy->listCategories() as $c) {
-            $out .= "<option value='" . $this->layout->attr($c["id"]) . "'>" . $this->layout->text($c["name"]) . "</option>\n";
+            $out .= "<option value='" . $this->layout->attr($c->id()) . "'>" . $this->layout->text($c->name()) . "</option>\n";
         }
         $out .= "</select>\n";
         $out .= "<input name='due_date' type='date' value='" . $this->layout->attr($post["due_date"] ?? "") . "'>\n";

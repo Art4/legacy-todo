@@ -34,18 +34,18 @@ class Auth
         }
     }
 
-    /** @return array<string, mixed>|null */
+    /** @return AuthenticatedUser|null */
     public function currentUser()
     {
         if (!$this->loggedIn()) {
             return null;
         }
 
-        return [
-            "user_id" => $this->session["user_id"],
-            "username" => $this->session["username"] ?? "",
-            "role" => $this->session["role"] ?? "",
-        ];
+        return new AuthenticatedUser(
+            (int) $this->session["user_id"],
+            (string) ($this->session["username"] ?? ""),
+            (string) ($this->session["role"] ?? ""),
+        );
     }
 
     /** @return bool */
@@ -64,9 +64,9 @@ class Auth
             return false;
         }
 
-        $this->session["user_id"] = $user["id"];
-        $this->session["username"] = $user["username"];
-        $this->session["role"] = $user["role"];
+        $this->session["user_id"] = $user->id();
+        $this->session["username"] = $user->username();
+        $this->session["role"] = $user->role();
 
         return true;
     }
@@ -116,11 +116,8 @@ class Auth
         return $this->canManage($todoId);
     }
 
-    /**
-     * @param array<string, mixed> $comment
-     * @return bool
-     */
-    public function canDeleteComment(array $comment)
+    /** @return bool */
+    public function canDeleteComment(Comment $comment)
     {
         if (($this->session["role"] ?? null) == "admin") {
             return true;
@@ -130,7 +127,7 @@ class Auth
             return false;
         }
 
-        return ($comment["user_id"] ?? null) == $userId;
+        return $comment->userId() == $userId;
     }
 
     /** @param string $next */

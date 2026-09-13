@@ -51,14 +51,14 @@ class TodoHandler
         }
         if (!empty($post["add_comment"])) {
             $body = $post["body"] ?? "";
-            $uid = $this->auth->currentUser()["user_id"];
+            $uid = $this->auth->currentUser()->userId();
             $this->todoActivity->addComment($id, $uid, $body);
             header("Location: todo.php?id=" . $id);
             exit;
         }
         if (!empty($post["assign"])) {
             $assignee = $post["assignee"] ?? "";
-            $this->todoActivity->assign($id, $assignee, $this->auth->currentUser()["user_id"]);
+            $this->todoActivity->assign($id, $assignee, $this->auth->currentUser()->userId());
             if (($get["next"] ?? "") != "") {
                 $this->auth->redirect("todo.php?id=" . $id, $get["next"]);
             }
@@ -77,8 +77,8 @@ class TodoHandler
 
     /**
      * @param Todo $t
-     * @param array<int, array<string, mixed>> $comments
-     * @param array<int, array<string, mixed>> $assigns
+     * @param array<int, Comment> $comments
+     * @param array<int, Assignment> $assigns
      * @return string
      */
     private function renderTodoDetail(Todo $t, array $comments, array $assigns, int $id)
@@ -90,14 +90,14 @@ class TodoHandler
         if (count($comments) > 0) {
             $out .= "<h3>Kommentare</h3>\n";
             foreach ($comments as $c) {
-                $out .= "<p>" . $this->layout->text($c["body"]) . " - User " . $this->layout->text($c["user_id"]) . " <a href='todo.php?id=" . $this->layout->attr($id) . "&del_comment=" . $this->layout->attr($c["id"]) . "'>löschen</a></p>\n";
-                $out .= "<small>" . $this->layout->text($c["username"]) . "</small>\n";
+                $out .= "<p>" . $this->layout->text($c->body()) . " - User " . $this->layout->text($c->userId()) . " <a href='todo.php?id=" . $this->layout->attr($id) . "&del_comment=" . $this->layout->attr($c->id()) . "'>löschen</a></p>\n";
+                $out .= "<small>" . $this->layout->text($c->username()) . "</small>\n";
             }
         }
         if (count($assigns) > 0) {
             $out .= "<h3>Zuweisungen</h3>\n";
             foreach ($assigns as $a) {
-                $out .= "<p>" . $this->layout->text($a["username"]) . "</p>\n";
+                $out .= "<p>" . $this->layout->text($a->username()) . "</p>\n";
             }
         }
         $out .= "<h3>Kommentar hinzufügen</h3>\n";
@@ -111,7 +111,7 @@ class TodoHandler
         $out .= $this->csrf->field() . "\n";
         $out .= "<select name=\"assignee\">\n";
         foreach ($this->users->listAll() as $u) {
-            $out .= "<option value='" . $this->layout->attr($u["id"]) . "'>" . $this->layout->text($u["username"]) . "</option>\n";
+            $out .= "<option value='" . $this->layout->attr($u->id()) . "'>" . $this->layout->text($u->username()) . "</option>\n";
         }
         $out .= "</select>\n";
         $out .= "<input type=\"submit\" name=\"assign\" value=\"Zuweisen\">\n";

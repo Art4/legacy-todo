@@ -45,8 +45,8 @@ class Layout
         $out .= "<div class=\"header\">\n";
         $out .= "<h2>" . $siteName . "</h2>\n";
         $user = $this->auth->currentUser();
-        if ($user != null && $user["username"] != "") {
-            $out .= "<p>Eingeloggt als " . $this->text($user["username"]) . "</p>\n";
+        if ($user != null && $user->username() != "") {
+            $out .= "<p>Eingeloggt als " . $this->text($user->username()) . "</p>\n";
         }
         $out .= "</div>\n";
 

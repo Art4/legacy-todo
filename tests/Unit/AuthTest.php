@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Art4\LegacyTodo\Auth;
+use Art4\LegacyTodo\AuthenticatedUser;
+use Art4\LegacyTodo\Comment;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\Todos;
 use Art4\LegacyTodo\Users;
@@ -58,9 +60,10 @@ final class AuthTest extends PHPUnit\Framework\TestCase
 
         $user = $this->auth->currentUser();
 
-        $this->assertSame(1, $user['user_id']);
-        $this->assertSame('alice', $user['username']);
-        $this->assertSame('user', $user['role']);
+        $this->assertInstanceOf(AuthenticatedUser::class, $user);
+        $this->assertSame(1, $user->userId());
+        $this->assertSame('alice', $user->username());
+        $this->assertSame('user', $user->role());
     }
 
     public function testLoggedInIsFalseWithoutUserId(): void
@@ -262,7 +265,7 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->session["user_id"] = 5;
         $this->session["role"] = "user";
 
-        $this->assertTrue($this->auth->canDeleteComment(["user_id" => 5]));
+        $this->assertTrue($this->auth->canDeleteComment($this->makeComment(5)));
     }
 
     public function testCanDeleteCommentAllowsAdmin(): void
@@ -270,7 +273,7 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->session["user_id"] = 1;
         $this->session["role"] = "admin";
 
-        $this->assertTrue($this->auth->canDeleteComment(["user_id" => 9]));
+        $this->assertTrue($this->auth->canDeleteComment($this->makeComment(9)));
     }
 
     public function testCanDeleteCommentDeniesNonAuthorNonAdmin(): void
@@ -278,12 +281,17 @@ final class AuthTest extends PHPUnit\Framework\TestCase
         $this->session["user_id"] = 5;
         $this->session["role"] = "user";
 
-        $this->assertFalse($this->auth->canDeleteComment(["user_id" => 9]));
+        $this->assertFalse($this->auth->canDeleteComment($this->makeComment(9)));
     }
 
     public function testCanDeleteCommentDeniesAnonymous(): void
     {
-        $this->assertFalse($this->auth->canDeleteComment(["user_id" => 5]));
+        $this->assertFalse($this->auth->canDeleteComment($this->makeComment(5)));
+    }
+
+    private function makeComment(int $userId): Comment
+    {
+        return new Comment(1, 1, $userId, "body", "username", "2026-01-01 00:00:00");
     }
 
     public function testRequireManageAllowsOwner(): void

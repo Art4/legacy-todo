@@ -12,13 +12,13 @@ class TodoActivity
         $this->pdo = $pdo;
     }
 
-    /** @return array<int, array<string, mixed>> */
+    /** @return array<int, Comment> */
     public function commentsForTodo($todoId)
     {
         $stmt = $this->pdo->prepare("SELECT comments.*, users.username FROM comments JOIN users ON users.id=comments.user_id WHERE comments.todo_id=?");
         $stmt->execute([(int) $todoId]);
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return array_map(fn(array $row) => $this->commentFromRow($row), $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
     /** @return bool */
@@ -30,13 +30,13 @@ class TodoActivity
         return true;
     }
 
-    /** @return array<int, array<string, mixed>> */
+    /** @return array<int, Assignment> */
     public function assignmentsForTodo($todoId)
     {
         $stmt = $this->pdo->prepare("SELECT assignments.*, users.username FROM assignments JOIN users ON users.id=assignments.user_id WHERE assignments.todo_id=?");
         $stmt->execute([(int) $todoId]);
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return array_map(fn(array $row) => $this->assignmentFromRow($row), $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
     /** @return bool */
@@ -48,13 +48,14 @@ class TodoActivity
         return true;
     }
 
-    /** @return array<string, mixed>|null */
+    /** @return Comment|null */
     public function findComment($commentId)
     {
-        $stmt = $this->pdo->prepare("SELECT id, todo_id, user_id, body FROM comments WHERE id=?");
+        $stmt = $this->pdo->prepare("SELECT comments.*, users.username FROM comments JOIN users ON users.id=comments.user_id WHERE comments.id=?");
         $stmt->execute([(int) $commentId]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+        return $row === false ? null : $this->commentFromRow($row);
     }
 
     /** @return bool */
@@ -64,5 +65,23 @@ class TodoActivity
         $stmt->execute([(int) $commentId]);
 
         return true;
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     * @return Comment
+     */
+    private function commentFromRow(array $row)
+    {
+        return new Comment((int) $row["id"], (int) $row["todo_id"], (int) $row["user_id"], (string) $row["body"], (string) $row["username"], (string) $row["created_at"]);
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     * @return Assignment
+     */
+    private function assignmentFromRow(array $row)
+    {
+        return new Assignment((int) $row["id"], (int) $row["todo_id"], (int) $row["user_id"], (int) $row["assigned_by"], (string) $row["username"]);
     }
 }

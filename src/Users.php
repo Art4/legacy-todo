@@ -12,7 +12,7 @@ class Users
         $this->pdo = $pdo;
     }
 
-    /** @return array<string, mixed>|null */
+    /** @return User|null */
     public function findById($id)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id=?");
@@ -22,10 +22,10 @@ class Users
             return null;
         }
 
-        return $row;
+        return $this->userFromRow($row);
     }
 
-    /** @return array<string, mixed>|null */
+    /** @return User|null */
     public function findByUsername($username)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE username=?");
@@ -35,10 +35,10 @@ class Users
             return null;
         }
 
-        return $row;
+        return $this->userFromRow($row);
     }
 
-    /** @return array<string, mixed>|null */
+    /** @return User|null */
     public function authenticate($username, $password)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE username=?");
@@ -54,13 +54,13 @@ class Users
                 $this->updatePassword((int) $row["id"], $password);
             }
 
-            return $row;
+            return $this->userFromRow($row);
         }
 
         if (preg_match('/^[a-f0-9]{32}$/i', (string) $hash) === 1 && hash_equals($hash, md5($password))) {
             $this->updatePassword((int) $row["id"], $password);
 
-            return $row;
+            return $this->userFromRow($row);
         }
 
         return null;
@@ -113,9 +113,17 @@ class Users
         return true;
     }
 
-    /** @return array<int, array<string, mixed>> */
+    /** @return array<int, User> */
     public function listAll()
     {
-        return $this->pdo->query("SELECT * FROM users")->fetchAll(\PDO::FETCH_ASSOC);
+        return array_map([$this, "userFromRow"], $this->pdo->query("SELECT * FROM users")->fetchAll(\PDO::FETCH_ASSOC));
+    }
+
+    /** @param array<string, mixed> $row
+     *  @return User
+     */
+    private function userFromRow(array $row)
+    {
+        return new User((int) $row["id"], (string) $row["username"], (string) $row["role"], (string) $row["email"]);
     }
 }

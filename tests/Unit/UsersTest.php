@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Art4\LegacyTodo\RegistrationResult;
+use Art4\LegacyTodo\User;
 use Art4\LegacyTodo\Users;
 
 final class UsersTest extends PHPUnit\Framework\TestCase
@@ -31,37 +32,44 @@ final class UsersTest extends PHPUnit\Framework\TestCase
         return (int) $this->pdo->lastInsertId();
     }
 
-    public function testFindByIdReturnsRowOrNull(): void
+    public function testFindByIdReturnsUserOrNull(): void
     {
         $id = $this->seedUser(["username" => "alice", "password" => "secret", "role" => "user", "email" => "alice@example.com"]);
 
-        $row = $this->users->findById($id);
+        $user = $this->users->findById($id);
 
-        $this->assertSame("alice", $row["username"]);
-        $this->assertSame($id, (int) $row["id"]);
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertSame("alice", $user->username());
+        $this->assertSame($id, $user->id());
+        $this->assertSame("user", $user->role());
+        $this->assertSame("alice@example.com", $user->email());
         $this->assertNull($this->users->findById($id + 99));
     }
 
-    public function testFindByUsernameReturnsRowOrNull(): void
+    public function testFindByUsernameReturnsUserOrNull(): void
     {
         $this->seedUser(["username" => "bob", "password" => "pw", "role" => "admin", "email" => "bob@example.com"]);
 
-        $row = $this->users->findByUsername("bob");
+        $user = $this->users->findByUsername("bob");
 
-        $this->assertSame("bob", $row["username"]);
-        $this->assertSame("admin", $row["role"]);
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertSame("bob", $user->username());
+        $this->assertSame("admin", $user->role());
+        $this->assertSame("bob@example.com", $user->email());
         $this->assertNull($this->users->findByUsername("nobody"));
     }
 
-    public function testAuthenticateReturnsRowForCorrectCredentials(): void
+    public function testAuthenticateReturnsUserForCorrectCredentials(): void
     {
         $id = $this->seedUser(["username" => "carol", "password" => "hunter2", "role" => "user", "email" => "carol@example.com"]);
 
-        $row = $this->users->authenticate("carol", "hunter2");
+        $user = $this->users->authenticate("carol", "hunter2");
 
-        $this->assertSame($id, (int) $row["id"]);
-        $this->assertSame("carol", $row["username"]);
-        $this->assertSame("user", $row["role"]);
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertSame($id, $user->id());
+        $this->assertSame("carol", $user->username());
+        $this->assertSame("user", $user->role());
+        $this->assertSame("carol@example.com", $user->email());
     }
 
     public function testAuthenticateReturnsNullForWrongPassword(): void
@@ -90,9 +98,11 @@ final class UsersTest extends PHPUnit\Framework\TestCase
             . "'gina','" . md5("secret") . "','user','gina@example.com','2026-01-01')",
         );
 
-        $row = $this->users->authenticate("gina", "secret");
+        $user = $this->users->authenticate("gina", "secret");
 
-        $this->assertSame("gina", $row["username"]);
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertSame("gina", $user->username());
+        $this->assertSame("user", $user->role());
         $stored = $this->pdo->query("SELECT password FROM users WHERE username='gina'")->fetchColumn();
         $this->assertTrue(password_verify("secret", $stored));
         $this->assertNotSame(md5("secret"), $stored);
@@ -116,9 +126,11 @@ final class UsersTest extends PHPUnit\Framework\TestCase
             . "'lena','" . $legacy . "','user','lena@example.com','2026-01-01')",
         );
 
-        $row = $this->users->authenticate("lena", "secret");
+        $user = $this->users->authenticate("lena", "secret");
 
-        $this->assertSame("lena", $row["username"]);
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertSame("lena", $user->username());
+        $this->assertSame("user", $user->role());
         $stored = $this->pdo->query("SELECT password FROM users WHERE username='lena'")->fetchColumn();
         $this->assertNotSame($legacy, $stored);
         $this->assertTrue(password_verify("secret", $stored));
@@ -206,9 +218,10 @@ final class UsersTest extends PHPUnit\Framework\TestCase
         $aliceId = $this->seedUser(["username" => "alice", "password" => "a", "role" => "user", "email" => "a@example.com"]);
         $bobId = $this->seedUser(["username" => "bob", "password" => "b", "role" => "admin", "email" => "b@example.com"]);
 
-        $rows = $this->users->listAll();
+        $users = $this->users->listAll();
 
-        $this->assertCount(2, $rows);
-        $this->assertSame([$aliceId, $bobId], array_map("\intval", array_column($rows, "id")));
+        $this->assertCount(2, $users);
+        $this->assertSame([$aliceId, $bobId], array_map(fn(User $user) => $user->id(), $users));
+        $this->assertSame(["alice", "bob"], array_map(fn(User $user) => $user->username(), $users));
     }
 }

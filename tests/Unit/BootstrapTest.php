@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Art4\LegacyTodo\Auth;
+use Art4\LegacyTodo\AuthenticatedUser;
 use Art4\LegacyTodo\Bootstrap;
 use Art4\LegacyTodo\Csrf;
 use Art4\LegacyTodo\Dashboard;
@@ -133,9 +134,10 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
 
         $user = $this->bootstrap->currentUser();
 
-        $this->assertSame(1, $user['user_id']);
-        $this->assertSame('alice', $user['username']);
-        $this->assertSame('user', $user['role']);
+        $this->assertInstanceOf(AuthenticatedUser::class, $user);
+        $this->assertSame(1, $user->userId());
+        $this->assertSame('alice', $user->username());
+        $this->assertSame('user', $user->role());
     }
 
     public function testCurrentUserIsNullWithoutLogin(): void

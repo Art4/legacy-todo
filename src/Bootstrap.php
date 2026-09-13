@@ -222,7 +222,7 @@ class Bootstrap
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return AuthenticatedUser|null
      */
     public function currentUser()
     {
