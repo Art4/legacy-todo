@@ -36,8 +36,7 @@ class DeleteTodoHandler
         }
         if (($get["confirm"] ?? "") == "1") {
             $this->todos->archive($id);
-            header("Location: index.php");
-            exit;
+            $this->auth->redirect("index.php");
         }
         $t = $this->todos->find($id);
         $out = $this->layout->header("Löschen?");
