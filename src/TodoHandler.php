@@ -53,8 +53,7 @@ class TodoHandler
             $body = $post["body"] ?? "";
             $uid = $this->auth->currentUser()->userId();
             $this->todoActivity->addComment($id, $uid, $body);
-            header("Location: todo.php?id=" . $id);
-            exit;
+            $this->auth->redirect("todo.php?id=" . $id);
         }
         if (!empty($post["assign"])) {
             $assignee = $post["assignee"] ?? "";
