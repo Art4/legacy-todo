@@ -63,8 +63,7 @@ class AddTodoHandler
             } else {
                 $r = $this->todos->create($userId, $title, $text, $priority, $due);
                 if ($r == true) {
-                    header("Location: index.php");
-                    exit;
+                    $this->auth->redirect("index.php");
                 }
                 $msg = "Fehler";
                 $out .= $msg;
