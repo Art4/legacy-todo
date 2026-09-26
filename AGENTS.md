@@ -37,11 +37,15 @@ etc.), or use a path inside the repo checkout.
 ## Continuous-refactoring suite
 
 Refactoring Notes: `docs/refactoring/` — the continuous-refactoring
-suite's own config, in-flight merge-request bookkeeping, and
-rejected-tooling records live here.
+suite's own housekeeping checklist and rejected-tooling records
+(`out-of-scope/`) live here. The loop's bookkeeping (cadence, last scan,
+open nodes) lives in GitHub issue #273 ("Continuous Refactoring"), as
+named by the Bookkeeping pointer in `.scratch/refactor/config.md`.
 
-Create-mode: see the Refactoring Notes' `bookkeeping.md` — that file is
-the sole authoritative value, this is a pointer, not a copy.
+Create-mode: see `.scratch/refactor/config.md` (`Ticket-create-mode`,
+`MR-create-mode`) — that file is the sole authoritative value, this is a
+pointer, not a copy.
 
-Backlog label: `refactor:candidate` (native tracker only — see
-`docs/agents/issue-tracker.md`).
+Backlog labels: `refactor:candidate` (proposed work) and
+`refactor:priority` (jumps the queue) — native tracker only, see
+`docs/agents/issue-tracker.md`.
