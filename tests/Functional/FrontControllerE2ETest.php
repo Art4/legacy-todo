@@ -200,7 +200,7 @@ final class FrontControllerE2ETest extends E2eTestCase
     {
         $this->login('user', 'user123');
 
-        $uploadsDir = dirname(__DIR__) . '/../public/uploads';
+        $uploadsDir = __DIR__ . '/../../public/uploads';
         $before = glob($uploadsDir . '/*');
         $before = $before !== false ? $before : [];
 
