@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+
 /**
  * Check that test coverage meets the committed floor.
  *
