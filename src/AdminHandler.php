@@ -49,13 +49,7 @@ class AdminHandler
         }
         $out = "";
         if (!empty($post["add_cat"])) {
-            $name = $post["kategorie"] ?? "";
-            if (($post["cat"] ?? "") != "") {
-                $name = $post["cat"];
-            }
-            if (($post["category"] ?? "") != "") {
-                $name = $post["category"];
-            }
+            $name = $this->categoryNameFrom($post);
             if ($name == "") {
                 $out .= "Name fehlt";
             } else {
@@ -76,6 +70,23 @@ class AdminHandler
         $tags = $this->taxonomy->listTags();
 
         return $out . $this->renderAdmin($userRows, $cats, $tags);
+    }
+
+    /**
+     * @param array<string, mixed> $post
+     * @return string
+     */
+    private function categoryNameFrom(array $post)
+    {
+        $name = $post["kategorie"] ?? "";
+        if (($post["cat"] ?? "") != "") {
+            $name = $post["cat"];
+        }
+        if (($post["category"] ?? "") != "") {
+            $name = $post["category"];
+        }
+
+        return $name;
     }
 
     /**

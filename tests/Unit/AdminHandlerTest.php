@@ -79,6 +79,64 @@ final class AdminHandlerTest extends PHPUnit\Framework\TestCase
         $this->assertStringContainsString('Name fehlt', $output);
     }
 
+    public function testAdminAddCategoryUsesKategorieKeyWhenOnlyKategorieProvided(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "Freizeit", "cat" => "", "category" => ""]);
+
+        $this->assertStringContainsString('<li>Freizeit</li>', $output);
+    }
+
+    public function testAdminAddCategoryUsesCatKeyWhenOnlyCatProvided(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "", "cat" => "Arbeit", "category" => ""]);
+
+        $this->assertStringContainsString('<li>Arbeit</li>', $output);
+    }
+
+    public function testAdminAddCategoryUsesCategoryKeyWhenOnlyCategoryProvided(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "", "cat" => "", "category" => "Privat"]);
+
+        $this->assertStringContainsString('<li>Privat</li>', $output);
+    }
+
+    public function testAdminAddCategoryCatOverridesKategorieWhenBothProvided(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "Freizeit", "cat" => "Arbeit", "category" => ""]);
+
+        $this->assertStringContainsString('<li>Arbeit</li>', $output);
+        $this->assertStringNotContainsString('<li>Freizeit</li>', $output);
+    }
+
+    public function testAdminAddCategoryCategoryOverridesCatAndKategorieWhenAllProvided(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "Freizeit", "cat" => "Arbeit", "category" => "Privat"]);
+
+        $this->assertStringContainsString('<li>Privat</li>', $output);
+        $this->assertStringNotContainsString('<li>Freizeit</li>', $output);
+        $this->assertStringNotContainsString('<li>Arbeit</li>', $output);
+    }
+
     public function testAdminAddTagCreatesTagAppearingInList(): void
     {
         $this->session['user_id'] = 1;
