@@ -35,9 +35,10 @@ This generalizes the `Todo` precedent to the whole data layer:
   with a fabricated empty email; `canDeleteComment(Comment $comment)` takes
   the typed comment instead of a raw array.
 - `Taxonomy` hydrates `Category` (`listCategories`) and `Tag` (`listTags`).
-  The batch helpers `categoryNamesForTodos()`/`tagsForTodos()` stay primitive
-  maps — their only consumer is `Todos::hydrate`, never markup, so they sit
-  outside this rule.
+  The batch helper `categoryNamesForTodos()` stays a primitive map — its only
+  consumer is `Todos::hydrate`, never markup, so it sits outside this rule.
+  (`tagsForTodos()`, the batch helper's tag counterpart, was later found to
+  have no production caller and removed as dead code — issue #284.)
 
 Write paths (`addComment`, `assign`, `create`, `register`, `createCategory`,
 `createTag`, …) are unaffected — this rule is about reads.
