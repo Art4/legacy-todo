@@ -81,7 +81,7 @@ The immutable value object (`Art4\LegacyTodo\Assignment`) holding one assignment
 _Avoid_: a raw `array<string,mixed>` assignment row surfacing outside `TodoActivity`
 
 **Taxonomy**:
-The single data-access module (`Art4\LegacyTodo\Taxonomy`) that owns every read and mutation of the Todo classification data — the `categories`, `tags`, and `todo_tags` tables: list categories, list tags, create category, create tag, category names for a batch of todos, tags for a batch of todos. `listCategories()`/`listTags()` return the immutable `Category`/`Tag` value objects (ADR-0017); the batch helpers `categoryNamesForTodos()`/`tagsForTodos()` stay typed primitive maps — their only consumer is `Todos::hydrate`, never markup, so they sit outside that rule.
+The single data-access module (`Art4\LegacyTodo\Taxonomy`) that owns every read and mutation of the Todo classification data — the `categories` and `tags` tables: list categories, list tags, create category, create tag, category names for a batch of todos. `listCategories()`/`listTags()` return the immutable `Category`/`Tag` value objects (ADR-0017); the batch helper `categoryNamesForTodos()` stays a typed primitive map — its only consumer is `Todos::hydrate`, never markup, so it sits outside that rule. Tags themselves are creatable and listable, but nothing links a tag to a todo — no `todo_tags` table, no per-todo tag read/write (removed as dead code, issue #284).
 _Avoid_: per-page category/tag SQL, a caller reading `$c["name"]` or any other row key from `listCategories()`/`listTags()`
 
 **Category**:

@@ -112,38 +112,6 @@ final class TaxonomyTest extends PHPUnit\Framework\TestCase
         $this->assertSame("", $names[$todoB]);
     }
 
-    public function testTagsForTodosMapsTodosToTheirTagLinksInOneQuery(): void
-    {
-        $this->pdo->exec("INSERT INTO todos (user_id,title,status,priority,due_date,archived,created_at) VALUES (1,'A','open',1,'2026-01-01',0,'2026-01-01')");
-        $todoA = (int) $this->pdo->lastInsertId();
-        $this->pdo->exec("INSERT INTO todos (user_id,title,status,priority,due_date,archived,created_at) VALUES (1,'B','open',1,'2026-01-02',0,'2026-01-01')");
-        $todoB = (int) $this->pdo->lastInsertId();
-        $this->pdo->exec("INSERT INTO todo_tags (todo_id,tag_id) VALUES (" . $todoA . ",7)");
-        $this->pdo->exec("INSERT INTO todo_tags (todo_id,tag_id) VALUES (" . $todoA . ",8)");
-
-        $tags = $this->taxonomy->tagsForTodos([$todoA, $todoB]);
-
-        $this->assertSame([["todo_id" => $todoA, "tag_id" => 7], ["todo_id" => $todoA, "tag_id" => 8]], $tags[$todoA]);
-        $this->assertSame([], $tags[$todoB]);
-    }
-
-    public function testTagsForTodosUsesOneStatementForABatch(): void
-    {
-        $this->pdo->exec("INSERT INTO todos (user_id,title,status,priority,due_date,archived,created_at) VALUES (1,'A','open',1,'2026-01-01',0,'2026-01-01')");
-        $todoA = (int) $this->pdo->lastInsertId();
-        $this->pdo->exec("INSERT INTO todos (user_id,title,status,priority,due_date,archived,created_at) VALUES (1,'B','open',1,'2026-01-02',0,'2026-01-01')");
-        $todoB = (int) $this->pdo->lastInsertId();
-        $this->pdo->exec("INSERT INTO todo_tags (todo_id,tag_id) VALUES (" . $todoA . ",7)");
-        $this->pdo->exec("INSERT INTO todo_tags (todo_id,tag_id) VALUES (" . $todoB . ",8)");
-
-        $this->pdo->setAttribute(\PDO::ATTR_STATEMENT_CLASS, [CountingStatement::class]);
-        CountingStatement::$count = 0;
-
-        $this->taxonomy->tagsForTodos([$todoA, $todoB]);
-
-        $this->assertSame(1, CountingStatement::$count);
-    }
-
     public function testCategoryNamesForTodosUsesOneStatementForABatch(): void
     {
         $this->taxonomy->createCategory("Arbeit", 1);
@@ -165,10 +133,5 @@ final class TaxonomyTest extends PHPUnit\Framework\TestCase
     public function testCategoryNamesForTodosReturnsEmptyMapForEmptyBatch(): void
     {
         $this->assertSame([], $this->taxonomy->categoryNamesForTodos([]));
-    }
-
-    public function testTagsForTodosReturnsEmptyMapForEmptyBatch(): void
-    {
-        $this->assertSame([], $this->taxonomy->tagsForTodos([]));
     }
 }
