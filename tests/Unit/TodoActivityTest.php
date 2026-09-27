@@ -166,4 +166,35 @@ final class TodoActivityTest extends PHPUnit\Framework\TestCase
         $this->assertTrue($this->activity->removeComment($commentId));
         $this->assertSame(0, (int) $this->pdo->query("SELECT COUNT(*) FROM comments WHERE id=" . $commentId)->fetchColumn());
     }
+
+    private function failingActivity(): TodoActivity
+    {
+        $pdo = new \PDO('sqlite::memory:');
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+        (new Installer($pdo))->createSchema();
+        $pdo->exec('PRAGMA query_only = 1');
+
+        return new TodoActivity($pdo);
+    }
+
+    public function testAddCommentReturnsFalseOnStorageFailure(): void
+    {
+        $result = $this->failingActivity()->addComment(1, 1, "Kommentar");
+
+        $this->assertFalse($result);
+    }
+
+    public function testAssignReturnsFalseOnStorageFailure(): void
+    {
+        $result = $this->failingActivity()->assign(1, 1, 2);
+
+        $this->assertFalse($result);
+    }
+
+    public function testRemoveCommentReturnsFalseOnStorageFailure(): void
+    {
+        $result = $this->failingActivity()->removeComment(1);
+
+        $this->assertFalse($result);
+    }
 }
