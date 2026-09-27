@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Art4\LegacyTodo\Installer;
 use Art4\LegacyTodo\RegistrationResult;
 use Art4\LegacyTodo\User;
 use Art4\LegacyTodo\Users;
@@ -18,7 +19,7 @@ final class UsersTest extends PHPUnit\Framework\TestCase
     {
         $this->pdo = new \PDO('sqlite::memory:');
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->pdo->exec('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, role TEXT, email TEXT, created_at TEXT, data2 TEXT, x_status INTEGER)');
+        (new Installer($this->pdo))->createSchema();
         $this->users = new Users($this->pdo);
     }
 

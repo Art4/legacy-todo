@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Art4\LegacyTodo\Auth;
 use Art4\LegacyTodo\AuthenticatedUser;
 use Art4\LegacyTodo\Comment;
+use Art4\LegacyTodo\Installer;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\Todos;
 use Art4\LegacyTodo\Users;
@@ -24,9 +25,7 @@ final class AuthTest extends PHPUnit\Framework\TestCase
     {
         $this->pdo = new \PDO('sqlite::memory:');
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->pdo->exec('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, role TEXT, email TEXT, created_at TEXT, data2 TEXT, x_status INTEGER)');
-        $this->pdo->exec('CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, title TEXT, text TEXT, status TEXT, priority INTEGER, due_date TEXT, category_id INTEGER, archived INTEGER DEFAULT 0, created_at TEXT, data2 TEXT, x_status INTEGER)');
-        $this->pdo->exec('CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, user_id INTEGER)');
+        (new Installer($this->pdo))->createSchema();
         $this->session = [];
         $this->auth = new Auth(new Users($this->pdo), new Todos($this->pdo, new Taxonomy($this->pdo)), $this->session);
     }
@@ -315,7 +314,7 @@ final class AuthTest extends PHPUnit\Framework\TestCase
     public function testRequireManageReturnsBoolAndProducesNoOutput(): void
     {
         $output = $this->runCli(
-            '$pdo->exec("CREATE TABLE todos (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, title TEXT, text TEXT, status TEXT, priority INTEGER, due_date TEXT, category_id INTEGER, archived INTEGER DEFAULT 0, created_at TEXT, data2 TEXT, x_status INTEGER)"); echo var_export($auth->requireManage(5), true);',
+            '(new \Art4\LegacyTodo\Installer($pdo))->createSchema(); echo var_export($auth->requireManage(5), true);',
             ["user_id" => 9, "role" => "user"],
             [],
         );

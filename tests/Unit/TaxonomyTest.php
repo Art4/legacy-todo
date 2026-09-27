@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Art4\LegacyTodo\Category;
+use Art4\LegacyTodo\Installer;
 use Art4\LegacyTodo\Tag;
 use Art4\LegacyTodo\Taxonomy;
 
@@ -28,11 +29,7 @@ final class TaxonomyTest extends PHPUnit\Framework\TestCase
     {
         $this->pdo = new \PDO('sqlite::memory:');
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->pdo->exec('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, role TEXT, email TEXT, created_at TEXT, data2 TEXT, x_status INTEGER)');
-        $this->pdo->exec('CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, title TEXT, text TEXT, status TEXT, priority INTEGER, due_date TEXT, category_id INTEGER, archived INTEGER DEFAULT 0, created_at TEXT, data2 TEXT, x_status INTEGER)');
-        $this->pdo->exec('CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, user_id INTEGER)');
-        $this->pdo->exec('CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)');
-        $this->pdo->exec('CREATE TABLE IF NOT EXISTS todo_tags (todo_id INTEGER, tag_id INTEGER)');
+        (new Installer($this->pdo))->createSchema();
         $this->taxonomy = new Taxonomy($this->pdo);
     }
 
