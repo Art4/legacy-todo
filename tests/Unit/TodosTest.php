@@ -215,6 +215,18 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertSame(3, (int) $row["priority"]);
     }
 
+    public function testUpdateReturnsFalseOnStorageFailure(): void
+    {
+        $failingPdo = new \PDO('sqlite::memory:');
+        $failingPdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+        (new Installer($failingPdo))->createSchema();
+        $failingPdo->exec("INSERT INTO todos (id,user_id,title,text,status,priority,due_date,archived,created_at) VALUES (1,1,'Alt','','open',1,'2026-01-01',0,'2026-01-10')");
+        $failingPdo->exec('PRAGMA query_only = 1');
+        $failingTodos = new Todos($failingPdo, new Taxonomy($failingPdo));
+
+        $this->assertFalse($failingTodos->update(1, "Neu", "neuer text", 3, "done"));
+    }
+
     public function testUpdateRequiresTitle(): void
     {
         $id = $this->seedTodo(["user_id" => 1, "title" => "Alt", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01", "archived" => 0]);

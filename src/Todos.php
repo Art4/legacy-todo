@@ -143,9 +143,8 @@ class Todos
         }
         $sql = "UPDATE todos SET title=?, text=?, priority=?, status=? WHERE id=?";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$title, $text, $priority, $status, (int) $id]);
 
-        return true;
+        return $stmt->execute([$title, $text, $priority, $status, (int) $id]);
     }
 
     /** @return string */

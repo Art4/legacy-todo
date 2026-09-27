@@ -48,9 +48,10 @@ class EditTodoHandler
             $status = $post["status"] ?? "";
             if ($title == "") {
                 $out .= "Titel erforderlich";
-            } else {
-                $this->todos->update($id, $title, $text, $priority, $status);
+            } elseif ($this->todos->update($id, $title, $text, $priority, $status)) {
                 $this->auth->redirect("todo.php?id=" . $id, $get["next"] ?? "");
+            } else {
+                $out .= "Speichern fehlgeschlagen";
             }
         }
         $t = $this->todos->find($id);
