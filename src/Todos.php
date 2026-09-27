@@ -114,9 +114,8 @@ class Todos
     public function archive($id)
     {
         $stmt = $this->pdo->prepare("UPDATE todos SET archived=1 WHERE id=?");
-        $stmt->execute([(int) $id]);
 
-        return true;
+        return $stmt->execute([(int) $id]);
     }
 
     /** @return bool */

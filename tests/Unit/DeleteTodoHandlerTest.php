@@ -90,6 +90,29 @@ final class DeleteTodoHandlerTest extends PHPUnit\Framework\TestCase
         $this->assertSame("Location: index.php", $output);
     }
 
+    public function testDeleteTodoConfirmStorageFailureRendersFailureMessageWithoutRedirecting(): void
+    {
+        $output = RunCliHelper::run(
+            ''
+                . '$failingPdo = new \PDO("sqlite::memory:");'
+                . '$failingPdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);'
+                . '(new \Art4\LegacyTodo\Installer($failingPdo))->createSchema();'
+                . '$failingPdo->exec("INSERT INTO todos (id,user_id,title,text,status,priority,due_date,archived,created_at) VALUES (1,1,\'Wichtig\',\'\',\'open\',1,\'2026-01-01\',0,\'2026-01-10\')");'
+                . '$failingPdo->exec("PRAGMA query_only = 1");'
+                . '$failingTodos = new \Art4\LegacyTodo\Todos($failingPdo, new \Art4\LegacyTodo\Taxonomy($failingPdo));'
+                . '$h = new \Art4\LegacyTodo\DeleteTodoHandler($app->auth(), $failingTodos, $app->layout());'
+                . 'echo $h->handle((int) $get["id"], $get);',
+            ["user_id" => 1, "username" => "alice", "role" => "admin"],
+            ["id" => 1, "confirm" => "1"],
+            [],
+            '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,1,\'Wichtig\',\'\',\'open\',0,\'2026-01-10\')");',
+        );
+
+        $this->assertStringNotContainsString('Location:', $output);
+        $this->assertStringContainsString('Archivieren fehlgeschlagen', $output);
+        $this->assertStringContainsString('<h1>Löschen?</h1>', $output);
+    }
+
     public function testDeleteTodoDeniesWhenCannotManage(): void
     {
         $id = $this->seedTodo(["user_id" => 5, "title" => "Fremdes", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);
