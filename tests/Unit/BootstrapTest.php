@@ -132,17 +132,12 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
         $this->session['username'] = 'alice';
         $this->session['role'] = 'user';
 
-        $user = $this->bootstrap->currentUser();
+        $user = $this->bootstrap->auth()->currentUser();
 
         $this->assertInstanceOf(AuthenticatedUser::class, $user);
         $this->assertSame(1, $user->userId());
         $this->assertSame('alice', $user->username());
         $this->assertSame('user', $user->role());
-    }
-
-    public function testCurrentUserIsNullWithoutLogin(): void
-    {
-        $this->assertNull($this->bootstrap->currentUser());
     }
 
     public function testConstructorFallsBackToSessionSuperglobalWhenNullPassed(): void
@@ -153,7 +148,7 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
         $bootstrap = new Bootstrap($pdo, $session);
 
         $this->assertInstanceOf(Bootstrap::class, $bootstrap);
-        $this->assertNull($bootstrap->currentUser());
+        $this->assertNull($bootstrap->auth()->currentUser());
     }
 
     public function testStartBootsRealRequestContext(): void

@@ -220,12 +220,4 @@ class Bootstrap
     {
         return new EditTodoHandler($this->auth(), $this->todos(), $this->csrf(), $this->layout());
     }
-
-    /**
-     * @return AuthenticatedUser|null
-     */
-    public function currentUser()
-    {
-        return $this->auth()->currentUser();
-    }
 }
