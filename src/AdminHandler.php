@@ -60,10 +60,14 @@ class AdminHandler
             $u = $post["username"] ?? "";
             $p = $post["password"] ?? "";
             $role = $post["role"] ?? "";
-            $this->users->create($u, $p, $role);
+            if (!$this->users->create($u, $p, $role)) {
+                $out .= "Anlegen fehlgeschlagen";
+            }
         }
         if (!empty($post["add_tag"])) {
-            $this->taxonomy->createTag($post["tag"] ?? "");
+            if (!$this->taxonomy->createTag($post["tag"] ?? "")) {
+                $out .= "Anlegen fehlgeschlagen";
+            }
         }
         $userRows = $this->users->listAll();
         $cats = $this->taxonomy->listCategories();

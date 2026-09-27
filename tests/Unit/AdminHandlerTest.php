@@ -125,6 +125,29 @@ final class AdminHandlerTest extends PHPUnit\Framework\TestCase
         $this->assertStringContainsString('Anlegen fehlgeschlagen', $output);
     }
 
+    public function testAdminAddUserStorageFailureRendersFailureMessage(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $failingPdo = new \PDO('sqlite::memory:');
+        $failingPdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        (new Installer($failingPdo))->createSchema();
+        $failingPdo->exec('PRAGMA query_only = 1');
+        $failingUsers = new Users($failingPdo);
+        $taxonomy = new Taxonomy($this->pdo);
+        $todos = new Todos($this->pdo, $taxonomy);
+        $auth = new Auth($failingUsers, $todos, $this->session);
+        $layout = new Layout('Legacy Todo', $auth);
+        $handler = new AdminHandler($auth, $failingUsers, $taxonomy, new Csrf($auth, $layout), $layout, 'Legacy Todo');
+
+        $output = $handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_user" => "User anlegen", "username" => "newbob", "password" => "pw123", "role" => "user"]);
+
+        $this->assertStringContainsString('Anlegen fehlgeschlagen', $output);
+        $this->assertStringNotContainsString('newbob', $output);
+    }
+
     public function testAdminAddTagCreatesTagAppearingInList(): void
     {
         $this->session['user_id'] = 1;
@@ -134,6 +157,40 @@ final class AdminHandlerTest extends PHPUnit\Framework\TestCase
         $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_tag" => "Tag", "tag" => "neu"]);
 
         $this->assertStringContainsString('<li>neu</li>', $output);
+    }
+
+    public function testAdminAddTagStorageFailureRendersFailureMessage(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $failingPdo = new \PDO('sqlite::memory:');
+        $failingPdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+        (new Installer($failingPdo))->createSchema();
+        $failingPdo->exec('PRAGMA query_only = 1');
+        $failingTaxonomy = new Taxonomy($failingPdo);
+        $users = new Users($this->pdo);
+        $todos = new Todos($this->pdo, $failingTaxonomy);
+        $auth = new Auth($users, $todos, $this->session);
+        $layout = new Layout('Legacy Todo', $auth);
+        $handler = new AdminHandler($auth, $users, $failingTaxonomy, new Csrf($auth, $layout), $layout, 'Legacy Todo');
+
+        $output = $handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_tag" => "Tag", "tag" => "neu"]);
+
+        $this->assertStringContainsString('Anlegen fehlgeschlagen', $output);
+    }
+
+    public function testAdminAddTagWithEmptyNameRendersFailureMessage(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_tag" => "Tag", "tag" => ""]);
+
+        $this->assertStringContainsString('Anlegen fehlgeschlagen', $output);
+        $this->assertStringNotContainsString('<li></li>', $output);
     }
 
     public function testAdminDeniesNonAdminWithComposed403(): void
