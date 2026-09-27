@@ -45,7 +45,7 @@ abstract class E2eTestCase extends \PHPUnit\Framework\TestCase
 
         Bootstrap::install(['db_file' => $this->dbFile]);
 
-        $docroot = dirname(__DIR__) . '/../public';
+        $docroot = __DIR__ . '/../../public';
 
         $port = $this->freePort();
         $env = getenv();
