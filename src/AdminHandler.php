@@ -52,8 +52,8 @@ class AdminHandler
             $name = $this->categoryNameFrom($post);
             if ($name == "") {
                 $out .= "Name fehlt";
-            } else {
-                $this->taxonomy->createCategory($name, $this->auth->currentUser()->userId());
+            } elseif (!$this->taxonomy->createCategory($name, $this->auth->currentUser()->userId())) {
+                $out .= "Anlegen fehlgeschlagen";
             }
         }
         if (!empty($post["add_user"])) {

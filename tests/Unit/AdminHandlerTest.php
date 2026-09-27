@@ -103,6 +103,28 @@ final class AdminHandlerTest extends PHPUnit\Framework\TestCase
         $this->assertStringNotContainsString('<li>Privat</li>', $output);
     }
 
+    public function testAdminAddCategoryStorageFailureRendersFailureMessage(): void
+    {
+        $this->session['user_id'] = 1;
+        $this->session['username'] = 'alice';
+        $this->session['role'] = 'admin';
+
+        $failingPdo = new \PDO('sqlite::memory:');
+        $failingPdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+        (new Installer($failingPdo))->createSchema();
+        $failingPdo->exec('PRAGMA query_only = 1');
+        $failingTaxonomy = new Taxonomy($failingPdo);
+        $users = new Users($this->pdo);
+        $todos = new Todos($this->pdo, $failingTaxonomy);
+        $auth = new Auth($users, $todos, $this->session);
+        $layout = new Layout('Legacy Todo', $auth);
+        $handler = new AdminHandler($auth, $users, $failingTaxonomy, new Csrf($auth, $layout), $layout, 'Legacy Todo');
+
+        $output = $handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "Freizeit"]);
+
+        $this->assertStringContainsString('Anlegen fehlgeschlagen', $output);
+    }
+
     public function testAdminAddTagCreatesTagAppearingInList(): void
     {
         $this->session['user_id'] = 1;
