@@ -49,17 +49,11 @@ class AdminHandler
         }
         $out = "";
         if (!empty($post["add_cat"])) {
-            $name = $post["kategorie"] ?? "";
-            if (($post["cat"] ?? "") != "") {
-                $name = $post["cat"];
-            }
-            if (($post["category"] ?? "") != "") {
-                $name = $post["category"];
-            }
+            $name = $this->categoryNameFrom($post);
             if ($name == "") {
                 $out .= "Name fehlt";
-            } else {
-                $this->taxonomy->createCategory($name, $this->auth->currentUser()->userId());
+            } elseif (!$this->taxonomy->createCategory($name, $this->auth->currentUser()->userId())) {
+                $out .= "Anlegen fehlgeschlagen";
             }
         }
         if (!empty($post["add_user"])) {
@@ -76,6 +70,15 @@ class AdminHandler
         $tags = $this->taxonomy->listTags();
 
         return $out . $this->renderAdmin($userRows, $cats, $tags);
+    }
+
+    /**
+     * @param array<string, mixed> $post
+     * @return string
+     */
+    private function categoryNameFrom(array $post)
+    {
+        return $post["kategorie"] ?? "";
     }
 
     /**
@@ -109,9 +112,7 @@ class AdminHandler
         $out .= "</ul>\n";
         $out .= "<form method=\"post\">\n";
         $out .= $this->csrf->field() . "\n";
-        $out .= "<input name=\"kategorie\" placeholder=\"Kategorie (kategorie)\">\n";
-        $out .= "<input name=\"cat\" placeholder=\"cat\">\n";
-        $out .= "<input name=\"category\" placeholder=\"category\">\n";
+        $out .= "<input name=\"kategorie\" placeholder=\"Kategorie\">\n";
         $out .= "<input type=\"submit\" name=\"add_cat\" value=\"Kategorie\">\n";
         $out .= "</form>\n";
         $out .= "<h2>Tags</h2>\n";
