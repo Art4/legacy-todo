@@ -69,27 +69,4 @@ class Taxonomy
 
         return $names;
     }
-
-    /** @param array<int, int> $todoIds
-     *  @return array<int, array<int, array<string, int>>>
-     */
-    public function tagsForTodos(array $todoIds)
-    {
-        $tags = [];
-        foreach ($todoIds as $id) {
-            $tags[$id] = [];
-        }
-        if ($todoIds === []) {
-            return $tags;
-        }
-        $placeholders = implode(",", array_fill(0, count($todoIds), "?"));
-        $stmt = $this->pdo->prepare("SELECT * FROM todo_tags WHERE todo_id IN ($placeholders)");
-        $stmt->execute($todoIds);
-        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        foreach ($rows as $row) {
-            $tags[(int) $row["todo_id"]][] = ["todo_id" => (int) $row["todo_id"], "tag_id" => (int) $row["tag_id"]];
-        }
-
-        return $tags;
-    }
 }
