@@ -207,7 +207,7 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
         @unlink($dbFile);
 
         $this->assertSame(
-            ['assignments', 'categories', 'comments', 'tags', 'todo_tags', 'todos', 'users'],
+            ['assignments', 'categories', 'comments', 'tags', 'todos', 'users'],
             $tables,
         );
     }
