@@ -74,67 +74,33 @@ final class AdminHandlerTest extends PHPUnit\Framework\TestCase
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "", "cat" => "", "category" => ""]);
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => ""]);
 
         $this->assertStringContainsString('Name fehlt', $output);
     }
 
-    public function testAdminAddCategoryUsesKategorieKeyWhenOnlyKategorieProvided(): void
+    public function testAdminAddCategoryUsesKategorieKeyWhenProvided(): void
     {
         $this->session['user_id'] = 1;
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "Freizeit", "cat" => "", "category" => ""]);
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "Freizeit"]);
 
         $this->assertStringContainsString('<li>Freizeit</li>', $output);
     }
 
-    public function testAdminAddCategoryUsesCatKeyWhenOnlyCatProvided(): void
+    public function testAdminAddCategoryIgnoresLegacyCatAndCategoryKeys(): void
     {
         $this->session['user_id'] = 1;
         $this->session['username'] = 'alice';
         $this->session['role'] = 'admin';
 
-        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "", "cat" => "Arbeit", "category" => ""]);
+        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "cat" => "Arbeit", "category" => "Privat"]);
 
-        $this->assertStringContainsString('<li>Arbeit</li>', $output);
-    }
-
-    public function testAdminAddCategoryUsesCategoryKeyWhenOnlyCategoryProvided(): void
-    {
-        $this->session['user_id'] = 1;
-        $this->session['username'] = 'alice';
-        $this->session['role'] = 'admin';
-
-        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "", "cat" => "", "category" => "Privat"]);
-
-        $this->assertStringContainsString('<li>Privat</li>', $output);
-    }
-
-    public function testAdminAddCategoryCatOverridesKategorieWhenBothProvided(): void
-    {
-        $this->session['user_id'] = 1;
-        $this->session['username'] = 'alice';
-        $this->session['role'] = 'admin';
-
-        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "Freizeit", "cat" => "Arbeit", "category" => ""]);
-
-        $this->assertStringContainsString('<li>Arbeit</li>', $output);
-        $this->assertStringNotContainsString('<li>Freizeit</li>', $output);
-    }
-
-    public function testAdminAddCategoryCategoryOverridesCatAndKategorieWhenAllProvided(): void
-    {
-        $this->session['user_id'] = 1;
-        $this->session['username'] = 'alice';
-        $this->session['role'] = 'admin';
-
-        $output = $this->handler->handle(["_csrf_token" => $this->session['csrf_token'], "add_cat" => "Kategorie", "kategorie" => "Freizeit", "cat" => "Arbeit", "category" => "Privat"]);
-
-        $this->assertStringContainsString('<li>Privat</li>', $output);
-        $this->assertStringNotContainsString('<li>Freizeit</li>', $output);
+        $this->assertStringContainsString('Name fehlt', $output);
         $this->assertStringNotContainsString('<li>Arbeit</li>', $output);
+        $this->assertStringNotContainsString('<li>Privat</li>', $output);
     }
 
     public function testAdminAddTagCreatesTagAppearingInList(): void

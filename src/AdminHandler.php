@@ -78,15 +78,7 @@ class AdminHandler
      */
     private function categoryNameFrom(array $post)
     {
-        $name = $post["kategorie"] ?? "";
-        if (($post["cat"] ?? "") != "") {
-            $name = $post["cat"];
-        }
-        if (($post["category"] ?? "") != "") {
-            $name = $post["category"];
-        }
-
-        return $name;
+        return $post["kategorie"] ?? "";
     }
 
     /**
@@ -120,9 +112,7 @@ class AdminHandler
         $out .= "</ul>\n";
         $out .= "<form method=\"post\">\n";
         $out .= $this->csrf->field() . "\n";
-        $out .= "<input name=\"kategorie\" placeholder=\"Kategorie (kategorie)\">\n";
-        $out .= "<input name=\"cat\" placeholder=\"cat\">\n";
-        $out .= "<input name=\"category\" placeholder=\"category\">\n";
+        $out .= "<input name=\"kategorie\" placeholder=\"Kategorie\">\n";
         $out .= "<input type=\"submit\" name=\"add_cat\" value=\"Kategorie\">\n";
         $out .= "</form>\n";
         $out .= "<h2>Tags</h2>\n";
