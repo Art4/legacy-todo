@@ -170,7 +170,7 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertFalse($failingTodos->archive(1));
     }
 
-    public function testCreateInsertsOpenTodoWithData2Wurst(): void
+    public function testCreateInsertsOpenTodo(): void
     {
         $result = $this->todos->create(7, "Neues Todo", "Text", 2, "2026-12-01");
 
@@ -183,7 +183,6 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->assertSame(2, (int) $row["priority"]);
         $this->assertSame("2026-12-01", $row["due_date"]);
         $this->assertSame(0, (int) $row["archived"]);
-        $this->assertSame("wurst", $row["data2"]);
         $this->assertSame(date("Y-m-d"), $row["created_at"]);
     }
 

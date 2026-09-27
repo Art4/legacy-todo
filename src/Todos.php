@@ -124,10 +124,10 @@ class Todos
         if ($title == "") {
             return false;
         }
-        $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at,data2) VALUES (?,?,?,'open',?,?,0,?,?)";
+        $sql = "INSERT INTO todos (user_id,title,text,status,priority,due_date,archived,created_at) VALUES (?,?,?,'open',?,?,0,?)";
         try {
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([(int) $userId, $title, $text, (int) $priority, $due, date("Y-m-d"), "wurst"]);
+            $stmt->execute([(int) $userId, $title, $text, (int) $priority, $due, date("Y-m-d")]);
         } catch (\Exception $e) {
             return false;
         }
