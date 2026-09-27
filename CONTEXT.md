@@ -22,7 +22,7 @@ _Avoid_: per-page `session_start()`, per-page `include_once`, module constructio
 
 **Installer**:
 The single module (`Art4\LegacyTodo\Installer`) that owns everything needed to make a database file request-ready — idempotent schema creation (the sqlite DDL) and seed-if-empty (admin/user accounts plus demo todos). It is invoked once, at first run or explicit migration time, via `Bootstrap::install()` (reached through `./run.sh install`), never from the request lifecycle: `Bootstrap::start()` assumes a prepared database (ADR-0010).
-_Avoid_: schema/seed SQL in the request path, per-test `CREATE TABLE` fixture duplication (noted as a future consolidation pass, not part of this seam)
+_Avoid_: schema/seed SQL in the request path, per-test `CREATE TABLE` fixture duplication — tests reuse the public `createSchema()` instead (issue #282, ADR-0010)
 
 **public/ webroot**:
 The only directory Apache serves (`public/`, per ADR-0003). It holds the 8 front controllers (`index.php`, `todo.php`, `admin.php`, `addtodo.php`, `edittodo.php`, `deletetodo.php`, `login.php`, `logout.php`) and `uploads/` (still reachable at `/uploads/...`). Everything internal — `src/`, `vendor/`, tooling configs, and the SQLite database — stays at the repo root, outside the docroot, so it 404s instead of being downloadable.

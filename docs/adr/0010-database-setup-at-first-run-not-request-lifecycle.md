@@ -34,7 +34,8 @@ The schema/seed concern moves out of the request lifecycle into a dedicated firs
 - The request path no longer runs DDL or seed checks; a fresh database must be installed once before
   the app serves requests (`./run.sh install`, part of `up`).
 - The DDL gets a single home (`Installer`) instead of the per-request duplication it had in
-  `Bootstrap` and the per-test duplication it still has across `tests/Unit/*Test.php` fixtures —
-  consolidating those test fixtures is a separate, noted follow-up, not part of this seam.
+  `Bootstrap`. The per-test duplication across `tests/Unit/*Test.php` fixtures was a separate,
+  noted follow-up, not part of this seam — later closed by making `createSchema()` public and
+  pointing every test fixture at it (issue #282).
 - `Bootstrap::install()` and the `Installer` module are the only place schema/seed lives; a future
   scan must not re-propose moving schema/seed back into the request lifecycle.
