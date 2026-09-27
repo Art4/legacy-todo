@@ -102,6 +102,29 @@ final class EditTodoHandlerTest extends PHPUnit\Framework\TestCase
         $this->assertStringContainsString('Titel erforderlich', $output);
     }
 
+    public function testEditTodoSaveStorageFailureRendersFailureMessageWithoutRedirecting(): void
+    {
+        $output = RunCliHelper::run(
+            ''
+                . '$failingPdo = new \PDO("sqlite::memory:");'
+                . '$failingPdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);'
+                . '(new \Art4\LegacyTodo\Installer($failingPdo))->createSchema();'
+                . '$failingPdo->exec("INSERT INTO todos (id,user_id,title,text,status,priority,due_date,archived,created_at) VALUES (1,1,\'Alt\',\'\',\'open\',1,\'2026-01-01\',0,\'2026-01-10\')");'
+                . '$failingPdo->exec("PRAGMA query_only = 1");'
+                . '$failingTodos = new \Art4\LegacyTodo\Todos($failingPdo, new \Art4\LegacyTodo\Taxonomy($failingPdo));'
+                . '$h = new \Art4\LegacyTodo\EditTodoHandler($app->auth(), $failingTodos, $app->csrf(), $app->layout());'
+                . 'echo $h->handle((int) $get["id"], $get, $_POST);',
+            ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
+            ["id" => 1],
+            ["_csrf_token" => $this->session['csrf_token'], "save" => "Speichern", "title" => "Neu", "text" => "", "priority" => "2", "status" => "open"],
+            '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,1,\'Alt\',\'\',\'open\',0,\'2026-01-10\')");',
+        );
+
+        $this->assertStringNotContainsString('Location:', $output);
+        $this->assertStringContainsString('Speichern fehlgeschlagen', $output);
+        $this->assertStringContainsString('<h1>Todo bearbeiten</h1>', $output);
+    }
+
     public function testEditTodoDeniesWhenCannotManage(): void
     {
         $id = $this->seedTodo(["user_id" => 5, "title" => "Fremdes", "text" => "", "status" => "open", "priority" => 1, "due_date" => "2026-01-01"]);

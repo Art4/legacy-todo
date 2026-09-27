@@ -49,29 +49,82 @@ class TodoHandler
         if ($t == null) {
             return $this->layout->errorPage(404, "Not found");
         }
-        if (!empty($post["add_comment"])) {
-            $body = $post["body"] ?? "";
-            $uid = $this->auth->currentUser()->userId();
-            $this->todoActivity->addComment($id, $uid, $body);
-            $this->auth->redirect("todo.php?id=" . $id);
+        $msg = "";
+        $addCommentMsg = $this->handleAddComment($id, $post);
+        if ($addCommentMsg !== null) {
+            $msg = $addCommentMsg;
         }
-        if (!empty($post["assign"])) {
-            $assignee = $post["assignee"] ?? "";
-            $this->todoActivity->assign($id, $assignee, $this->auth->currentUser()->userId());
-            if (($get["next"] ?? "") != "") {
-                $this->auth->redirect("todo.php?id=" . $id, $get["next"]);
-            }
+        $assignMsg = $this->handleAssign($id, $get, $post);
+        if ($assignMsg !== null) {
+            $msg = $assignMsg;
         }
-        if (!empty($get["del_comment"])) {
-            $comment = $this->todoActivity->findComment($get["del_comment"]);
-            if ($comment !== null && $this->auth->canDeleteComment($comment)) {
-                $this->todoActivity->removeComment($get["del_comment"]);
-            }
+        $delCommentMsg = $this->handleDelComment($get);
+        if ($delCommentMsg !== null) {
+            $msg = $delCommentMsg;
         }
         $comments = $this->todoActivity->commentsForTodo($id);
         $assigns = $this->todoActivity->assignmentsForTodo($id);
 
-        return $this->renderTodoDetail($t, $comments, $assigns, $id);
+        return $this->renderTodoDetail($t, $comments, $assigns, $id, $msg);
+    }
+
+    /**
+     * @param array<string, mixed> $post
+     * @return string|null
+     */
+    private function handleAddComment(int $id, array $post)
+    {
+        if (empty($post["add_comment"])) {
+            return null;
+        }
+        $body = $post["body"] ?? "";
+        $uid = $this->auth->currentUser()->userId();
+        if ($this->todoActivity->addComment($id, $uid, $body)) {
+            $this->auth->redirect("todo.php?id=" . $id);
+        }
+
+        return "Kommentar fehlgeschlagen";
+    }
+
+    /**
+     * @param array<string, mixed> $get
+     * @param array<string, mixed> $post
+     * @return string|null
+     */
+    private function handleAssign(int $id, array $get, array $post)
+    {
+        if (empty($post["assign"])) {
+            return null;
+        }
+        $assignee = $post["assignee"] ?? "";
+        if (!$this->todoActivity->assign($id, $assignee, $this->auth->currentUser()->userId())) {
+            return "Zuweisen fehlgeschlagen";
+        }
+        if (($get["next"] ?? "") != "") {
+            $this->auth->redirect("todo.php?id=" . $id, $get["next"]);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array<string, mixed> $get
+     * @return string|null
+     */
+    private function handleDelComment(array $get)
+    {
+        if (empty($get["del_comment"])) {
+            return null;
+        }
+        $comment = $this->todoActivity->findComment($get["del_comment"]);
+        if ($comment === null || !$this->auth->canDeleteComment($comment)) {
+            return null;
+        }
+        if ($this->todoActivity->removeComment($get["del_comment"])) {
+            return null;
+        }
+
+        return "Löschen fehlgeschlagen";
     }
 
     /**
@@ -80,12 +133,15 @@ class TodoHandler
      * @param array<int, Assignment> $assigns
      * @return string
      */
-    private function renderTodoDetail(Todo $t, array $comments, array $assigns, int $id)
+    private function renderTodoDetail(Todo $t, array $comments, array $assigns, int $id, string $msg = "")
     {
         $out = $this->layout->header("Todo - " . $t->title());
         $out .= "<h1>" . $this->layout->text($t->title()) . "</h1>\n";
         $out .= "<p>" . $this->layout->text($t->text()) . "</p>\n";
         $out .= "<p>Status: " . $this->layout->text($t->status()) . " | Prio: " . $this->layout->text($t->priority()) . " | Fällig: " . $this->layout->text($t->dueDate()) . "</p>\n";
+        if ($msg !== "") {
+            $out .= "<p>" . $this->layout->text($msg) . "</p>\n";
+        }
         if (count($comments) > 0) {
             $out .= "<h3>Kommentare</h3>\n";
             foreach ($comments as $c) {

@@ -194,4 +194,56 @@ final class TodoHandlerTest extends PHPUnit\Framework\TestCase
 
         $this->assertSame("Location: index.php", $output);
     }
+
+    private const FAILING_ACTIVITY_SETUP = ''
+        . '$failingPdo = new \PDO("sqlite::memory:");'
+        . '$failingPdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);'
+        . '(new \Art4\LegacyTodo\Installer($failingPdo))->createSchema();'
+        . '$failingPdo->exec("INSERT INTO users (id,username,password,role,email,created_at) VALUES (1,\'alice\',\'pw\',\'user\',\'alice@example.com\',\'2026-01-01\')");'
+        . '$failingPdo->exec("INSERT INTO comments (id,todo_id,user_id,body,created_at) VALUES (77,1,1,\'weg damit\',\'2026-01-12\')");'
+        . '$failingPdo->exec("PRAGMA query_only = 1");'
+        . '$activity = new \Art4\LegacyTodo\TodoActivity($failingPdo);'
+        . '$h = new \Art4\LegacyTodo\TodoHandler($app->auth(), $app->todos(), $activity, $app->users(), $app->csrf(), $app->layout());';
+
+    public function testTodoAddCommentStorageFailureRendersFailureMessageWithoutRedirecting(): void
+    {
+        $output = RunCliHelper::run(
+            self::FAILING_ACTIVITY_SETUP . 'echo $h->handle((int) $get["id"], $get, $_POST);',
+            ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
+            ["id" => 1],
+            ["_csrf_token" => $this->session['csrf_token'], "add_comment" => "Kommentieren", "body" => "Neuer Kommentar"],
+            '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,1,\'Titel\',\'\',\'open\',0,\'2026-01-10\')");',
+        );
+
+        $this->assertStringContainsString('Kommentar fehlgeschlagen', $output);
+        $this->assertStringNotContainsString('Location:', $output);
+    }
+
+    public function testTodoAssignStorageFailureRendersFailureMessageWithoutRedirecting(): void
+    {
+        $output = RunCliHelper::run(
+            self::FAILING_ACTIVITY_SETUP . 'echo $h->handle((int) $get["id"], $get, $_POST);',
+            ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
+            ["id" => 1, "next" => "index.php"],
+            ["_csrf_token" => $this->session['csrf_token'], "assign" => "Zuweisen", "assignee" => "1"],
+            '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,1,\'Titel\',\'\',\'open\',0,\'2026-01-10\')");',
+        );
+
+        $this->assertStringContainsString('Zuweisen fehlgeschlagen', $output);
+        $this->assertStringNotContainsString('Location:', $output);
+    }
+
+    public function testTodoRemoveCommentStorageFailureRendersFailureMessage(): void
+    {
+        $output = RunCliHelper::run(
+            self::FAILING_ACTIVITY_SETUP . 'echo $h->handle((int) $get["id"], $get, $_POST);',
+            ["user_id" => 1, "username" => "alice", "role" => "admin", "csrf_token" => $this->session['csrf_token']],
+            ["id" => 1, "del_comment" => 77],
+            [],
+            '$pdo->exec("INSERT INTO todos (id,user_id,title,text,status,archived,created_at) VALUES (1,1,\'Titel\',\'\',\'open\',0,\'2026-01-10\')");',
+        );
+
+        $this->assertStringContainsString('Löschen fehlgeschlagen', $output);
+        $this->assertStringContainsString('weg damit', $output);
+    }
 }
