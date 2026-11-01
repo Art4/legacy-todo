@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Superseded — the runtime migration this ADR prepared for now shipped; see ADR-0019.
 
 ## Context
 

@@ -1,9 +1,9 @@
 # legacy-todo
 
 Eine To-Do-Listen-Anwendung in PHP mit gewachsenem Legacy-Code. Aktuell läuft sie auf **PHP
-7.4** – das ist der heutige Status quo, keine Vorgabe, auf der die Anwendung bleiben soll. Sie
-wird laufend weiterentwickelt und modernisiert; ein weiteres PHP-Versions-Upgrade (etwa auf 8.x)
-bleibt ein offener Backlog-Punkt.
+8.2** – das ist der heutige Status quo, keine Vorgabe, auf der die Anwendung bleiben soll. Sie
+wird laufend weiterentwickelt und modernisiert; ein weiteres PHP-Versions-Upgrade bleibt ein
+offener Backlog-Punkt.
 
 > **Sicherheitshinweis:** Die Anwendung hat bekannte, noch nicht behobene Schwachstellen
 > (SQL-Konkatenation, XSS, fehlende Autorisierung etc.) – bis die behoben sind, nur lokal mit
@@ -14,7 +14,7 @@ bleibt ein offener Backlog-Punkt.
 Kein Host-PHP nötig – die Laufzeit läuft komplett über Docker.
 
 ```bash
-./run.sh up      # PHP-7.4-Apache-Container starten (Port 8086), SQLite
+./run.sh up      # PHP-8.2-Apache-Container starten (Port 8086), SQLite
 ./run.sh install # Einmalige Datenbank-Einrichtung (Schema + Demo-Daten, idempotent)
 ./run.sh shell   # Bash im Container
 ./run.sh logs    # Container-Logs verfolgen
@@ -25,8 +25,8 @@ App: http://localhost:8086/
 
 Composer und statische Analyse (PHPStan, PHP CS Fixer, Rector) sind als Dev-Tooling vorhanden und
 laufen in CI – Details siehe `.github/workflows/ci.yml` und `composer.json`. Die Laufzeit selbst
-läuft auf PHP 7.4 im Container; die Testsuiten (Unit, Legacy, Functional) laufen in CI unter
-PHP 7.4 und 8.2, die statische Analyse unter PHP 8.3.
+läuft auf PHP 8.2 im Container; die Testsuiten (Unit, Legacy, Functional) laufen in CI ebenfalls
+unter PHP 8.2, die statische Analyse unter PHP 8.3.
 
 ## Weiterentwicklung
 

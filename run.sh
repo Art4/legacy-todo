@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Helfer-Script für legacy-todo – startet die App-Laufzeit (aktuell PHP 7.4) über Docker,
+# Helfer-Script für legacy-todo – startet die App-Laufzeit (aktuell PHP 8.2) über Docker,
 # kein Host-PHP nötig. Datenbank: SQLite.
 set -euo pipefail
 
-IMAGE="php:7.4-apache"
-CONTAINER="legacy-todo-php74"
+IMAGE="php:8.2-apache"
+CONTAINER="legacy-todo-php82"
 PORT="${PORT:-8086}"
 SRC="$(cd "$(dirname "$0")" && pwd)"
 
@@ -29,7 +29,7 @@ case "$cmd" in
     # Einmalige (idempotente) Datenbank-Einrichtung: Schema anlegen und bei
     # leerer Datenbank mit Demo-Daten befüllen. Läuft bewusst NICHT im
     # Request-Lebenszyklus, sondern nur beim ersten Start (ADR-0010).
-    # Verwendet dieselbe PHP-Version wie die CI-Werkzeuge (nicht die 7.4-Laufzeit),
+    # Verwendet dieselbe PHP-Version wie die CI-Werkzeuge (nicht die 8.2-Laufzeit),
     # da der Composer-Dev-Stack nur auf PHP 8.x parst (siehe issue #239).
     echo "Richte SQLite-Datenbank ein ($SRC/database.sqlite)..."
     docker run --rm -v "${SRC}:/app" -w /app php:8.3-cli php src/install.php
@@ -50,7 +50,7 @@ case "$cmd" in
   help|*)
     echo "Usage: $0 {up|down|install|shell|logs|exec <cmd>}"
     echo ""
-    echo "  up          - Startet PHP 7.4 Apache Container (Port $PORT) mit SQLite"
+    echo "  up          - Startet PHP 8.2 Apache Container (Port $PORT) mit SQLite"
     echo "  down        - Stoppt und löscht Container"
     echo "  install     - Einmalige Datenbank-Einrichtung (Schema + Demo-Daten, idempotent)"
     echo "  shell       - Bash im Container"
