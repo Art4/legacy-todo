@@ -49,3 +49,17 @@ Used by `/wayfinder`. The **map** is a single issue with **child** issues as tic
 - **Frontier query**: list the map's open children (`./scripts/bot-gh-refactor.sh issue list --state open`, scoped to the map's sub-issues / task list), drop any with an open blocker (`issue_dependencies_summary.blocked_by > 0`, or an open issue in the `Blocked by` line) or an assignee; first in map order wins.
 - **Claim**: `./scripts/bot-gh-refactor.sh issue edit <n> --add-assignee @me`, the session's first write.
 - **Resolve**: `./scripts/bot-gh-refactor.sh issue comment <n> --body "<answer>"`, then `./scripts/bot-gh-refactor.sh issue close <n>`, then append a context pointer (gist + link) to the map's Decisions-so-far.
+
+## Refactoring operations
+
+Used by `/continuous-refactoring-run`.
+
+- **Search**: `./scripts/bot-gh-refactor.sh issue list --state all --search "<words>" --json number,title,state,labels,updatedAt` searches title and text, open and closed together; `--state open` narrows it to the open ones. Raise `--limit` when the default of 30 cuts the list.
+- **Done**: an issue closed as completed: `./scripts/bot-gh-refactor.sh api repos/Art4/legacy-todo/issues/<n> --jq .state_reason` gives `completed`. Mark one finished with `./scripts/bot-gh-refactor.sh issue close <n> --reason completed`.
+- **Merge requests**: pull requests on this GitHub repository, via `./scripts/bot-gh-refactor.sh pr`.
+- **Linked merge request**: the pull request's description carries `Closes #<issue>`. From the issue: `./scripts/bot-gh-refactor.sh api graphql -F n=<n> -f query='query($n:Int!){repository(owner:"Art4",name:"legacy-todo"){issue(number:$n){closedByPullRequestsReferences(first:5,includeClosedPrs:true){nodes{number state}}}}}' --jq '.data.repository.issue.closedByPullRequestsReferences.nodes'`.
+- **Blocked by**: a line `Blocked by: #<n>, #<n>` in the issue's description. The issue is unblocked when every issue on that line is done.
+- **Candidate**: the label `refactor:candidate`. List the open ones with `./scripts/bot-gh-refactor.sh issue list --state open --label refactor:candidate --json number,title,labels,updatedAt`.
+- **Priority**: the label `refactor:priority`, next to the **Candidate** mark.
+- **Rejected**: one file per rejection at `docs/refactoring/out-of-scope/<slug>.md`, holding the reason. Found again with `grep -rli "<word>" docs/refactoring/out-of-scope/`.
+- **BC promise**: none — no code outside this repository relies on this one's.
