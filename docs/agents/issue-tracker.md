@@ -63,3 +63,4 @@ Used by `/continuous-refactoring-run`.
 - **Priority**: the label `refactor:priority`, next to the **Candidate** mark.
 - **Rejected**: one file per rejection at `docs/refactoring/out-of-scope/<slug>.md`, holding the reason. Found again with `grep -rli "<word>" docs/refactoring/out-of-scope/`.
 - **BC promise**: none — no code outside this repository relies on this one's.
+- **Housekeeping**: the template is `docs/refactoring/housekeeping-template.md`. The next ticket is made with `./scripts/bot-gh-refactor.sh issue create`: a title that names Housekeeping and the date the ticket is due from, a line in the text with that date, a line naming the template `docs/refactoring/housekeeping-template.md`, and the template's tasks as a checklist. The open ones are listed with `./scripts/bot-gh-refactor.sh issue list --state open --search "Housekeeping in:title" --json number,title,labels,updatedAt`.
