@@ -130,7 +130,7 @@ final class UploadsTest extends PHPUnit\Framework\TestCase
         $this->assertStringEndsWith('.png', $stored);
         $this->assertStringNotContainsString('photo', $stored);
         $this->assertFileEquals($tmp, $this->dir . DIRECTORY_SEPARATOR . $stored);
-        $this->assertSame([$stored], array_map('basename', glob($this->dir . '/*') ?: []));
+        $this->assertSame([$stored], array_map(basename(...), glob($this->dir . '/*') ?: []));
     }
 
     public function testStoreReturnsNullWhenMoveFailsForNonUploadedFile(): void

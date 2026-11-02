@@ -4,7 +4,7 @@ namespace Art4\LegacyTodo;
 
 class Users
 {
-    public function __construct(private \PDO $pdo) {}
+    public function __construct(private readonly \PDO $pdo) {}
 
     /** @return User|null */
     public function findById($id)
@@ -110,7 +110,7 @@ class Users
     /** @return array<int, User> */
     public function listAll()
     {
-        return array_map([$this, "userFromRow"], $this->pdo->query("SELECT * FROM users")->fetchAll(\PDO::FETCH_ASSOC));
+        return array_map($this->userFromRow(...), $this->pdo->query("SELECT * FROM users")->fetchAll(\PDO::FETCH_ASSOC));
     }
 
     /** @param array<string, mixed> $row

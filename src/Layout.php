@@ -10,7 +10,7 @@ namespace Art4\LegacyTodo;
  */
 class Layout
 {
-    public function __construct(private string $siteName, private Auth $auth) {}
+    public function __construct(private readonly string $siteName, private readonly Auth $auth) {}
 
     /** @param mixed $value */
     public function text($value): string

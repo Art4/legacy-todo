@@ -12,7 +12,7 @@ namespace Art4\LegacyTodo;
  */
 final class Comment
 {
-    public function __construct(private int $id, private int $todoId, private int $userId, private string $body, private string $username, private string $createdAt) {}
+    public function __construct(private readonly int $id, private readonly int $todoId, private readonly int $userId, private readonly string $body, private readonly string $username, private readonly string $createdAt) {}
 
     /** @return int */
     public function id()

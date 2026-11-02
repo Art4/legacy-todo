@@ -9,7 +9,7 @@ namespace Art4\LegacyTodo;
  */
 final class Assignment
 {
-    public function __construct(private int $id, private int $todoId, private int $userId, private int $assignedBy, private string $username) {}
+    public function __construct(private readonly int $id, private readonly int $todoId, private readonly int $userId, private readonly int $assignedBy, private readonly string $username) {}
 
     /** @return int */
     public function id()
