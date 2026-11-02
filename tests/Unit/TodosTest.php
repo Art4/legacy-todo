@@ -52,21 +52,19 @@ final class TodosTest extends PHPUnit\Framework\TestCase
         $this->pdo->exec('INSERT INTO categories (name,user_id) VALUES ("Arbeit",1)');
         $this->pdo->exec("UPDATE todos SET category_id=1 WHERE id=" . $id);
 
-        $shape = static function (Todo $todo): array {
-            return [
-                $todo->id(),
-                $todo->userId(),
-                $todo->title(),
-                $todo->text(),
-                $todo->status(),
-                $todo->priority(),
-                $todo->dueDate(),
-                $todo->archived(),
-                $todo->createdAt(),
-                $todo->categoryId(),
-                $todo->category(),
-            ];
-        };
+        $shape = (static fn(Todo $todo): array => [
+            $todo->id(),
+            $todo->userId(),
+            $todo->title(),
+            $todo->text(),
+            $todo->status(),
+            $todo->priority(),
+            $todo->dueDate(),
+            $todo->archived(),
+            $todo->createdAt(),
+            $todo->categoryId(),
+            $todo->category(),
+        ]);
         $expected = [$id, 1, "Einziges", "", "open", 1, "2026-01-01", false, "2026-01-10", 1, "Arbeit"];
 
         $this->assertSame($expected, $shape($this->todos->find($id)));

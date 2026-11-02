@@ -112,81 +112,63 @@ class Bootstrap
 
     public function auth(): Auth
     {
-        if ($this->auth === null) {
-            $this->auth = new Auth($this->users(), $this->todos(), $this->session);
-        }
+        $this->auth ??= new Auth($this->users(), $this->todos(), $this->session);
 
         return $this->auth;
     }
 
     public function todos(): Todos
     {
-        if ($this->todos === null) {
-            $this->todos = new Todos($this->pdo, $this->taxonomy());
-        }
+        $this->todos ??= new Todos($this->pdo, $this->taxonomy());
 
         return $this->todos;
     }
 
     public function dashboard(): Dashboard
     {
-        if ($this->dashboard === null) {
-            $this->dashboard = new Dashboard($this->todos());
-        }
+        $this->dashboard ??= new Dashboard($this->todos());
 
         return $this->dashboard;
     }
 
     public function users(): Users
     {
-        if ($this->users === null) {
-            $this->users = new Users($this->pdo);
-        }
+        $this->users ??= new Users($this->pdo);
 
         return $this->users;
     }
 
     public function uploads(): Uploads
     {
-        if ($this->uploads === null) {
-            $this->uploads = new Uploads($this->uploadsDir);
-        }
+        $this->uploads ??= new Uploads($this->uploadsDir);
 
         return $this->uploads;
     }
 
     public function todoActivity(): TodoActivity
     {
-        if ($this->todoActivity === null) {
-            $this->todoActivity = new TodoActivity($this->pdo);
-        }
+        $this->todoActivity ??= new TodoActivity($this->pdo);
 
         return $this->todoActivity;
     }
 
     public function taxonomy(): Taxonomy
     {
-        if ($this->taxonomy === null) {
-            $this->taxonomy = new Taxonomy($this->pdo);
-        }
+        $this->taxonomy ??= new Taxonomy($this->pdo);
 
         return $this->taxonomy;
     }
 
     public function layout(): Layout
     {
-        if ($this->layout === null) {
-            $this->layout = new Layout($this->siteName, $this->auth());
-        }
+        $this->layout ??= new Layout($this->siteName, $this->auth());
 
         return $this->layout;
     }
 
     public function csrf(): Csrf
     {
-        if ($this->csrf === null) {
-            $this->csrf = new Csrf($this->auth(), $this->layout());
-        }
+        $this->csrf ??= new Csrf($this->auth(), $this->layout());
 
         return $this->csrf;
     }
