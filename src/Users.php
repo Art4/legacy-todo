@@ -4,9 +4,7 @@ namespace Art4\LegacyTodo;
 
 class Users
 {
-    public function __construct(private \PDO $pdo)
-    {
-    }
+    public function __construct(private \PDO $pdo) {}
 
     /** @return User|null */
     public function findById($id)

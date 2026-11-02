@@ -8,9 +8,7 @@ namespace Art4\LegacyTodo;
  */
 class EditTodoHandler
 {
-    public function __construct(private Auth $auth, private Todos $todos, private Csrf $csrf, private Layout $layout)
-    {
-    }
+    public function __construct(private Auth $auth, private Todos $todos, private Csrf $csrf, private Layout $layout) {}
 
     /**
      * @param array<string, mixed> $get

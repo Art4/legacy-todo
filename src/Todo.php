@@ -15,9 +15,7 @@ namespace Art4\LegacyTodo;
  */
 final class Todo
 {
-    public function __construct(private int $id, private int $userId, private string $title, private string $text, private string $status, private int $priority, private string $dueDate, private bool $archived, private string $createdAt, private ?int $categoryId, private string $category)
-    {
-    }
+    public function __construct(private int $id, private int $userId, private string $title, private string $text, private string $status, private int $priority, private string $dueDate, private bool $archived, private string $createdAt, private ?int $categoryId, private string $category) {}
 
     /** @return int */
     public function id()

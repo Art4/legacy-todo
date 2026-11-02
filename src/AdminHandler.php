@@ -8,9 +8,7 @@ namespace Art4\LegacyTodo;
  */
 class AdminHandler
 {
-    public function __construct(private Auth $auth, private Users $users, private Taxonomy $taxonomy, private Csrf $csrf, private Layout $layout, private string $siteName)
-    {
-    }
+    public function __construct(private Auth $auth, private Users $users, private Taxonomy $taxonomy, private Csrf $csrf, private Layout $layout, private string $siteName) {}
 
     /**
      * @param array<string, mixed> $post

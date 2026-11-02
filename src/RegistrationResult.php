@@ -16,9 +16,7 @@ final class RegistrationResult
     /**
      * @param string $status One of the STATUS_* constants
      */
-    private function __construct(private string $status)
-    {
-    }
+    private function __construct(private string $status) {}
 
     public static function registered(): self
     {

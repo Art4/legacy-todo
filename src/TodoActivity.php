@@ -4,9 +4,7 @@ namespace Art4\LegacyTodo;
 
 class TodoActivity
 {
-    public function __construct(private \PDO $pdo)
-    {
-    }
+    public function __construct(private \PDO $pdo) {}
 
     /** @return array<int, Comment> */
     public function commentsForTodo($todoId)

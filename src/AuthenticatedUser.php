@@ -10,9 +10,7 @@ namespace Art4\LegacyTodo;
  */
 final class AuthenticatedUser
 {
-    public function __construct(private int $userId, private string $username, private string $role)
-    {
-    }
+    public function __construct(private int $userId, private string $username, private string $role) {}
 
     /** @return int */
     public function userId()

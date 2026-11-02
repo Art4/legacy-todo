@@ -12,9 +12,7 @@ final class HttpClient
 {
     private const MAX_REDIRECTS = 10;
 
-    public function __construct(private string $baseUrl, private string $cookieJar)
-    {
-    }
+    public function __construct(private string $baseUrl, private string $cookieJar) {}
 
     /**
      * @param array<string, mixed> $data

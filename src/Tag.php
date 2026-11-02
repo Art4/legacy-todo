@@ -9,9 +9,7 @@ namespace Art4\LegacyTodo;
  */
 final class Tag
 {
-    public function __construct(private int $id, private string $name)
-    {
-    }
+    public function __construct(private int $id, private string $name) {}
 
     /** @return int */
     public function id()

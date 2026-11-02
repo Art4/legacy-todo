@@ -8,9 +8,7 @@ namespace Art4\LegacyTodo;
  */
 class DeleteTodoHandler
 {
-    public function __construct(private Auth $auth, private Todos $todos, private Layout $layout)
-    {
-    }
+    public function __construct(private Auth $auth, private Todos $todos, private Layout $layout) {}
 
     /**
      * @param array<string, mixed> $get

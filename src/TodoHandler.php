@@ -8,9 +8,7 @@ namespace Art4\LegacyTodo;
  */
 class TodoHandler
 {
-    public function __construct(private Auth $auth, private Todos $todos, private TodoActivity $todoActivity, private Users $users, private Csrf $csrf, private Layout $layout)
-    {
-    }
+    public function __construct(private Auth $auth, private Todos $todos, private TodoActivity $todoActivity, private Users $users, private Csrf $csrf, private Layout $layout) {}
 
     /**
      * @param array<string, mixed> $get

@@ -8,9 +8,7 @@ namespace Art4\LegacyTodo;
  */
 class AddTodoHandler
 {
-    public function __construct(private Auth $auth, private Todos $todos, private Taxonomy $taxonomy, private Uploads $uploads, private Csrf $csrf, private Layout $layout)
-    {
-    }
+    public function __construct(private Auth $auth, private Todos $todos, private Taxonomy $taxonomy, private Uploads $uploads, private Csrf $csrf, private Layout $layout) {}
 
     /**
      * @param array<string, mixed> $post

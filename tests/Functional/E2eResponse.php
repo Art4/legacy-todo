@@ -12,9 +12,7 @@ final class E2eResponse
     /**
      * @param array<string, string> $headers
      */
-    public function __construct(private int $status, private array $headers, private string $body)
-    {
-    }
+    public function __construct(private int $status, private array $headers, private string $body) {}
 
     public function status(): int
     {
