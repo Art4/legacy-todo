@@ -19,3 +19,7 @@ PHPUnit test layout convention. A folder only gets created once something actual
 - A unit test covers exactly one class, the one it tests (`#[CoversClass]`); everything else it runs it uses (`#[UsesClass]`).
 - A test that enters through a script and not through a class (`tests/Functional/`, `tests/Legacy/PublicWebrootTest.php`) is `#[CoversNothing]`.
 - A new class gets a test of its own that covers it.
+
+## What the coverage figure measures
+
+`<source>` in `phpunit.xml.dist` lists `src/` and `public/`, the application code; test code and tooling files are not measured. The coverage floor in `.coverage-floor` guards that figure, set a few points below the measured value, so a test is judged by what it checks and not by the lines it adds.
