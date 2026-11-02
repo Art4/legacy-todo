@@ -10,9 +10,9 @@ namespace Art4\LegacyTodo;
  * differs per path. Hydrated only by TodoActivity, never written to after
  * construction.
  */
-final class Comment
+final readonly class Comment
 {
-    public function __construct(private readonly int $id, private readonly int $todoId, private readonly int $userId, private readonly string $body, private readonly string $username, private readonly string $createdAt) {}
+    public function __construct(private int $id, private int $todoId, private int $userId, private string $body, private string $username, private string $createdAt) {}
 
     /** @return int */
     public function id()

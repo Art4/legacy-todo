@@ -7,9 +7,9 @@ namespace Art4\LegacyTodo;
  * by Taxonomy::listTags(), hydrated only by Taxonomy, never written to
  * after construction.
  */
-final class Tag
+final readonly class Tag
 {
-    public function __construct(private readonly int $id, private readonly string $name) {}
+    public function __construct(private int $id, private string $name) {}
 
     /** @return int */
     public function id()

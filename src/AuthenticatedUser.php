@@ -8,9 +8,9 @@ namespace Art4\LegacyTodo;
  * session carries exactly these three fields (user_id, username, role) — never
  * an email — so this is its own VO rather than a partial User.
  */
-final class AuthenticatedUser
+final readonly class AuthenticatedUser
 {
-    public function __construct(private readonly int $userId, private readonly string $username, private readonly string $role) {}
+    public function __construct(private int $userId, private string $username, private string $role) {}
 
     /** @return int */
     public function userId()

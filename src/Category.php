@@ -7,9 +7,9 @@ namespace Art4\LegacyTodo;
  * returned by Taxonomy::listCategories(), hydrated only by Taxonomy, never
  * written to after construction.
  */
-final class Category
+final readonly class Category
 {
-    public function __construct(private readonly int $id, private readonly string $name, private readonly int $userId) {}
+    public function __construct(private int $id, private string $name, private int $userId) {}
 
     /** @return int */
     public function id()

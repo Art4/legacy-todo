@@ -9,9 +9,9 @@ namespace Art4\LegacyTodo;
  * the rehash logic stay inside Users, the VO carries the auth-relevant
  * identity fields only.
  */
-final class User
+final readonly class User
 {
-    public function __construct(private readonly int $id, private readonly string $username, private readonly string $role, private readonly string $email) {}
+    public function __construct(private int $id, private string $username, private string $role, private string $email) {}
 
     /** @return int */
     public function id()

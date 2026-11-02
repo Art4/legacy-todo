@@ -8,11 +8,11 @@ namespace Art4\LegacyTodo;
  * curl wrapper around the built-in test server. One cookie jar per instance
  * (per test method), redirects asserted but not traversed unless asked.
  */
-final class HttpClient
+final readonly class HttpClient
 {
     private const MAX_REDIRECTS = 10;
 
-    public function __construct(private readonly string $baseUrl, private readonly string $cookieJar) {}
+    public function __construct(private string $baseUrl, private string $cookieJar) {}
 
     /**
      * @param array<string, mixed> $data
