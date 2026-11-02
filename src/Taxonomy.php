@@ -4,12 +4,8 @@ namespace Art4\LegacyTodo;
 
 class Taxonomy
 {
-    /** @var \PDO */
-    private $pdo;
-
-    public function __construct(\PDO $pdo)
+    public function __construct(private \PDO $pdo)
     {
-        $this->pdo = $pdo;
     }
 
     /** @return array<int, Category> */

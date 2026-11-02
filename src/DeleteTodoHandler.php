@@ -8,20 +8,8 @@ namespace Art4\LegacyTodo;
  */
 class DeleteTodoHandler
 {
-    /** @var Auth */
-    private $auth;
-
-    /** @var Todos */
-    private $todos;
-
-    /** @var Layout */
-    private $layout;
-
-    public function __construct(Auth $auth, Todos $todos, Layout $layout)
+    public function __construct(private Auth $auth, private Todos $todos, private Layout $layout)
     {
-        $this->auth = $auth;
-        $this->todos = $todos;
-        $this->layout = $layout;
     }
 
     /**

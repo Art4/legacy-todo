@@ -9,28 +9,8 @@ namespace Art4\LegacyTodo;
  */
 final class Assignment
 {
-    /** @var int */
-    private $id;
-
-    /** @var int */
-    private $todoId;
-
-    /** @var int */
-    private $userId;
-
-    /** @var int */
-    private $assignedBy;
-
-    /** @var string */
-    private $username;
-
-    public function __construct(int $id, int $todoId, int $userId, int $assignedBy, string $username)
+    public function __construct(private int $id, private int $todoId, private int $userId, private int $assignedBy, private string $username)
     {
-        $this->id = $id;
-        $this->todoId = $todoId;
-        $this->userId = $userId;
-        $this->assignedBy = $assignedBy;
-        $this->username = $username;
     }
 
     /** @return int */

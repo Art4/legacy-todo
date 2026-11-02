@@ -10,16 +10,8 @@ namespace Art4\LegacyTodo;
  */
 class Layout
 {
-    /** @var string */
-    private $siteName;
-
-    /** @var Auth */
-    private $auth;
-
-    public function __construct(string $siteName, Auth $auth)
+    public function __construct(private string $siteName, private Auth $auth)
     {
-        $this->siteName = $siteName;
-        $this->auth = $auth;
     }
 
     /** @param mixed $value */

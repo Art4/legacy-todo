@@ -8,32 +8,8 @@ namespace Art4\LegacyTodo;
  */
 class AddTodoHandler
 {
-    /** @var Auth */
-    private $auth;
-
-    /** @var Todos */
-    private $todos;
-
-    /** @var Taxonomy */
-    private $taxonomy;
-
-    /** @var Uploads */
-    private $uploads;
-
-    /** @var Csrf */
-    private $csrf;
-
-    /** @var Layout */
-    private $layout;
-
-    public function __construct(Auth $auth, Todos $todos, Taxonomy $taxonomy, Uploads $uploads, Csrf $csrf, Layout $layout)
+    public function __construct(private Auth $auth, private Todos $todos, private Taxonomy $taxonomy, private Uploads $uploads, private Csrf $csrf, private Layout $layout)
     {
-        $this->auth = $auth;
-        $this->todos = $todos;
-        $this->taxonomy = $taxonomy;
-        $this->uploads = $uploads;
-        $this->csrf = $csrf;
-        $this->layout = $layout;
     }
 
     /**

@@ -17,16 +17,8 @@ class Auth
     /** @var array<string, mixed> */
     private $session;
 
-    /** @var Users */
-    private $users;
-
-    /** @var Todos */
-    private $todos;
-
-    public function __construct(Users $users, Todos $todos, &$session = null)
+    public function __construct(private Users $users, private Todos $todos, &$session = null)
     {
-        $this->users = $users;
-        $this->todos = $todos;
         if ($session === null) {
             $this->session = &$_SESSION;
         } else {
@@ -142,10 +134,10 @@ class Auth
 
     private function isSafeInAppTarget(string $next): bool
     {
-        return strpos($next, "://") === false
+        return !str_contains($next, "://")
             && preg_match('/^[a-zA-Z][a-zA-Z0-9+.\-]*:/', $next) !== 1
-            && substr($next, 0, 2) !== "//"
-            && strpos($next, "\\") === false;
+            && !str_starts_with($next, "//")
+            && !str_contains($next, "\\");
     }
 
     public function csrfToken(): string

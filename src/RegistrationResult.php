@@ -13,15 +13,11 @@ final class RegistrationResult
     public const STATUS_USERNAME_TAKEN = 'username-taken';
     public const STATUS_STORAGE_FAILURE = 'storage-failure';
 
-    /** @var string */
-    private $status;
-
     /**
      * @param string $status One of the STATUS_* constants
      */
-    private function __construct(string $status)
+    private function __construct(private string $status)
     {
-        $this->status = $status;
     }
 
     public static function registered(): self

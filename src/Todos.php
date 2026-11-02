@@ -4,16 +4,8 @@ namespace Art4\LegacyTodo;
 
 class Todos
 {
-    /** @var \PDO */
-    private $pdo;
-
-    /** @var Taxonomy */
-    private $taxonomy;
-
-    public function __construct(\PDO $pdo, Taxonomy $taxonomy)
+    public function __construct(private \PDO $pdo, private Taxonomy $taxonomy)
     {
-        $this->pdo = $pdo;
-        $this->taxonomy = $taxonomy;
     }
 
     /** @return array<int, Todo> */
@@ -128,7 +120,7 @@ class Todos
         try {
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([(int) $userId, $title, $text, (int) $priority, $due, date("Y-m-d")]);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
 

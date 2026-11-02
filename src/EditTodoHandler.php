@@ -8,24 +8,8 @@ namespace Art4\LegacyTodo;
  */
 class EditTodoHandler
 {
-    /** @var Auth */
-    private $auth;
-
-    /** @var Todos */
-    private $todos;
-
-    /** @var Csrf */
-    private $csrf;
-
-    /** @var Layout */
-    private $layout;
-
-    public function __construct(Auth $auth, Todos $todos, Csrf $csrf, Layout $layout)
+    public function __construct(private Auth $auth, private Todos $todos, private Csrf $csrf, private Layout $layout)
     {
-        $this->auth = $auth;
-        $this->todos = $todos;
-        $this->csrf = $csrf;
-        $this->layout = $layout;
     }
 
     /**

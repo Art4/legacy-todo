@@ -12,32 +12,8 @@ namespace Art4\LegacyTodo;
  */
 final class Comment
 {
-    /** @var int */
-    private $id;
-
-    /** @var int */
-    private $todoId;
-
-    /** @var int */
-    private $userId;
-
-    /** @var string */
-    private $body;
-
-    /** @var string */
-    private $username;
-
-    /** @var string */
-    private $createdAt;
-
-    public function __construct(int $id, int $todoId, int $userId, string $body, string $username, string $createdAt)
+    public function __construct(private int $id, private int $todoId, private int $userId, private string $body, private string $username, private string $createdAt)
     {
-        $this->id = $id;
-        $this->todoId = $todoId;
-        $this->userId = $userId;
-        $this->body = $body;
-        $this->username = $username;
-        $this->createdAt = $createdAt;
     }
 
     /** @return int */

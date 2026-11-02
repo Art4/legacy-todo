@@ -8,32 +8,8 @@ namespace Art4\LegacyTodo;
  */
 class AdminHandler
 {
-    /** @var Auth */
-    private $auth;
-
-    /** @var Users */
-    private $users;
-
-    /** @var Taxonomy */
-    private $taxonomy;
-
-    /** @var Csrf */
-    private $csrf;
-
-    /** @var Layout */
-    private $layout;
-
-    /** @var string */
-    private $siteName;
-
-    public function __construct(Auth $auth, Users $users, Taxonomy $taxonomy, Csrf $csrf, Layout $layout, string $siteName)
+    public function __construct(private Auth $auth, private Users $users, private Taxonomy $taxonomy, private Csrf $csrf, private Layout $layout, private string $siteName)
     {
-        $this->auth = $auth;
-        $this->users = $users;
-        $this->taxonomy = $taxonomy;
-        $this->csrf = $csrf;
-        $this->layout = $layout;
-        $this->siteName = $siteName;
     }
 
     /**

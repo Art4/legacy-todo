@@ -12,16 +12,8 @@ final class HttpClient
 {
     private const MAX_REDIRECTS = 10;
 
-    /** @var string */
-    private $baseUrl;
-
-    /** @var string */
-    private $cookieJar;
-
-    public function __construct(string $baseUrl, string $cookieJar)
+    public function __construct(private string $baseUrl, private string $cookieJar)
     {
-        $this->baseUrl = $baseUrl;
-        $this->cookieJar = $cookieJar;
     }
 
     /**
