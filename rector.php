@@ -15,18 +15,16 @@ return RectorConfig::configure()
         __DIR__ . '/public/login.php',
         __DIR__ . '/public/logout.php',
         __DIR__ . '/public/todo.php',
+        __DIR__ . '/src',
         __DIR__ . '/tests',
     ])
     ->withTypeCoverageLevel(0)
     ->withSkip([
-        // strict_types doesn't exist before PHP 7.0 -- this codebase's real
-        // runtime floor is still 5.6 (see issue #156 for the pending
-        // migration to 7.4). A per-file skip here (functions.php only) once
-        // chased this rule file by file as each one happened to become
-        // newly eligible -- it re-broke the runtime on config.php/logout.php
-        // (issue #158) the moment the rule found a new opening. Skipped
-        // globally instead: nothing in this codebase should gain
-        // strict_types until the floor genuinely moves.
+        // This rule only rejects scalar mismatches it can prove. Values it sees
+        // as mixed (request input, database rows) stay unchecked, so a call that
+        // PHP coerces today could become a TypeError at runtime under
+        // strict_types, as in issue #300. Adding the declare to the application
+        // is a change in behaviour, not a rewrite, and stays out of this config.
         Rector\TypeDeclaration\Rector\StmtsAwareInterface\SafeDeclareStrictTypesRector::class,
     ])
     ->withSets([
