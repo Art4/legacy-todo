@@ -14,7 +14,20 @@ use Art4\LegacyTodo\TodoActivity;
 use Art4\LegacyTodo\Todos;
 use Art4\LegacyTodo\Uploads;
 use Art4\LegacyTodo\Users;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
+#[CoversClass(Bootstrap::class)]
+#[UsesClass(Auth::class)]
+#[UsesClass(AuthenticatedUser::class)]
+#[UsesClass(Csrf::class)]
+#[UsesClass(Installer::class)]
+#[UsesClass(Layout::class)]
+#[UsesClass(Taxonomy::class)]
+#[UsesClass(TodoActivity::class)]
+#[UsesClass(Todos::class)]
+#[UsesClass(Uploads::class)]
+#[UsesClass(Users::class)]
 final class BootstrapTest extends PHPUnit\Framework\TestCase
 {
     /** @var array<string, mixed> */

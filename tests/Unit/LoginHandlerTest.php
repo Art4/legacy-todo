@@ -13,7 +13,19 @@ use Art4\LegacyTodo\LoginHandler;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\Todos;
 use Art4\LegacyTodo\Users;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
+use Art4\LegacyTodo\RegistrationResult;
 
+#[CoversClass(LoginHandler::class)]
+#[UsesClass(Auth::class)]
+#[UsesClass(Csrf::class)]
+#[UsesClass(Installer::class)]
+#[UsesClass(Layout::class)]
+#[UsesClass(RegistrationResult::class)]
+#[UsesClass(Taxonomy::class)]
+#[UsesClass(Todos::class)]
+#[UsesClass(Users::class)]
 final class LoginHandlerTest extends PHPUnit\Framework\TestCase
 {
     /** @var \PDO */

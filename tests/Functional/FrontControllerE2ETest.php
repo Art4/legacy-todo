@@ -3,12 +3,14 @@
 declare(strict_types=1);
 
 use Art4\LegacyTodo\E2eTestCase;
+use PHPUnit\Framework\Attributes\CoversNothing;
 
 /**
  * Boot proof and the full end-to-end journey scenarios against the running
  * app: real HTTP requests to the public/ entry points, a real seeded SQLite
  * file, and real session cookies.
  */
+#[CoversNothing]
 final class FrontControllerE2ETest extends E2eTestCase
 {
     public function testLoginPageRendersUnauthenticated(): void

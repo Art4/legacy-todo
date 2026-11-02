@@ -8,7 +8,22 @@ use Art4\LegacyTodo\Bootstrap;
 use Art4\LegacyTodo\Csrf;
 use Art4\LegacyTodo\Fakes\RunCliHelper;
 use Art4\LegacyTodo\Installer;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
+use Art4\LegacyTodo\Todos;
+use Art4\LegacyTodo\Taxonomy;
+use Art4\LegacyTodo\Layout;
+use Art4\LegacyTodo\Auth;
+use Art4\LegacyTodo\Users;
 
+#[CoversClass(Csrf::class)]
+#[UsesClass(Auth::class)]
+#[UsesClass(Bootstrap::class)]
+#[UsesClass(Installer::class)]
+#[UsesClass(Layout::class)]
+#[UsesClass(Taxonomy::class)]
+#[UsesClass(Todos::class)]
+#[UsesClass(Users::class)]
 final class CsrfTest extends PHPUnit\Framework\TestCase
 {
     /** @var array<string, mixed> */

@@ -6,7 +6,13 @@ use Art4\LegacyTodo\Installer;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\Todo;
 use Art4\LegacyTodo\Todos;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
+#[CoversClass(Todos::class)]
+#[UsesClass(Installer::class)]
+#[UsesClass(Taxonomy::class)]
+#[UsesClass(Todo::class)]
 final class TodosTest extends PHPUnit\Framework\TestCase
 {
     /** @var \PDO */

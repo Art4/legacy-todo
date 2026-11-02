@@ -8,7 +8,15 @@ use Art4\LegacyTodo\Layout;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\Todos;
 use Art4\LegacyTodo\Users;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
+#[CoversClass(Layout::class)]
+#[UsesClass(Auth::class)]
+#[UsesClass(Installer::class)]
+#[UsesClass(Taxonomy::class)]
+#[UsesClass(Todos::class)]
+#[UsesClass(Users::class)]
 final class LayoutTest extends PHPUnit\Framework\TestCase
 {
     /** @var array<string, mixed> */

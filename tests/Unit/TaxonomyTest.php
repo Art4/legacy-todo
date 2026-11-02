@@ -6,6 +6,8 @@ use Art4\LegacyTodo\Category;
 use Art4\LegacyTodo\Installer;
 use Art4\LegacyTodo\Tag;
 use Art4\LegacyTodo\Taxonomy;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 final class CountingStatement extends \PDOStatement
 {
@@ -17,6 +19,9 @@ final class CountingStatement extends \PDOStatement
     }
 }
 
+#[CoversClass(Taxonomy::class)]
+#[UsesClass(Installer::class)]
+#[UsesClass(Tag::class)]
 final class TaxonomyTest extends PHPUnit\Framework\TestCase
 {
     /** @var \PDO */

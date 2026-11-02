@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use Art4\LegacyTodo\RegistrationResult;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(RegistrationResult::class)]
 final class RegistrationResultTest extends PHPUnit\Framework\TestCase
 {
     public function testRegisteredResultHasCorrectStatus(): void

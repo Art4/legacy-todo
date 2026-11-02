@@ -5,7 +5,9 @@ declare(strict_types=1);
 require_once __DIR__ . '/../Fakes/RunCliHelper.php';
 
 use Art4\LegacyTodo\Fakes\RunCliHelper;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(RunCliHelper::class)]
 final class RunCliHelperTest extends PHPUnit\Framework\TestCase
 {
     public function testRunExecutesExpressionAndReturnsStdout(): void
