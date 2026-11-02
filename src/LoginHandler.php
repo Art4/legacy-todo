@@ -8,7 +8,7 @@ namespace Art4\LegacyTodo;
  */
 class LoginHandler
 {
-    public function __construct(private Auth $auth, private Users $users, private Csrf $csrf, private Layout $layout, private string $siteName) {}
+    public function __construct(private readonly Auth $auth, private readonly Users $users, private readonly Csrf $csrf, private readonly Layout $layout, private readonly string $siteName) {}
 
     /**
      * @param array<string, mixed> $get

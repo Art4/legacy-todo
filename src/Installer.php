@@ -10,7 +10,7 @@ namespace Art4\LegacyTodo;
  */
 class Installer
 {
-    public function __construct(private \PDO $pdo) {}
+    public function __construct(private readonly \PDO $pdo) {}
 
     public function install(): void
     {

@@ -4,7 +4,7 @@ namespace Art4\LegacyTodo;
 
 class Dashboard
 {
-    public function __construct(private Todos $todos) {}
+    public function __construct(private readonly Todos $todos) {}
 
     /**
      * @param array<string, mixed> $query

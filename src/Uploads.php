@@ -15,7 +15,7 @@ class Uploads
         'webp',
     ];
 
-    public function __construct(private string $dir) {}
+    public function __construct(private readonly string $dir) {}
 
     /**
      * Persist an uploaded file into the uploads directory.

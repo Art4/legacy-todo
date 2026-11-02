@@ -9,7 +9,7 @@ namespace Art4\LegacyTodo;
  */
 class Csrf
 {
-    public function __construct(private Auth $auth, private Layout $layout) {}
+    public function __construct(private readonly Auth $auth, private readonly Layout $layout) {}
 
     public function field(): string
     {

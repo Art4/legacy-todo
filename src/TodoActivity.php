@@ -4,7 +4,7 @@ namespace Art4\LegacyTodo;
 
 class TodoActivity
 {
-    public function __construct(private \PDO $pdo) {}
+    public function __construct(private readonly \PDO $pdo) {}
 
     /** @return array<int, Comment> */
     public function commentsForTodo($todoId)
@@ -12,7 +12,7 @@ class TodoActivity
         $stmt = $this->pdo->prepare("SELECT comments.*, users.username FROM comments JOIN users ON users.id=comments.user_id WHERE comments.todo_id=?");
         $stmt->execute([(int) $todoId]);
 
-        return array_map(fn(array $row) => $this->commentFromRow($row), $stmt->fetchAll(\PDO::FETCH_ASSOC));
+        return array_map($this->commentFromRow(...), $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
     /** @return bool */
@@ -29,7 +29,7 @@ class TodoActivity
         $stmt = $this->pdo->prepare("SELECT assignments.*, users.username FROM assignments JOIN users ON users.id=assignments.user_id WHERE assignments.todo_id=?");
         $stmt->execute([(int) $todoId]);
 
-        return array_map(fn(array $row) => $this->assignmentFromRow($row), $stmt->fetchAll(\PDO::FETCH_ASSOC));
+        return array_map($this->assignmentFromRow(...), $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
     /** @return bool */

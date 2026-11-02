@@ -50,7 +50,7 @@ final class DashboardTest extends PHPUnit\Framework\TestCase
 
         $this->assertSame(["todos", "stats"], array_keys($overview));
         $this->assertSame(["Erledigt", "Offen früh", "Offen spät"], array_map(fn($t) => $t->title(), $overview["todos"]));
-        $this->assertSame(["c" => 3, "open" => 2, "done" => 1, "overdue" => 1], array_map("\intval", $overview["stats"]));
+        $this->assertSame(["c" => 3, "open" => 2, "done" => 1, "overdue" => 1], array_map(\intval(...), $overview["stats"]));
     }
 
     public function testOverviewSearchWinsOverFiltersWhenQueryNonEmpty(): void
@@ -61,7 +61,7 @@ final class DashboardTest extends PHPUnit\Framework\TestCase
         $overview = $this->dashboard()->overview(["q" => "meeting", "status" => "open", "priority" => "1", "due" => "2026-01-01"]);
 
         $this->assertSame(["Meeting fertig"], array_map(fn($t) => $t->title(), $overview["todos"]));
-        $this->assertSame(["c" => 2, "open" => 1, "done" => 1, "overdue" => 0], array_map("\intval", $overview["stats"]));
+        $this->assertSame(["c" => 2, "open" => 1, "done" => 1, "overdue" => 0], array_map(\intval(...), $overview["stats"]));
     }
 
     public function testOverviewFiltersWhenQueryEmptyAndFiltersPresent(): void

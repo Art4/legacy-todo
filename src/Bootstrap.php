@@ -51,7 +51,7 @@ class Bootstrap
     private $uploadsDir;
 
     /** @param string|null $siteName */
-    public function __construct(private \PDO $pdo, &$session = null, private $siteName = "Legacy Todo", $uploadsDir = null)
+    public function __construct(private readonly \PDO $pdo, &$session = null, private $siteName = "Legacy Todo", $uploadsDir = null)
     {
         $this->uploadsDir = $uploadsDir ?? __DIR__ . '/../public/uploads';
         if ($session === null) {

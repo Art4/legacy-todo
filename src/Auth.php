@@ -17,7 +17,7 @@ class Auth
     /** @var array<string, mixed> */
     private $session;
 
-    public function __construct(private Users $users, private Todos $todos, &$session = null)
+    public function __construct(private readonly Users $users, private readonly Todos $todos, &$session = null)
     {
         if ($session === null) {
             $this->session = &$_SESSION;

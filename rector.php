@@ -28,7 +28,7 @@ return RectorConfig::configure()
         Rector\TypeDeclaration\Rector\StmtsAwareInterface\SafeDeclareStrictTypesRector::class,
     ])
     ->withSets([
-        LevelSetList::UP_TO_PHP_80,
+        LevelSetList::UP_TO_PHP_81,
         SetList::DEAD_CODE,
         SetList::CODE_QUALITY,
         SetList::EARLY_RETURN,

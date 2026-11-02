@@ -4,7 +4,7 @@ namespace Art4\LegacyTodo;
 
 class Todos
 {
-    public function __construct(private \PDO $pdo, private Taxonomy $taxonomy) {}
+    public function __construct(private readonly \PDO $pdo, private readonly Taxonomy $taxonomy) {}
 
     /** @return array<int, Todo> */
     public function listActive()

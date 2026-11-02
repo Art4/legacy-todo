@@ -11,7 +11,7 @@ namespace Art4\LegacyTodo;
  */
 final class User
 {
-    public function __construct(private int $id, private string $username, private string $role, private string $email) {}
+    public function __construct(private readonly int $id, private readonly string $username, private readonly string $role, private readonly string $email) {}
 
     /** @return int */
     public function id()
