@@ -53,7 +53,7 @@ class Auth
     {
         $id = $this->session["user_id"] ?? null;
 
-        return !($id == null || $id == "");
+        return $id != null && $id != "";
     }
 
     /** @return bool */

@@ -128,7 +128,6 @@ class TodoHandler
     }
 
     /**
-     * @param Todo $t
      * @param array<int, Comment> $comments
      * @param array<int, Assignment> $assigns
      * @return string
