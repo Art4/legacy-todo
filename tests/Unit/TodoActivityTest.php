@@ -6,7 +6,13 @@ use Art4\LegacyTodo\Assignment;
 use Art4\LegacyTodo\Comment;
 use Art4\LegacyTodo\Installer;
 use Art4\LegacyTodo\TodoActivity;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
+#[CoversClass(TodoActivity::class)]
+#[UsesClass(Assignment::class)]
+#[UsesClass(Comment::class)]
+#[UsesClass(Installer::class)]
 final class TodoActivityTest extends PHPUnit\Framework\TestCase
 {
     /** @var \PDO */

@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use Art4\LegacyTodo\Uploads;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(Uploads::class)]
 final class UploadsTest extends PHPUnit\Framework\TestCase
 {
     /** @var string */

@@ -14,7 +14,26 @@ use Art4\LegacyTodo\TodoActivity;
 use Art4\LegacyTodo\TodoHandler;
 use Art4\LegacyTodo\Todos;
 use Art4\LegacyTodo\Users;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
+use Art4\LegacyTodo\Comment;
+use Art4\LegacyTodo\AuthenticatedUser;
+use Art4\LegacyTodo\Todo;
+use Art4\LegacyTodo\User;
 
+#[CoversClass(TodoHandler::class)]
+#[UsesClass(Auth::class)]
+#[UsesClass(AuthenticatedUser::class)]
+#[UsesClass(Comment::class)]
+#[UsesClass(Csrf::class)]
+#[UsesClass(Installer::class)]
+#[UsesClass(Layout::class)]
+#[UsesClass(Taxonomy::class)]
+#[UsesClass(Todo::class)]
+#[UsesClass(TodoActivity::class)]
+#[UsesClass(Todos::class)]
+#[UsesClass(User::class)]
+#[UsesClass(Users::class)]
 final class TodoHandlerTest extends PHPUnit\Framework\TestCase
 {
     /** @var \PDO */

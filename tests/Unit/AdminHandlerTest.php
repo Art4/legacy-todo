@@ -10,7 +10,25 @@ use Art4\LegacyTodo\Layout;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\Todos;
 use Art4\LegacyTodo\Users;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
+use Art4\LegacyTodo\Category;
+use Art4\LegacyTodo\Tag;
+use Art4\LegacyTodo\AuthenticatedUser;
+use Art4\LegacyTodo\User;
 
+#[CoversClass(AdminHandler::class)]
+#[UsesClass(Auth::class)]
+#[UsesClass(AuthenticatedUser::class)]
+#[UsesClass(Category::class)]
+#[UsesClass(Csrf::class)]
+#[UsesClass(Installer::class)]
+#[UsesClass(Layout::class)]
+#[UsesClass(Tag::class)]
+#[UsesClass(Taxonomy::class)]
+#[UsesClass(Todos::class)]
+#[UsesClass(User::class)]
+#[UsesClass(Users::class)]
 final class AdminHandlerTest extends PHPUnit\Framework\TestCase
 {
     /** @var \PDO */

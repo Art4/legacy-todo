@@ -2,19 +2,44 @@
 
 declare(strict_types=1);
 
+use Art4\LegacyTodo\AddTodoHandler;
+use Art4\LegacyTodo\AdminHandler;
 use Art4\LegacyTodo\Auth;
 use Art4\LegacyTodo\AuthenticatedUser;
 use Art4\LegacyTodo\Bootstrap;
 use Art4\LegacyTodo\Csrf;
 use Art4\LegacyTodo\Dashboard;
+use Art4\LegacyTodo\DeleteTodoHandler;
+use Art4\LegacyTodo\EditTodoHandler;
 use Art4\LegacyTodo\Installer;
 use Art4\LegacyTodo\Layout;
+use Art4\LegacyTodo\LoginHandler;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\TodoActivity;
+use Art4\LegacyTodo\TodoHandler;
 use Art4\LegacyTodo\Todos;
 use Art4\LegacyTodo\Uploads;
 use Art4\LegacyTodo\Users;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
+#[CoversClass(Bootstrap::class)]
+#[UsesClass(AddTodoHandler::class)]
+#[UsesClass(AdminHandler::class)]
+#[UsesClass(Auth::class)]
+#[UsesClass(AuthenticatedUser::class)]
+#[UsesClass(Csrf::class)]
+#[UsesClass(DeleteTodoHandler::class)]
+#[UsesClass(EditTodoHandler::class)]
+#[UsesClass(Installer::class)]
+#[UsesClass(Layout::class)]
+#[UsesClass(LoginHandler::class)]
+#[UsesClass(Taxonomy::class)]
+#[UsesClass(TodoActivity::class)]
+#[UsesClass(TodoHandler::class)]
+#[UsesClass(Todos::class)]
+#[UsesClass(Uploads::class)]
+#[UsesClass(Users::class)]
 final class BootstrapTest extends PHPUnit\Framework\TestCase
 {
     /** @var array<string, mixed> */
@@ -79,6 +104,21 @@ final class BootstrapTest extends PHPUnit\Framework\TestCase
     public function testCsrfReturnsCsrfModule(): void
     {
         $this->assertInstanceOf(Csrf::class, $this->bootstrap->csrf());
+    }
+
+    public function testHandlerFactoriesReturnTheirHandlers(): void
+    {
+        $this->assertSame(
+            [AddTodoHandler::class, TodoHandler::class, LoginHandler::class, AdminHandler::class, DeleteTodoHandler::class, EditTodoHandler::class],
+            array_map(get_class(...), [
+                $this->bootstrap->addTodoHandler(),
+                $this->bootstrap->todoHandler(),
+                $this->bootstrap->loginHandler(),
+                $this->bootstrap->adminHandler(),
+                $this->bootstrap->deleteTodoHandler(),
+                $this->bootstrap->editTodoHandler(),
+            ]),
+        );
     }
 
     public function testAuthIsSharedSingleton(): void

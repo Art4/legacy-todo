@@ -6,7 +6,15 @@ use Art4\LegacyTodo\Dashboard;
 use Art4\LegacyTodo\Installer;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\Todos;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
+use Art4\LegacyTodo\Todo;
 
+#[CoversClass(Dashboard::class)]
+#[UsesClass(Installer::class)]
+#[UsesClass(Taxonomy::class)]
+#[UsesClass(Todo::class)]
+#[UsesClass(Todos::class)]
 final class DashboardTest extends PHPUnit\Framework\TestCase
 {
     /** @var \PDO */

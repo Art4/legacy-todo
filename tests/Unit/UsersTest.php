@@ -6,7 +6,13 @@ use Art4\LegacyTodo\Installer;
 use Art4\LegacyTodo\RegistrationResult;
 use Art4\LegacyTodo\User;
 use Art4\LegacyTodo\Users;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
+#[CoversClass(Users::class)]
+#[UsesClass(Installer::class)]
+#[UsesClass(RegistrationResult::class)]
+#[UsesClass(User::class)]
 final class UsersTest extends PHPUnit\Framework\TestCase
 {
     /** @var \PDO */

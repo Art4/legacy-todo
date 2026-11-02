@@ -12,7 +12,20 @@ use Art4\LegacyTodo\Layout;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\Todos;
 use Art4\LegacyTodo\Users;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
+use Art4\LegacyTodo\AuthenticatedUser;
+use Art4\LegacyTodo\Todo;
 
+#[CoversClass(DeleteTodoHandler::class)]
+#[UsesClass(Auth::class)]
+#[UsesClass(AuthenticatedUser::class)]
+#[UsesClass(Installer::class)]
+#[UsesClass(Layout::class)]
+#[UsesClass(Taxonomy::class)]
+#[UsesClass(Todo::class)]
+#[UsesClass(Todos::class)]
+#[UsesClass(Users::class)]
 final class DeleteTodoHandlerTest extends PHPUnit\Framework\TestCase
 {
     /** @var \PDO */

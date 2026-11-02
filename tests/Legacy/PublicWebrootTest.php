@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use PHPUnit\Framework\Attributes\CoversNothing;
+
+#[CoversNothing]
 final class PublicWebrootTest extends PHPUnit\Framework\TestCase
 {
     private const ENTRY_POINTS = [

@@ -9,7 +9,17 @@ use Art4\LegacyTodo\Installer;
 use Art4\LegacyTodo\Taxonomy;
 use Art4\LegacyTodo\Todos;
 use Art4\LegacyTodo\Users;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
+use Art4\LegacyTodo\Todo;
 
+#[CoversClass(Auth::class)]
+#[UsesClass(Comment::class)]
+#[UsesClass(Installer::class)]
+#[UsesClass(Taxonomy::class)]
+#[UsesClass(Todo::class)]
+#[UsesClass(Todos::class)]
+#[UsesClass(Users::class)]
 final class AuthTest extends PHPUnit\Framework\TestCase
 {
     /** @var \PDO */
