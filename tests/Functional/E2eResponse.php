@@ -7,12 +7,12 @@ namespace Art4\LegacyTodo;
 /**
  * Value object over one raw HTTP response from the built-in test server.
  */
-final class E2eResponse
+final readonly class E2eResponse
 {
     /**
      * @param array<string, string> $headers
      */
-    public function __construct(private readonly int $status, private readonly array $headers, private readonly string $body) {}
+    public function __construct(private int $status, private array $headers, private string $body) {}
 
     public function status(): int
     {

@@ -6,7 +6,7 @@ namespace Art4\LegacyTodo;
  * Typed result returned by Users::register(), replacing the old
  * bool-or-string return contract. One instance per registration attempt.
  */
-final class RegistrationResult
+final readonly class RegistrationResult
 {
     public const STATUS_REGISTERED = 'registered';
     public const STATUS_INVALID_INPUT = 'invalid-input';
@@ -16,7 +16,7 @@ final class RegistrationResult
     /**
      * @param string $status One of the STATUS_* constants
      */
-    private function __construct(private readonly string $status) {}
+    private function __construct(private string $status) {}
 
     public static function registered(): self
     {
