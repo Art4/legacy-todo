@@ -4,9 +4,6 @@ namespace Art4\LegacyTodo;
 
 class Uploads
 {
-    /** @var string */
-    private $dir;
-
     /** @var string[] */
     private const ALLOWED_EXTENSIONS = [
         'gif',
@@ -18,10 +15,7 @@ class Uploads
         'webp',
     ];
 
-    public function __construct(string $dir)
-    {
-        $this->dir = $dir;
-    }
+    public function __construct(private string $dir) {}
 
     /**
      * Persist an uploaded file into the uploads directory.
@@ -89,7 +83,7 @@ class Uploads
             return true;
         }
 
-        if (strpos($name, '..') !== false) {
+        if (str_contains($name, '..')) {
             return true;
         }
 

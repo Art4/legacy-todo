@@ -15,53 +15,7 @@ namespace Art4\LegacyTodo;
  */
 final class Todo
 {
-    /** @var int */
-    private $id;
-
-    /** @var int */
-    private $userId;
-
-    /** @var string */
-    private $title;
-
-    /** @var string */
-    private $text;
-
-    /** @var string */
-    private $status;
-
-    /** @var int */
-    private $priority;
-
-    /** @var string */
-    private $dueDate;
-
-    /** @var bool */
-    private $archived;
-
-    /** @var string */
-    private $createdAt;
-
-    /** @var int|null */
-    private $categoryId;
-
-    /** @var string */
-    private $category;
-
-    public function __construct(int $id, int $userId, string $title, string $text, string $status, int $priority, string $dueDate, bool $archived, string $createdAt, ?int $categoryId, string $category)
-    {
-        $this->id = $id;
-        $this->userId = $userId;
-        $this->title = $title;
-        $this->text = $text;
-        $this->status = $status;
-        $this->priority = $priority;
-        $this->dueDate = $dueDate;
-        $this->archived = $archived;
-        $this->createdAt = $createdAt;
-        $this->categoryId = $categoryId;
-        $this->category = $category;
-    }
+    public function __construct(private int $id, private int $userId, private string $title, private string $text, private string $status, private int $priority, private string $dueDate, private bool $archived, private string $createdAt, private ?int $categoryId, private string $category) {}
 
     /** @return int */
     public function id()

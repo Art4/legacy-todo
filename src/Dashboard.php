@@ -4,13 +4,7 @@ namespace Art4\LegacyTodo;
 
 class Dashboard
 {
-    /** @var Todos */
-    private $todos;
-
-    public function __construct(Todos $todos)
-    {
-        $this->todos = $todos;
-    }
+    public function __construct(private Todos $todos) {}
 
     /**
      * @param array<string, mixed> $query

@@ -17,14 +17,8 @@ require_once __DIR__ . "/../vendor/autoload.php";
  */
 class Bootstrap
 {
-    /** @var \PDO */
-    private $pdo;
-
     /** @var array<string, mixed> */
     private $session;
-
-    /** @var string */
-    private $siteName;
 
     /** @var Auth|null */
     private $auth;
@@ -57,10 +51,8 @@ class Bootstrap
     private $uploadsDir;
 
     /** @param string|null $siteName */
-    public function __construct(\PDO $pdo, &$session = null, $siteName = "Legacy Todo", $uploadsDir = null)
+    public function __construct(private \PDO $pdo, &$session = null, private $siteName = "Legacy Todo", $uploadsDir = null)
     {
-        $this->pdo = $pdo;
-        $this->siteName = $siteName;
         $this->uploadsDir = $uploadsDir ?? __DIR__ . '/../public/uploads';
         if ($session === null) {
             $this->session = &$_SESSION;

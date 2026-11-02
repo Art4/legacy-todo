@@ -8,25 +8,7 @@ namespace Art4\LegacyTodo;
  */
 class EditTodoHandler
 {
-    /** @var Auth */
-    private $auth;
-
-    /** @var Todos */
-    private $todos;
-
-    /** @var Csrf */
-    private $csrf;
-
-    /** @var Layout */
-    private $layout;
-
-    public function __construct(Auth $auth, Todos $todos, Csrf $csrf, Layout $layout)
-    {
-        $this->auth = $auth;
-        $this->todos = $todos;
-        $this->csrf = $csrf;
-        $this->layout = $layout;
-    }
+    public function __construct(private Auth $auth, private Todos $todos, private Csrf $csrf, private Layout $layout) {}
 
     /**
      * @param array<string, mixed> $get
@@ -55,8 +37,8 @@ class EditTodoHandler
             }
         }
         $t = $this->todos->find($id);
-        $title = $t === null ? "" : $t->title();
-        $text = $t === null ? "" : $t->text();
+        $title = $t?->title() ?? "";
+        $text = $t?->text() ?? "";
         $out .= $this->layout->header("Todo bearbeiten");
         $out .= "<h1>Todo bearbeiten</h1>\n";
         $out .= "<form method='post'>\n";

@@ -10,21 +10,7 @@ namespace Art4\LegacyTodo;
  */
 final class AuthenticatedUser
 {
-    /** @var int */
-    private $userId;
-
-    /** @var string */
-    private $username;
-
-    /** @var string */
-    private $role;
-
-    public function __construct(int $userId, string $username, string $role)
-    {
-        $this->userId = $userId;
-        $this->username = $username;
-        $this->role = $role;
-    }
+    public function __construct(private int $userId, private string $username, private string $role) {}
 
     /** @return int */
     public function userId()

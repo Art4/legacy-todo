@@ -4,13 +4,7 @@ namespace Art4\LegacyTodo;
 
 class Users
 {
-    /** @var \PDO */
-    private $pdo;
-
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
+    public function __construct(private \PDO $pdo) {}
 
     /** @return User|null */
     public function findById($id)
@@ -91,7 +85,7 @@ class Users
         try {
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$u, $hash, $email, date("Y-m-d")]);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return RegistrationResult::storageFailure();
         }
 
@@ -106,7 +100,7 @@ class Users
         try {
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$username, $hash, $role, $username . "@example.com", date("Y-m-d")]);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
 

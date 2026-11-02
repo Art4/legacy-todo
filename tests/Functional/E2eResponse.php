@@ -9,24 +9,10 @@ namespace Art4\LegacyTodo;
  */
 final class E2eResponse
 {
-    /** @var int */
-    private $status;
-
-    /** @var array<string, string> */
-    private $headers;
-
-    /** @var string */
-    private $body;
-
     /**
      * @param array<string, string> $headers
      */
-    public function __construct(int $status, array $headers, string $body)
-    {
-        $this->status = $status;
-        $this->headers = $headers;
-        $this->body = $body;
-    }
+    public function __construct(private int $status, private array $headers, private string $body) {}
 
     public function status(): int
     {
@@ -58,6 +44,6 @@ final class E2eResponse
 
     public function contains(string $needle): bool
     {
-        return strpos($this->body, $needle) !== false;
+        return str_contains($this->body, $needle);
     }
 }

@@ -8,33 +8,7 @@ namespace Art4\LegacyTodo;
  */
 class TodoHandler
 {
-    /** @var Auth */
-    private $auth;
-
-    /** @var Todos */
-    private $todos;
-
-    /** @var TodoActivity */
-    private $todoActivity;
-
-    /** @var Users */
-    private $users;
-
-    /** @var Csrf */
-    private $csrf;
-
-    /** @var Layout */
-    private $layout;
-
-    public function __construct(Auth $auth, Todos $todos, TodoActivity $todoActivity, Users $users, Csrf $csrf, Layout $layout)
-    {
-        $this->auth = $auth;
-        $this->todos = $todos;
-        $this->todoActivity = $todoActivity;
-        $this->users = $users;
-        $this->csrf = $csrf;
-        $this->layout = $layout;
-    }
+    public function __construct(private Auth $auth, private Todos $todos, private TodoActivity $todoActivity, private Users $users, private Csrf $csrf, private Layout $layout) {}
 
     /**
      * @param array<string, mixed> $get

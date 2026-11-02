@@ -11,25 +11,7 @@ namespace Art4\LegacyTodo;
  */
 final class User
 {
-    /** @var int */
-    private $id;
-
-    /** @var string */
-    private $username;
-
-    /** @var string */
-    private $role;
-
-    /** @var string */
-    private $email;
-
-    public function __construct(int $id, string $username, string $role, string $email)
-    {
-        $this->id = $id;
-        $this->username = $username;
-        $this->role = $role;
-        $this->email = $email;
-    }
+    public function __construct(private int $id, private string $username, private string $role, private string $email) {}
 
     /** @return int */
     public function id()

@@ -8,29 +8,7 @@ namespace Art4\LegacyTodo;
  */
 class LoginHandler
 {
-    /** @var Auth */
-    private $auth;
-
-    /** @var Users */
-    private $users;
-
-    /** @var Csrf */
-    private $csrf;
-
-    /** @var Layout */
-    private $layout;
-
-    /** @var string */
-    private $siteName;
-
-    public function __construct(Auth $auth, Users $users, Csrf $csrf, Layout $layout, string $siteName)
-    {
-        $this->auth = $auth;
-        $this->users = $users;
-        $this->csrf = $csrf;
-        $this->layout = $layout;
-        $this->siteName = $siteName;
-    }
+    public function __construct(private Auth $auth, private Users $users, private Csrf $csrf, private Layout $layout, private string $siteName) {}
 
     /**
      * @param array<string, mixed> $get

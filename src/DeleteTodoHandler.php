@@ -8,21 +8,7 @@ namespace Art4\LegacyTodo;
  */
 class DeleteTodoHandler
 {
-    /** @var Auth */
-    private $auth;
-
-    /** @var Todos */
-    private $todos;
-
-    /** @var Layout */
-    private $layout;
-
-    public function __construct(Auth $auth, Todos $todos, Layout $layout)
-    {
-        $this->auth = $auth;
-        $this->todos = $todos;
-        $this->layout = $layout;
-    }
+    public function __construct(private Auth $auth, private Todos $todos, private Layout $layout) {}
 
     /**
      * @param array<string, mixed> $get
@@ -47,7 +33,7 @@ class DeleteTodoHandler
         if ($msg !== "") {
             $out .= "<p>" . $this->layout->text($msg) . "</p>\n";
         }
-        $out .= "<p>" . $this->layout->text($t === null ? "" : $t->title()) . " wirklich archivieren?</p>\n";
+        $out .= "<p>" . $this->layout->text($t?->title() ?? "") . " wirklich archivieren?</p>\n";
         $out .= "<a href=\"deletetodo.php?id=" . $this->layout->attr($id) . "&confirm=1\">Ja</a> | <a href=\"index.php\">Nein</a>\n";
         $out .= $this->layout->footer();
 

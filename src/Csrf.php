@@ -9,17 +9,7 @@ namespace Art4\LegacyTodo;
  */
 class Csrf
 {
-    /** @var Auth */
-    private $auth;
-
-    /** @var Layout */
-    private $layout;
-
-    public function __construct(Auth $auth, Layout $layout)
-    {
-        $this->auth = $auth;
-        $this->layout = $layout;
-    }
+    public function __construct(private Auth $auth, private Layout $layout) {}
 
     public function field(): string
     {
