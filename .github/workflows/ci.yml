@@ -70,6 +70,22 @@ jobs:
             vendor/bin/phpmd src,public text phpmd.xml.dist
           '
 
+  code-style:
+    name: Code style
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP CS Fixer check (php 8.2 via Docker)
+        run: |
+          docker run --rm -v "$PWD":/app -w /app php:8.2-cli bash -c '
+            set -e
+            apt-get update -qq && apt-get install -y -qq unzip git > /dev/null
+            curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+            composer install --no-interaction --no-progress
+            vendor/bin/php-cs-fixer check
+          '
+
   phpunit:
     name: PHPUnit
     runs-on: ubuntu-latest
