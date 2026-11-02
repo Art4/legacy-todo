@@ -20,6 +20,7 @@ final class CountingStatement extends \PDOStatement
 }
 
 #[CoversClass(Taxonomy::class)]
+#[UsesClass(Category::class)]
 #[UsesClass(Installer::class)]
 #[UsesClass(Tag::class)]
 final class TaxonomyTest extends PHPUnit\Framework\TestCase

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Art4\LegacyTodo\Auth;
+use Art4\LegacyTodo\AuthenticatedUser;
 use Art4\LegacyTodo\Installer;
 use Art4\LegacyTodo\Layout;
 use Art4\LegacyTodo\Taxonomy;
@@ -13,6 +14,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(Layout::class)]
 #[UsesClass(Auth::class)]
+#[UsesClass(AuthenticatedUser::class)]
 #[UsesClass(Installer::class)]
 #[UsesClass(Taxonomy::class)]
 #[UsesClass(Todos::class)]
