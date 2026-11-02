@@ -68,7 +68,7 @@ class LoginHandler
         }
         $out .= $this->layout->header("Login - " . $this->siteName);
         $out .= "<h1>Login</h1>\n";
-        if ($msg != "") {
+        if ($msg !== "") {
             $out .= "<p>" . $this->layout->text($msg) . "</p>\n";
         }
         $out .= "<form method='post'>\n";

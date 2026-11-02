@@ -35,7 +35,7 @@ class Uploads
             return null;
         }
 
-        $ext = strtolower((string) pathinfo((string) $file['name'], PATHINFO_EXTENSION));
+        $ext = strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION));
         $stored = sprintf('%s.%s', bin2hex(random_bytes(16)), $ext);
         if (!move_uploaded_file((string) $file['tmp_name'], $this->dir . DIRECTORY_SEPARATOR . $stored)) {
             return null;
@@ -73,7 +73,7 @@ class Uploads
     private function hasAllowedExtension(array $file): bool
     {
         $name = $file['name'] ?? '';
-        $ext = strtolower((string) pathinfo((string) $name, PATHINFO_EXTENSION));
+        $ext = strtolower(pathinfo((string) $name, PATHINFO_EXTENSION));
 
         return in_array($ext, self::ALLOWED_EXTENSIONS, true);
     }

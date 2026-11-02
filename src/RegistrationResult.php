@@ -24,31 +24,26 @@ final class RegistrationResult
         $this->status = $status;
     }
 
-    /** @return self */
     public static function registered(): self
     {
         return new self(self::STATUS_REGISTERED);
     }
 
-    /** @return self */
     public static function invalidInput(): self
     {
         return new self(self::STATUS_INVALID_INPUT);
     }
 
-    /** @return self */
     public static function usernameTaken(): self
     {
         return new self(self::STATUS_USERNAME_TAKEN);
     }
 
-    /** @return self */
     public static function storageFailure(): self
     {
         return new self(self::STATUS_STORAGE_FAILURE);
     }
 
-    /** @return string */
     public function status(): string
     {
         return $this->status;

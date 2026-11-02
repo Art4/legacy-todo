@@ -61,7 +61,7 @@ class Bootstrap
     {
         $this->pdo = $pdo;
         $this->siteName = $siteName;
-        $this->uploadsDir = $uploadsDir ?? dirname(__DIR__) . '/public/uploads';
+        $this->uploadsDir = $uploadsDir ?? __DIR__ . '/../public/uploads';
         if ($session === null) {
             $this->session = &$_SESSION;
         } else {
@@ -80,7 +80,7 @@ class Bootstrap
         }
         date_default_timezone_set('UTC');
 
-        $pdo = self::connect($config['db_file'] ?? (getenv('LEGACY_TODO_DB_FILE') ?: dirname(__DIR__) . '/database.sqlite'));
+        $pdo = self::connect($config['db_file'] ?? (getenv('LEGACY_TODO_DB_FILE') ?: __DIR__ . '/../database.sqlite'));
 
         return new self($pdo, $_SESSION, $config['siteName'] ?? 'Legacy Todo');
     }
@@ -90,7 +90,7 @@ class Bootstrap
      */
     public static function install(array $config = []): void
     {
-        $pdo = self::connect($config['db_file'] ?? (getenv('LEGACY_TODO_DB_FILE') ?: dirname(__DIR__) . '/database.sqlite'));
+        $pdo = self::connect($config['db_file'] ?? (getenv('LEGACY_TODO_DB_FILE') ?: __DIR__ . '/../database.sqlite'));
         $installer = new Installer($pdo);
         $installer->install();
     }
