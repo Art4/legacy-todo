@@ -37,8 +37,8 @@ class EditTodoHandler
             }
         }
         $t = $this->todos->find($id);
-        $title = $t === null ? "" : $t->title();
-        $text = $t === null ? "" : $t->text();
+        $title = $t?->title() ?? "";
+        $text = $t?->text() ?? "";
         $out .= $this->layout->header("Todo bearbeiten");
         $out .= "<h1>Todo bearbeiten</h1>\n";
         $out .= "<form method='post'>\n";
