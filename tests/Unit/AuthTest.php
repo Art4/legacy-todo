@@ -12,13 +12,16 @@ use Art4\LegacyTodo\Users;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use Art4\LegacyTodo\Todo;
+use Art4\LegacyTodo\User;
 
 #[CoversClass(Auth::class)]
+#[UsesClass(AuthenticatedUser::class)]
 #[UsesClass(Comment::class)]
 #[UsesClass(Installer::class)]
 #[UsesClass(Taxonomy::class)]
 #[UsesClass(Todo::class)]
 #[UsesClass(Todos::class)]
+#[UsesClass(User::class)]
 #[UsesClass(Users::class)]
 final class AuthTest extends PHPUnit\Framework\TestCase
 {

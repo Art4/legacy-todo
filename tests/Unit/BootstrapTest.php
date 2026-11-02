@@ -29,6 +29,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(Auth::class)]
 #[UsesClass(AuthenticatedUser::class)]
 #[UsesClass(Csrf::class)]
+#[UsesClass(Dashboard::class)]
 #[UsesClass(DeleteTodoHandler::class)]
 #[UsesClass(EditTodoHandler::class)]
 #[UsesClass(Installer::class)]
